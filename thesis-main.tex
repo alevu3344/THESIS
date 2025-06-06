@@ -1,3 +1,4 @@
+% !TeX spellcheck = it_IT 
 \documentclass[12pt,a4paper,openright,twoside]{book}
 \usepackage[utf8]{inputenc}
 \usepackage[italian]{babel}  
@@ -64,6 +65,16 @@ In questo scenario di transizione, è emersa una criticità tanto specifica quan
 
 Il progetto di tesi nasce per rispondere a questa precisa esigenza. Data l'impossibilità di attendere il rilascio della nuova piattaforma, si è optato per lo sviluppo di una soluzione tattica e mirata: un'applicazione web temporanea, concepita come "ponte" (bridge) tecnologico. Lo scopo primario di questa applicazione è fornire ai clienti un pannello di controllo readonly per le funzionalità standard di analisi dei dati, garantendo continuità operativa e soddisfacendo le richieste del mercato fino alla migrazione sulla nuova infrastruttura. Questo lavoro di tesi documenta pertanto non solo la realizzazione di un prodotto software, ma anche l'approccio ingegneristico adottato per sviluppare una soluzione efficace e affidabile in un contesto agile e con vincoli temporali definiti.
 
+\section{Obiettivi della Tesi}
+\label{sec:obiettivi_tesi}
+
+A partire dal contesto delineato, questo elaborato si pone obiettivi che trascendono la semplice descrizione di un prodotto software, per configurarsi come un'analisi approfondita delle metodologie di ingegneria del software applicate a un caso di studio reale. Il fine principale della tesi è, pertanto, analizzare e documentare come i paradigmi della Programmazione Orientata agli Oggetti (OOP) e le relative pratiche di progettazione, quali i design pattern, vengano impiegati per realizzare un'applicazione web complessa in un contesto industriale. Si intende dimostrare come tali principi, spesso affrontati in ambito teorico, rappresentino strumenti pratici e fondamentali per guidare le scelte architetturali e per garantire qualità essenziali come la manutenibilità, la scalabilità e la robustezza del software, specialmente quando si opera con vincoli di tempo e risorse.
+
+Per supportare tale analisi, un primo passo fondamentale sarà la documentazione completa e dettagliata dell'architettura full-stack dell'applicazione. Verrà illustrato il flusso di dati e le interazioni tra il frontend, sviluppato in React con TypeScript, e il backend, basato su un modello di programmazione reattiva in Java. Questo esame non si limiterà a una descrizione statica, ma includerà un'analisi critica delle decisioni tecniche prese durante lo sviluppo, giustificando la scelta dello stack tecnologico e approfondendo l'implementazione di componenti chiave come il sistema di autenticazione sicuro basato su token JWT e l'integrazione con le API esterne di FlashStart.
+
+Il cuore analitico della tesi si concentrerà sull'applicazione pratica dei Design Pattern. Verranno identificati e discussi esempi concreti di pattern implementati nel codice sorgente, spiegando per ciascuno il problema che risolve e i benefici apportati in termini di flessibilità e organizzazione del codice. In questo modo, si intende creare un collegamento esplicito tra i concetti teorici dell'ingegneria del software e la loro implementazione pratica. Particolare attenzione sarà data a come le scelte di design abbiano promosso un'architettura dinamica e facilmente manutenibile; un requisito fondamentale dato che l'applicazione doveva interfacciarsi con servizi interni di FlashStart a loro volta in piena fase di reingegnerizzazione. Verrà quindi evidenziato come le decisioni di design non siano state casuali, ma guidate da principi consolidati volti a massimizzare l'efficienza e la qualità, nel pieno rispetto della natura strategica ma temporanea del progetto.
+
+
 \section{Panoramica dello Stack Tecnologico}
 \label{sec:stack_tecnologico}
 
@@ -83,7 +94,47 @@ Infine, l'intera infrastruttura è gestita tramite un approccio DevOps moderno. 
 \chapter{Background}
 \label{chap:background}
 
+% Introduzione al capitolo
+Il presente capitolo si prefigge di delineare il contesto teorico e tecnologico che funge da fondamento per lo sviluppo del pannello web oggetto di questa tesi.  Per giustificare le decisioni architetturali e tecnologiche adottate, verranno esplorate le aree di ricerca che hanno guidato le scelte progettuali e implementative.  L'analisi spazierà dai fondamenti della Programmazione Orientata agli Oggetti (OOP) e dei design pattern, fino alle architetture reattive e alle metodologie DevOps, per concludere con uno sguardo allo stato dell'arte dei sistemi di filtraggio DNS in cui il progetto si inserisce. 
 
+\section{Pattern Architetturali per Sistemi Reattivi}
+\label{sec:pattern_reattivi}
+
+I design pattern sono soluzioni collaudate e riutilizzabili a problemi comuni di progettazione.  Nello sviluppo di applicazioni web moderne, caratterizzate da elevata interattività e flussi di dati complessi, la loro applicazione è cruciale.  Un pattern fondamentale è l'Observer, che definisce una dipendenza uno-a-molti tra oggetti, in modo che quando un "soggetto" cambia stato, i suoi "osservatori" vengono notificati automaticamente. 
+
+Tuttavia, l'Observer classico può mostrare limiti in contesti reattivi complessi, come la potenziale incapacità di aggiornare correttamente gli oggetti, l'esecuzione di aggiornamenti ridondanti o in ordine errato (causando "glitch") e la creazione di dipendenze circolari.  Per superare queste criticità, sono emersi pattern più sofisticati come il pattern REACTOR \cite{Mijac2021Reactor}.  Questo pattern utilizza un grafo di dipendenze per gestire le reazioni a catena, assicurando che gli aggiornamenti avvengano in modo ordinato e consistente tramite ordinamento topologico.  È pensato per scenari in cui il cambiamento di stato di un oggetto richiede una reazione automatica in tutti gli oggetti dipendenti, situazione comune in interfacce grafiche, fogli di calcolo e animazioni.  Sebbene la sua implementazione di riferimento sia in C\#, i concetti sono perfettamente applicabili al contesto Java di questo progetto. 
+
+A livello di interfaccia utente, il pattern DCRC (Dynamically Coalescing Reactive Chains) \cite{Oliveira2024DCRC} affronta problemi simili, riducendo i "glitch" visivi nelle GUI web raggruppando catene di eventi per garantire aggiornamenti ordinati.  La progressione da Observer a pattern come REACTOR (per il backend) e DCRC (per il frontend) evidenzia una maturazione nel modo in cui le applicazioni moderne gestiscono cambiamenti di stato complessi, un tema centrale per questo lavoro di tesi che integra OOP e programmazione reattiva. 
+
+\section{Architetture Reattive e Programmazione Non-bloccante}
+\label{sec:architetture_reattive}
+
+Le architetture reattive sono diventate fondamentali per costruire applicazioni web capaci di gestire alta concorrenza e grandi volumi di dati mantenendo responsività.  La programmazione reattiva è un paradigma focalizzato sui flussi di dati (data streams) e sulla propagazione del cambiamento \cite{WikipediaReactive}; le applicazioni "reagiscono" ai dati man mano che diventano disponibili.  I suoi benefici principali sono una migliore responsività (le operazioni non bloccanti evitano che l'applicazione si fermi in attesa di I/O), resilienza (gestione degli errori integrata nei flussi), elasticità e un uso efficiente delle risorse. 
+
+Spring WebFlux è il modulo di Spring che permette di creare applicazioni web reattive in Java.  È costruito su Project Reactor, che fornisce i tipi \texttt{Mono<T>} (per 0 o 1 elemento) e \texttt{Flux<T>} (per 0 o N elementi).  Le sue caratteristiche chiave sono l'I/O non bloccante, che permette di servire molte connessioni con pochi thread, il supporto alla "backpressure" per evitare sovraccarichi, e la possibilità di comporre logica asincrona in modo dichiarativo. 
+
+Un aspetto interessante è la distinzione tra Object-Oriented Reactive Programming (OORP), dove si usano oggetti per comporre flussi reattivi, e Reactive Object-Oriented Programming (ROOP), dove gli oggetti stessi sono flussi di stato reattivo \cite{Boix2013OORP}.  Spring WebFlux tende a favorire un approccio OORP, dove i servizi e i controller orchestrano e manipolano i flussi \texttt{Flux} e \texttt{Mono}. 
+
+\section{Sicurezza nelle Applicazioni Web}
+\label{sec:sicurezza_web}
+
+La sicurezza è un aspetto non negoziabile, specialmente in un'applicazione che gestisce il monitoraggio di un filtro DNS.  Il meccanismo di autenticazione scelto per questo progetto è basato su JSON Web Tokens (JWT), uno standard aperto per creare token di accesso che contengono "claim" (asserzioni) su un utente.  Un JWT è composto da un Header, un Payload e una Signature, che ne garantisce l'integrità e l'autenticità. 
+
+Seguendo le best practice di sicurezza, l'architettura adotta token di accesso a breve scadenza (access token) e token di aggiornamento a lunga scadenza (refresh token).  Una misura di sicurezza cruciale implementata è la rotazione dei refresh token: quando un refresh token viene usato, viene invalidato e sostituito con uno nuovo.  Questa tecnica aiuta a rilevare eventuali furti e limita drasticamente i danni in caso di compromissione del token.  Questo approccio, sebbene aumenti la sicurezza, introduce un leggero grado di "statefulness" in un sistema altrimenti stateless, poiché il server deve mantenere traccia dei token validi, un compromesso progettuale importante discusso in questa tesi. 
+
+\section{Metodologie DevOps e Containerizzazione}
+\label{sec:devops}
+
+Le pratiche DevOps e la containerizzazione sono standard moderni per aumentare l'efficienza e l'affidabilità del ciclo di vita del software.  Per questo progetto è stato utilizzato Docker, una piattaforma che automatizza il deployment di applicazioni all'interno di container software.  I container incapsulano l'applicazione e tutte le sue dipendenze, garantendo che funzioni in modo coerente in qualsiasi ambiente ed eliminando il classico problema del "funziona sulla mia macchina".  I benefici includono consistenza, isolamento, gestione semplificata delle dipendenze e scalabilità. 
+
+Il ciclo di vita del software è automatizzato tramite una pipeline di Continuous Integration/Continuous Deployment (CI/CD).  Questo progetto sfrutta una soluzione ibrida con GitHub Actions per l'orchestrazione e runner self-hosted per l'esecuzione dei job di deployment.  Questo approccio combina la comodità della definizione delle pipeline su GitHub con la sicurezza e la flessibilità di eseguire il deployment su macchine controllate direttamente dall'azienda. 
+
+\section{Stato dell'Arte: Sistemi di Filtraggio DNS}
+\label{sec:dns_filtering}
+
+Per comprendere appieno il contesto applicativo, è essenziale analizzare lo stato dell'arte del filtraggio DNS. Il Domain Name System (DNS) è il sistema che traduce i nomi di dominio (es. `www.google.com`) in indirizzi IP.  Il filtraggio DNS sfrutta questo meccanismo per bloccare l'accesso a domini malevoli o indesiderati, intercettando le richieste e rispondendo con l'indirizzo di una pagina di blocco o facendo fallire la risoluzione.  Le moderne soluzioni di filtraggio, come quelle di FlashStart, utilizzano blacklist, whitelist e, sempre più, sistemi basati su Intelligenza Artificiale (AI) e Machine Learning (ML) per classificare dinamicamente i domini e proteggere dalle minacce zero-day. 
+
+Il pannello web sviluppato in questa tesi non è il filtro stesso, ma un'interfaccia di gestione e analisi per il sistema di filtraggio.  Questo implica che la sua architettura deve essere progettata per interagire efficacemente con un'infrastruttura di sicurezza critica e ad alte prestazioni, presentando i dati in modo chiaro e supportando la configurazione delle policy che verranno poi applicate dai motori di filtraggio DNS.
 %----------------------------------------------------------------------------------------
 \chapter{Analisi}
 \label{chap:analisi}

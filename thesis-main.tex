@@ -1,5 +1,6 @@
 \documentclass[12pt,a4paper,openright,twoside]{book}
 \usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}  
 \usepackage{disi-thesis}
 \usepackage{code-lstlistings}
 \usepackage{notes}
@@ -14,7 +15,7 @@
 \subject{Programmazione ad Oggetti}
 \supervisor{Prof. Mirko Viroli}
 \cosupervisor{Dott. Nicolas Farabegoli}
-\session{I}
+\session{II}
 \academicyear{2024-2025}
 
 
@@ -24,26 +25,61 @@
 
 \frontmatter\frontispiece
 
-\begin{abstract}	
-Max 2000 characters, strict.
+\begin{abstract}
+    Questa tesi descrive la progettazione, lo sviluppo e l'analisi architetturale di una applicazione web full-stack, realizzata in collaborazione con l'azienda FlashStart Group. Il progetto nasce dalla necessità di fornire una dashboard in sola lettura per la visualizzazione e l'analisi dei dati provenienti dal servizio di filtraggio DNS offerto ai clienti dell'azienda.
+
+    L'obiettivo del lavoro è duplice: da un lato, la realizzazione di una piattaforma software funzionale, sicura e manutenibile; dall'altro, l'analisi critica delle scelte architetturali e dei design pattern della programmazione orientata agli oggetti (OOP) che ne hanno guidato lo sviluppo.
+
+    La metodologia si basa su un'architettura a servizi containerizzata con Docker. Il backend è stato sviluppato in Java, adottando il paradigma di programmazione reattiva con Spring WebFlux per garantire scalabilità ed efficienza. Il frontend è un'applicazione single-page (SPA) costruita con React e TypeScript. La gestione dei dati è affidata a un database PostgreSQL, mentre la sicurezza è implementata tramite un sistema di autenticazione basato su token JWT con rotazione.
+
+    Il risultato è un'applicazione capace di interfacciarsi con gli endpoint esterni di FlashStart e di presentare i dati in modo intuitivo attraverso componenti grafici. La trattazione approfondisce l'applicazione pratica di design pattern fondamentali come il Factory Method, utilizzato per la creazione di filtri dinamici nel gateway, e analizza come i principi SOLID e le tecniche OOP siano stati il fondamento per la strutturazione dei componenti sia del backend che del frontend.
+
+    Questo lavoro rappresenta un'analisi di come i principi teorici dell'ingegneria del software e i pattern OOP trovino applicazione concreta per risolvere problemi industriali, evidenziando benefici e compromessi delle scelte implementative in un contesto aziendale reale.
 \end{abstract}
 
-\begin{dedication} % this is optional
-Optional. Max a few lines.
-\end{dedication}
+%\begin{dedication} % this is optional
+%Optional. Max a few lines.
+%\end{dedication}
 
 %----------------------------------------------------------------------------------------
-\tableofcontents   
-\listoffigures     % (optional) comment if empty
-\lstlistoflistings % (optional) comment if empty
+\tableofcontents
+%\listoffigures     % (optional) comment if empty
+%\lstlistoflistings % (optional) comment if empty
 %----------------------------------------------------------------------------------------
 
 \mainmatter
 
 %----------------------------------------------------------------------------------------
-\chapter{Introduction}
-\label{chap:introduction}
+\chapter{Introduzione}
+\label{chap:introduzione}
 
+\section{Contesto Aziendale e Motivazione del Progetto}
+\label{sec:contesto_e_motivazione}
+
+Il presente lavoro di tesi si inserisce in un contesto industriale specifico, frutto della collaborazione con FlashStart SRL, un'azienda italiana con sede a Cesena, specializzata nello sviluppo e nella fornitura di soluzioni di filtraggio dei contenuti e protezione da minacce informatiche basate su tecnologia DNS (Domain Name System). I servizi offerti da FlashStart si rivolgono a una clientela diversificata, che include aziende, istituzioni educative e pubbliche amministrazioni, fornendo loro strumenti per garantire una navigazione sicura e controllata.
+
+Al momento dell'inizio del percorso di tirocinio, nel mese di giugno 2025, l'azienda si trovava in una fase di significativa evoluzione tecnologica e strategica. Era infatti in corso un processo di completa reingegnerizzazione della propria piattaforma di gestione, la dashboard utilizzata dai clienti per configurare e monitorare il servizio di filtraggio. Questo processo, unito a un'operazione di rebranding aziendale, mirava a modernizzare l'infrastruttura e l'esperienza utente, con un rilascio previsto per novembre 2025.
+
+In questo scenario di transizione, è emersa una criticità tanto specifica quanto urgente. La piattaforma allora in uso, pur essendo efficace per la gestione delle policy di protezione, presentava una notevole lacuna funzionale: l'assenza di una modalità di consultazione dei dati in sola lettura (readonly). Gli utenti, in particolare gli amministratori di rete e i responsabili IT, manifestavano la crescente necessità di poter analizzare i report e le statistiche di navigazione senza avere i permessi di modifica, per evitare alterazioni accidentali delle configurazioni di sicurezza.
+
+Il progetto di tesi nasce per rispondere a questa precisa esigenza. Data l'impossibilità di attendere il rilascio della nuova piattaforma, si è optato per lo sviluppo di una soluzione tattica e mirata: un'applicazione web temporanea, concepita come "ponte" (bridge) tecnologico. Lo scopo primario di questa applicazione è fornire ai clienti un pannello di controllo readonly per le funzionalità standard di analisi dei dati, garantendo continuità operativa e soddisfacendo le richieste del mercato fino alla migrazione sulla nuova infrastruttura. Questo lavoro di tesi documenta pertanto non solo la realizzazione di un prodotto software, ma anche l'approccio ingegneristico adottato per sviluppare una soluzione efficace e affidabile in un contesto agile e con vincoli temporali definiti.
+
+%----------------------------------------------------------------------------------------
+\chapter{Background}
+\label{chap:background}
+
+
+%----------------------------------------------------------------------------------------
+\chapter{Analisi}
+\label{chap:analisi}
+
+%----------------------------------------------------------------------------------------
+\chapter{Design}
+\label{chap:design}
+
+%----------------------------------------------------------------------------------------
+\chapter{Implementazione}
+\label{chap:implementazione}
 
 %----------------------------------------------------------------------------------------
 % BIBLIOGRAPHY
@@ -57,7 +93,7 @@ Optional. Max a few lines.
 \bibliography{bibliography}
 
 \begin{acknowledgements} % this is optional
-Optional. Max 1 page.
+    Optional. Max 1 page.
 \end{acknowledgements}
 
 \end{document}

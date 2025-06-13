@@ -26,7 +26,6 @@
 \frontmatter\frontispiece
 
 \begin{abstract}
-    Nel contesto aziendale moderno, la necessità di analizzare e monitorare il traffico internet filtrato è diventata sempre più critica per garantire sicurezza e conformità. Le aziende richiedono strumenti di visualizzazione che permettano di esaminare i dati di filtraggio DNS senza rischi di modifiche accidentali alle configurazioni di sicurezza. In questo scenario, l'implementazione di sistemi di autenticazione robusti e sicuri rappresenta un elemento fondamentale per proteggere dati sensibili e garantire accesso controllato alle informazioni aziendali.
 
     Questa tesi descrive lo sviluppo di una dashboard web in modalità readonly per la visualizzazione e l'analisi dei dati di filtraggio DNS, realizzata in collaborazione con FlashStart SRL, azienda leader nel settore del filtraggio dei contenuti web. Il progetto nasce come soluzione temporanea per colmare una lacuna funzionale della piattaforma esistente, fornendo ai clienti dell'azienda uno strumento dedicato all'analisi dei dati fino al rilascio della nuova infrastruttura aziendale.
 
@@ -219,8 +218,7 @@ Il flusso di interazione tra questi componenti è lineare e disaccoppiato. Il cl
 
 \begin{figure}[h!]
     \centering
-    % \includegraphics[width=\textwidth]{path/to/your/logical-architecture-diagram.png}
-    \fbox{Spazio per il diagramma dell'architettura logica (Componenti)}
+    \includegraphics[width=\textwidth]{figures/components.pdf}
     \caption{Diagramma dell'architettura logica di sistema, che illustra i componenti principali e i loro flussi di interazione.}
     \label{fig:logical_architecture_diagram}
 \end{figure}
@@ -239,6 +237,7 @@ Il componente backend rappresenta il nucleo logico dell'intera applicazione. La 
 \paragraph{Problema di Design}
 Dall'analisi delle integrazioni (Sezione \ref{sec:analisi_contesto}) è emersa la necessità di arricchire le richieste inoltrate ai due diversi endpoint esterni (API HQ e API Principale) con meccanismi di autenticazione differenti (Basic Auth per uno, API Key per l'altro). La sfida di design consisteva nel trovare un modo flessibile ed estensibile per creare e applicare queste logiche di modifica delle richieste in modo dinamico e disaccoppiato dalla configurazione delle rotte.
 
+
 \paragraph{Soluzione di Design}
 Per risolvere questo problema, è stato adottato il pattern creazionale \textbf{Factory Method}. Il design prevede la definizione di una interfaccia o classe base astratta, la \texttt{GatewayFilterFactory}, che dichiara un "metodo fabbrica" (\textit{factory method}) per la creazione di oggetti di tipo \texttt{GatewayFilter}. Un \texttt{GatewayFilter} è un oggetto la cui responsabilità è intercettare e modificare una richiesta HTTP.
 
@@ -252,8 +251,7 @@ Questo approccio delega la responsabilità dell'istanziazione dei filtri alle so
 \vspace{1cm}
 \begin{figure}[h!]
     \centering
-    % \includegraphics[width=0.8\textwidth]{path/to/your/factory-method-uml.png}
-    \fbox{Spazio per il diagramma delle classi UML del pattern Factory Method}
+    \includegraphics[width=0.8\textwidth]{figures/gwfactory.pdf}
     \caption{Diagramma delle classi che illustra l'applicazione del pattern Factory Method per la creazione dei filtri del gateway.}
     \label{fig:factory_method_uml}
 \end{figure}
@@ -623,8 +621,7 @@ Il fondamento dell'infrastruttura è la containerizzazione. L'intera applicazion
 % Qui sarebbe perfetto un diagramma che illustra il flusso della pipeline CI/CD
 \begin{figure}[h!]
     \centering
-    % \includegraphics[width=\textwidth]{path/to/your/ci-cd-pipeline-diagram.png}
-    \fbox{Spazio per il diagramma del flusso della pipeline CI/CD}
+    \includegraphics[width=\textwidth]{figures/workflow.pdf}
     \caption{Diagramma che illustra il flusso di Continuous Integration e Continuous Deployment, dal push su Git al deployment sul server.}
     \label{fig:ci_cd_diagram}
 \end{figure}

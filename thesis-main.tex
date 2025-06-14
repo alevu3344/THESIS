@@ -36,12 +36,12 @@
 \end{abstract}
 
 \begin{dedication} % this is optional
-    Alla mia famiglia, a Saul detto el Butre, a Linda e ai miei amici.
+    Alla mia famiglia, a Linda e ai miei amici.
 \end{dedication}
 
 %----------------------------------------------------------------------------------------
 \tableofcontents
-%\listoffigures     % (optional) comment if empty
+\listoffigures     % (optional) comment if empty
 %\lstlistoflistings % (optional) comment if empty
 %----------------------------------------------------------------------------------------
 
@@ -94,7 +94,7 @@ Infine, l'intera infrastruttura è gestita tramite un approccio DevOps moderno. 
 % Introduzione al capitolo
 Il presente capitolo si prefigge di delineare il contesto teorico e tecnologico che funge da fondamento per lo sviluppo del pannello web oggetto di questa tesi.  Per giustificare le decisioni architetturali e tecnologiche adottate, verranno esplorate le aree di ricerca che hanno guidato le scelte progettuali e implementative.  L'analisi spazierà dai fondamenti della Programmazione Orientata agli Oggetti (OOP) e dei design pattern, fino alle architetture reattive e alle metodologie DevOps, per concludere con uno sguardo allo stato dell'arte dei sistemi di filtraggio DNS in cui il progetto si inserisce.
 
-\section{Architetture Reattive e Programmazione Non-bloccante}
+\section{Architetture Reattive e Programmazione Non bloccante}
 \label{sec:architetture_reattive}
 
 Le architetture reattive sono diventate fondamentali per costruire applicazioni web capaci di gestire alta concorrenza e grandi volumi di dati mantenendo responsività. La programmazione reattiva è un paradigma focalizzato sui flussi di dati (data streams) e sulla propagazione del cambiamento; le applicazioni "reagiscono" ai dati man mano che diventano disponibili. I suoi benefici principali sono una migliore responsività (le operazioni non bloccanti evitano che l'applicazione si fermi in attesa di I/O), resilienza (gestione degli errori integrata nei flussi), elasticità e un uso efficiente delle risorse.
@@ -166,13 +166,15 @@ I requisiti non funzionali impongono vincoli sulla qualità e sulle modalità op
 \begin{itemize}
     \item \textbf{RNF1: Modalità di Sola Lettura.} Si tratta del requisito non funzionale più stringente: l'applicazione dovrà operare esclusivamente in modalità di consultazione. Nessuna funzionalità di modifica, creazione o cancellazione dei dati e delle configurazioni dovrà essere progettata o implementata.
 
-    \item \textbf{RNF2: Alte Prestazioni e Reattività.} L'architettura dovrà essere progettata per essere performante ed efficiente, specialmente nella gestione delle operazioni di I/O verso i servizi esterni. Si predilige un modello di programmazione asincrono e non bloccante per il backend, al fine di garantire bassa latenza e un uso ottimale delle risorse computazionali.
+    \item \textbf{RNF2: Gestione delle Operazioni di I/O Concorrenti.}L'applicazione dovrà gestire un numero significativo di operazioni di I/O concorrenti, dovute alle chiamate verso i servizi API esterni. Pertanto, l'architettura del backend dovrà essere progettata per gestire tali operazioni in modo asincrono e non bloccante, al fine di evitare la saturazione dei thread e ottimizzare l'uso delle risorse di sistema.
 
     \item \textbf{RNF3: Sicurezza delle Sessioni Utente.} Il meccanismo di autenticazione dovrà essere di tipo stateless, per favorire la scalabilità, ma al contempo garantire un'elevata sicurezza. Per mitigare i rischi associati a token di lunga durata, si dovrà studiare e implementare una strategia di rotazione dei token, in particolare per i refresh token utilizzati per il rinnovo delle sessioni.
 
     \item \textbf{RNF4: Portabilità e Standardizzazione dell'Ambiente.} La soluzione software dovrà essere pacchettizzata in modo da garantire la coerenza e la riproducibilità dell'ambiente operativo. L'adozione della tecnologia di containerizzazione, come Docker, è identificata come la scelta strategica per raggiungere questo obiettivo.
 
     \item \textbf{RNF5: Vincoli di Progetto.} Lo sviluppo del sistema è vincolato da una precisa finestra temporale, essendo una soluzione "ponte" strategica. Questo requisito impone l'adozione di un approccio agile, favorendo scelte tecnologiche e architetturali che bilancino la velocità di realizzazione con la robustezza e la manutenibilità necessarie per un prodotto di livello industriale.
+    
+    \item \textbf{RNF6: Conformità allo Stack Tecnologico Aziendale.} Per garantire continuità, manutenibilità e integrazione con le competenze e le infrastrutture esistenti in FlashStart, lo sviluppo del progetto è vincolato all'utilizzo di uno stack tecnologico predefinito. Nello specifico, i requisiti impongono l'uso di React con TypeScript per lo sviluppo dell'interfaccia utente, Nginx come web server per il servizio di frontend e Docker per la containerizzazione dell'intera applicazione.
 \end{itemize}
 
 \section{Analisi del Contesto e delle Integrazioni}
@@ -186,7 +188,7 @@ Un'analisi dell'infrastruttura esistente ha identificato due distinti endpoint d
     \item \textbf{Endpoint API Principale (fsflt)}: Costituisce la fonte dati primaria per la maggior parte delle funzionalità del pannello. Da questo servizio è possibile recuperare tutte le informazioni operative, tra cui le configurazioni dei profili, le liste di protezione, i dati statistici per i report e l'elenco delle reti dei clienti. Le richieste a questo endpoint richiedono un'autenticazione basata su una chiave API (API key) univoca, associata all'utente che effettua la chiamata.
 \end{itemize}
 La necessità di interagire con questi due sistemi eterogenei, ciascuno con un proprio meccanismo di autenticazione, rappresenta un vincolo tecnico significativo. La soluzione software dovrà essere in grado di gestire questa complessità, orchestrando le chiamate verso entrambi gli endpoint per aggregare e presentare i dati all'utente in modo trasparente.
-%----------------------------------------------------------------------------------------
+
 \chapter{Design}
 \label{chap:design}
 

@@ -4,10 +4,12 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{disi-thesis}
+\usepackage{microtype}
 \usepackage{code-lstlistings}
 \usepackage{notes}
 \usepackage{shortcuts}
 \usepackage{acronym}
+\usepackage{float}
 
 \school{\unibo}
 \programme{Corso di Laurea in Ingegneria e Scienze Informatiche}
@@ -73,22 +75,6 @@ Per supportare tale analisi, un primo passo fondamentale sarà la documentazione
 
 Il cuore analitico della tesi si concentrerà sull'applicazione pratica dei Design Pattern. Verranno identificati e discussi esempi concreti di pattern implementati nel codice sorgente, spiegando per ciascuno il problema che risolve e i benefici apportati in termini di flessibilità e organizzazione del codice. In questo modo, si intende creare un collegamento esplicito tra i concetti teorici dell'ingegneria del software e la loro implementazione pratica. Particolare attenzione sarà data a come le scelte di design abbiano promosso un'architettura dinamica e facilmente manutenibile; un requisito fondamentale dato che l'applicazione doveva interfacciarsi con servizi interni di FlashStart a loro volta in piena fase di reingegnerizzazione. Verrà quindi evidenziato come le decisioni di design non siano state casuali, ma guidate da principi consolidati volti a massimizzare l'efficienza e la qualità, nel pieno rispetto della natura strategica ma temporanea del progetto.
 
-
-\section{Panoramica dello Stack Tecnologico}
-\label{sec:stack_tecnologico}
-
-La realizzazione di un'applicazione robusta, scalabile e sicura, pur in un contesto di sviluppo agile e a breve termine, ha richiesto un'attenta selezione delle tecnologie costitutive. L'architettura del sistema è stata progettata per essere moderna e reattiva, garantendo un'esperienza utente fluida e un uso efficiente delle risorse server. Ogni componente dello stack, dal backend al frontend, fino all'infrastruttura di deployment, è stato scelto per rispondere a precise esigenze di progetto.
-
-Il cuore pulsante dell'applicazione risiede nel backend, sviluppato in Java 17 e fondato sul framework Spring Boot. Per questo progetto è stato adottato un paradigma di programmazione completamente reattivo, utilizzando Spring WebFlux anziché il tradizionale Spring MVC. Questa scelta strategica si basa sulla natura dell'applicazione, intrinsecamente legata a operazioni di I/O (input/output) come le chiamate verso API esterne e l'accesso al database. Il modello non bloccante di WebFlux permette di gestire un elevato numero di connessioni concorrenti con un numero limitato di thread, ottimizzando le risorse e garantendo bassa latenza. Inoltre, il backend assume un ruolo centrale di API Gateway grazie all'integrazione con Spring Cloud Gateway. Questa componente orchestra il traffico di rete, indirizzando le richieste del client verso le API interne dell'applicazione o fungendo da proxy sicuro verso i due distinti endpoint di FlashStart, applicando filtri personalizzati per l'autenticazione e l'arricchimento delle chiamate.
-
-Per l'interfaccia utente è stata realizzata una Single Page Application (SPA) utilizzando React, una delle librerie JavaScript più diffuse per la creazione di interfacce complesse e performanti. L'adozione di TypeScript ha introdotto la tipizzazione statica nel codice frontend, un elemento cruciale per aumentare la robustezza, la manutenibilità e la chiarezza del codice, riducendo la probabilità di errori a runtime. La comunicazione asincrona con il backend avviene tramite chiamate HTTP gestite dalla libreria axios, configurata con intercettori specifici per aggiungere automaticamente i token di autenticazione alle richieste e per gestire in modo trasparente la logica di rinnovo dei token in caso di sessione scaduta, come definito in axiosInstance.ts.
-
-La persistenza dei dati, limitata alle informazioni su utenti e token per la gestione delle sessioni, è affidata a PostgreSQL, un database relazionale open-source rinomato per la sua stabilità e le sue funzionalità avanzate. Per mantenere la coerenza con l'approccio reattivo del backend, l'accesso al database è gestito tramite Spring Data R2DBC (Reactive Relational Database Connectivity). Questo permette di estendere il paradigma non bloccante fino al livello di accesso ai dati, evitando colli di bottiglia e garantendo che l'intera catena di elaborazione di una richiesta, dalla ricezione alla risposta, rimanga asincrona.
-
-La sicurezza dell'applicazione è un pilastro fondamentale dell'architettura. Il sistema di autenticazione è stateless e si basa su JSON Web Tokens (JWT), che vengono trasmessi dal client nell'header di ogni richiesta autorizzativa. Per mitigare i rischi legati a token di lunga durata, è stato implementato un meccanismo di sicurezza avanzato noto come rotazione dei refresh token. Come visibile nel AuthenticationService, ogni volta che un refresh token viene utilizzato con successo per ottenere un nuovo access token, esso viene immediatamente invalidato e sostituito da uno nuovo. Questa strategia riduce drasticamente la finestra temporale in cui un token compromesso potrebbe essere sfruttato, aumentando significativamente la sicurezza complessiva delle sessioni utente.
-
-Infine, l'intera infrastruttura è gestita tramite un approccio DevOps moderno. L'applicazione è interamente containerizzata utilizzando Docker, e la sua architettura multi-servizio (backend, frontend web server e database) è definita tramite file docker-compose.yaml. Questo garantisce la portabilità e la riproducibilità dell'ambiente su macchine diverse. Il ciclo di vita dello sviluppo è automatizzato da una pipeline di Continuous Integration e Continuous Deployment (CI/CD) ibrida, che si avvale di GitHub Actions per l'orchestrazione dei flussi di lavoro e di un runner self-hosted, installato direttamente sul server di destinazione, per eseguire in modo sicuro le operazioni di build e deployment.
-
 %----------------------------------------------------------------------------------------
 \chapter{Background}
 \label{chap:background}
@@ -107,18 +93,20 @@ L'approccio architetturale basato su componenti (Component-Based Software Engine
 Un'innovazione chiave di React è il Virtual DOM (VDOM), una rappresentazione in memoria del Document Object Model (DOM) reale del browser. La manipolazione diretta del DOM è un'operazione computazionalmente costosa. React affronta questo problema aggiornando prima il VDOM, che è un oggetto leggero, e successivamente, tramite un processo di "riconciliazione", calcola il set minimo di modifiche da applicare al DOM reale in un unico processo batch \cite{chen2019performance}. Questo approccio offre benefici significativi per applicazioni con aggiornamenti frequenti della UI, poiché minimizza le operazioni sul DOM e fornisce un'utile astrazione per lo sviluppatore \cite{chen2019performance}.
 
 \subsection{Tipizzazione Statica con TypeScript}
-Nei linguaggi a tipizzazione dinamica come JavaScript, i controlli sui tipi di dato avvengono a runtime, mentre nei linguaggi a tipizzazione statica questi controlli avvengono a compile-time, intercettando errori nelle fasi iniziali dello sviluppo \cite{gannon1977empirical}. TypeScript è un superset di JavaScript a tipizzazione statica che viene compilato in JavaScript puro \cite{bierman2014understanding}, con l'obiettivo di introdurne i benefici in applicazioni su larga scala. Studi empirici hanno fornito prove concrete a sostegno del suo utilizzo. Una ricerca ha dimostrato che i sistemi di tipi statici offrono un vantaggio significativo per la manutenibilità del software, fungendo da documentazione efficace e aiutando gli sviluppatori a comprendere più rapidamente codice non familiare \cite{hanenberg2014empirical}. Un'analisi su larga scala di progetti su GitHub ha ulteriormente corroborato questi risultati, rilevando che le applicazioni TypeScript mostrano una qualità e una comprensibilità del codice significativamente migliore rispetto a quelle in JavaScript puro \cite{gajbhiye2022systematic}. È importante notare che il sistema di tipi di TypeScript è intenzionalmente non "sound" (insicuro) per progettazione, una scelta di compromesso per garantire la massima compatibilità con l'ecosistema JavaScript \cite{bierman2014understanding}. L'adozione di TypeScript in questo progetto è quindi motivata dalla necessità di migliorare la qualità e la manutenibilità a lungo termine della codebase.
+Nei linguaggi a tipizzazione dinamica come JavaScript, i controlli sui tipi di dato avvengono a runtime, mentre nei linguaggi a tipizzazione statica questi controlli avvengono a compile-time, intercettando errori nelle fasi iniziali dello sviluppo \cite{mayerTyping}. TypeScript è un superset di JavaScript a tipizzazione statica che viene compilato in JavaScript puro \cite{bierman2014understanding}, con l'obiettivo di introdurne i benefici in applicazioni su larga scala. Studi empirici hanno fornito prove concrete a sostegno del suo utilizzo. Una ricerca ha dimostrato che i sistemi di tipi statici offrono un vantaggio significativo per la manutenibilità del software, fungendo da documentazione efficace e aiutando gli sviluppatori a comprendere più rapidamente codice non familiare \cite{hanenberg2014empirical}. Un'analisi su larga scala di progetti su GitHub ha ulteriormente corroborato questi risultati, rilevando che le applicazioni TypeScript mostrano una qualità e una comprensibilità del codice significativamente migliore rispetto a quelle in JavaScript puro \cite{Bogner_2022}. È importante notare che il sistema di tipi di TypeScript è intenzionalmente non "sound" (insicuro) per progettazione, una scelta di compromesso per garantire la massima compatibilità con l'ecosistema JavaScript \cite{bierman2014understanding}. L'adozione di TypeScript in questo progetto è quindi motivata dalla necessità di migliorare la qualità e la manutenibilità a lungo termine della codebase.
 
-\section{Architetture Reattive e Programmazione Asincrona nel Backend}
+\section{Architetture reattive e programmazione asincrona}
 
-\subsection{Il Manifesto Reattivo e i Suoi Principi Fondamentali}
-In risposta alle crescenti richieste di concorrenza e bassa latenza, è stato redatto il Manifesto Reattivo, un documento che sistematizza un insieme di principi per la costruzione di sistemi software moderni \cite{reactivemanifesto}. I sistemi reattivi, secondo il manifesto, sono definiti da quattro tratti interconnessi: Reattivi (Responsive), Resilienti (Resilient), Elastici (Elastic) e Guidati da Messaggi (Message-Driven) \cite{reactivemanifesto, szymanek2016quality}. L'adozione di un'architettura reattiva rappresenta quindi una scelta deliberata per costruire un sistema preparato a gestire le sfide degli ambienti distribuiti.
+Le architetture server tradizionali, come quelle basate su Java Servlet, si fondano sul modello di concorrenza \textbf{thread-per-request}. In questo paradigma, il server application assegna a ogni richiesta HTTP in ingresso un thread dedicato da un pool limitato. Questo thread gestisce l'intera logica della richiesta e, aspetto cruciale, rimane in stato di attesa bloccante durante le operazioni di I/O, come una query su un database o una chiamata a un servizio esterno. Sebbene questo modello sia concettualmente semplice, la sua efficienza si degrada rapidamente in scenari con alta concorrenza o alta latenza. Un numero elevato di richieste simultanee può portare alla saturazione del pool di thread, consumando ingenti quantità di memoria (ogni thread ha un proprio stack) e aumentando il carico sulla CPU a causa del continuo "context switching". Le nuove richieste vengono messe in coda o respinte, e la latenza complessiva del sistema aumenta drasticamente \cite{vrincean2021optimizing}.
 
-\subsection{Modelli di Concorrenza: Approccio Thread-per-Request vs. Event-Driven}
-Il modello tradizionale, noto come thread-per-request, assegna a ogni richiesta un thread dedicato che rimane bloccato durante le operazioni di I/O, presentando gravi limiti di scalabilità \cite{vrincean2021optimizing}. In contrapposizione, il modello event-driven (o asincrono) utilizza un numero ridotto di thread ("event loop") che, anziché bloccarsi, registrano una callback e passano a gestire altri eventi. Studi empirici hanno dimostrato che questo approccio migliora drasticamente la scalabilità per i carichi di lavoro I/O-bound \cite{bth2015performance, vrincean2021optimizing}. Questa scelta è supportata da analisi delle prestazioni che mostrano costantemente come la migrazione da framework basati su I/O bloccante a quelli non bloccanti porti a un aumento significativo delle performance \cite{derezinska2020performance, bth2015performance}.
+Per superare questi limiti, è stato introdotto il \textbf{modello di I/O non bloccante}, che costituisce il fondamento delle architetture reattive. In questo paradigma, un numero ridotto e fisso di thread, noto come \textbf{Event Loop}, gestisce un numero molto più elevato di connessioni concorrenti. Quando un'operazione di I/O viene avviata, il thread dell'Event Loop non attende il suo completamento; delega l'operazione al sistema operativo e registra una \textit{callback} da eseguire quando il risultato sarà disponibile. Nel frattempo, il thread è libero di elaborare altri eventi per altre richieste. Questo approccio, ispirato a sistemi come Node.js e Nginx, permette di ottenere un'elevata efficienza nell'uso delle risorse e una scalabilità superiore, specialmente per cariche di lavoro I/O-bound, come dimostrato da numerosi studi comparativi \cite{bth2015performance, derezinska2020performance}.
 
-\subsection{Lo Standard Reactive Streams e la Gestione della Contropressione (Backpressure)}
-Le architetture asincrone introducono la sfida della gestione del flusso tra un produttore (Publisher) e un consumatore (Subscriber) che operano a velocità diverse. Per standardizzare la programmazione reattiva sulla JVM e risolvere questo problema, è nata l'iniziativa Reactive Streams, una specifica che definisce uno standard per l'elaborazione di flussi asincroni con un meccanismo di contropressione (backpressure) non bloccante. Il concetto chiave è che il Subscriber controlla il flusso, segnalando esplicitamente al Publisher quanti elementi è pronto a ricevere, trasformando il flusso da un modello "push" a un ibrido "push-pull" \cite{haitao2016framework}.
+Nel contesto dell'ecosistema Spring, questo paradigma è implementato dal modulo \textbf{Spring WebFlux}, che si fonda su \textbf{Project Reactor} per fornire un'API ricca e componibile per la gestione di flussi asincroni. Reactor introduce due tipi fondamentali: \textbf{Mono}, un \textit{publisher} che rappresenta un flusso asincrono di 0 o 1 elemento (es. il risultato di una query che restituisce un singolo utente), e \textbf{Flux}, che rappresenta un flusso di 0 o N elementi (es. una lista di risultati). Attraverso questi tipi, è possibile costruire pipeline di elaborazione dati in modo dichiarativo e funzionale. Anziché scrivere codice imperativo (con cicli e costrutti condizionali), lo sviluppatore definisce una catena di operatori (es. .map() per trasformare, .filter() per selezionare, .flatMap() per operazioni asincrone nidificate) che descrivono la logica di business. Questa "ricetta" viene eseguita dal framework solo quando un client "sottoscrive" il flusso, promuovendo un codice più espressivo e disaccoppiato dalla gestione della concorrenza \cite{spring_reactive}.
+
+Un principio fondamentale dei sistemi reattivi è che il paradigma non bloccante deve essere preservato \textbf{end-to-end}, dall'interfaccia di rete fino alla fonte dei dati. Utilizzare un web layer reattivo sarebbe inutile se il thread dell'Event Loop dovesse poi bloccarsi in attesa di una risposta dal database. La tradizionale API \textbf{JDBC (Java Database Connectivity)} è, per sua natura, bloccante. Per risolvere questa incompatibilità, è stata sviluppata la specifica \textbf{R2DBC (Reactive Relational Database Connectivity)}, che definisce un Service Provider Interface (SPI) per driver di database che supportano operazioni non bloccanti e basate su flussi. Per semplificare l'utilizzo di R2DBC, \textbf{Spring Data R2DBC} offre un'astrazione di alto livello, coerente con il resto dell'ecosistema Spring Data. Fornisce un modello di programmazione familiare, basato sul pattern Repository (es. \texttt{ReactiveCrudRepository}), la cui differenza cruciale è che i metodi non restituiscono entità o collezioni, ma \textit{publishers} reattivi (Mono o Flux), integrando così l'accesso ai dati in modo trasparente all'interno della catena reattiva \cite{spring_reactive}. 
+
+I vantaggi di un'architettura reattiva correttamente implementata sono molteplici e significativi. Il più evidente è la scalabilità verticale e l'efficienza delle risorse: un'applicazione reattiva può gestire un numero molto più elevato di richieste concorrenti con un numero inferiore di thread, riducendo drasticamente il consumo di memoria e l'overhead della CPU. Questo si traduce in una maggiore responsività del sistema, che rimane reattivo e con bassa latenza anche sotto carichi pesanti, poiché i thread non vengono mai monopolizzati da operazioni lente. Un altro vantaggio cruciale è la resilienza. Gli errori in un flusso reattivo sono eventi di prima classe, gestiti all'interno della pipeline tramite operatori dedicati (es. .onErrorResume, .retry), permettendo di implementare logiche di fallback e di recupero dagli errori in modo più robusto e isolato. Infine, il protocollo Reactive Streams incorpora nativamente il concetto di contropressione (backpressure), un meccanismo di controllo del flusso con cui il consumatore di dati (Subscriber) segnala al produttore (Publisher) quanti elementi è in grado di processare. Questo previene che un produttore veloce possa sopraffare un consumatore più lento, garantendo la stabilità del sistema ed evitando errori di OutOfMemoryError.
+
 
 \section{Sicurezza nelle Applicazioni Web Distribuite}
 
@@ -128,25 +116,47 @@ L'autenticazione stateful (basata su sessione) memorizza lo stato dell'utente su
 \subsection{JSON Web Token (JWT): Specifica RFC 7519 e Analisi delle Vulnerabilità}
 Il JSON Web Token (JWT), definito nella RFC 7519, è lo standard de facto per l'implementazione dell'autenticazione stateless \cite{rfc7519}. È un formato compatto per rappresentare "claims" (asserzioni) tra due parti, composto da Header, Payload e Signature. La variante più comune, JSON Web Signature (JWS), garantisce l'integrità dei dati tramite firma digitale, ma non la confidenzialità, poiché Header e Payload sono codificati in Base64Url e pubblicamente leggibili. È quindi imperativo non memorizzare mai informazioni sensibili nel payload \cite{rana2023enhancing}. Vulnerabilità comuni includono l'attacco dell'algoritmo "none", l'uso di segreti deboli per la firma e la mancata verifica della firma stessa \cite{owasp_jwt_cheatsheet}.
 
+\subsection{Sinergia tra Paradigma Reattivo e Autenticazione Stateless}
+Il paradigma reattivo e l'autenticazione stateless tramite JWT sono un abbinamento architetturale quasi perfetto, poiché si fondano sullo stesso principio: l'assenza di stato condiviso e mutabile. Un flusso reattivo (una pipeline di `Mono` o `Flux`) è intrinsecamente stateless; ogni richiesta viene processata come una sequenza di eventi indipendente. Se un'applicazione reattiva dovesse recuperare i dati dell'utente da un tradizionale archivio di sessioni, dovrebbe eseguire un'operazione di I/O che, se bloccante, vanificherebbe i benefici del modello non bloccante.
+
+Qui entra in gioco la sinergia con i JWT. Un token JWT è auto-contenuto: trasporta al suo interno tutte le informazioni necessarie sull'utente (ID, ruoli, ecc.) in modo sicuro. Quando una richiesta arriva al server:
+\begin{enumerate}
+    \item Un filtro di sicurezza reattivo (come quelli forniti da Spring Security) decodifica e valida il JWT all'inizio della catena di elaborazione, in modo asincrono.
+    \item Le informazioni sull'utente autenticato (il \textit{Principal}) vengono estratte e inserite nel Contesto Reattivo (\texttt{Context}).
+    \item Questo \texttt{Context} è immutabile e viene propagato lungo l'intera pipeline reattiva, diventando accessibile a ogni operatore (es. \texttt{.map}, \texttt{.flatMap}) in modo non bloccante.
+\end{enumerate}
+In questo modo, il contesto di sicurezza "fluisce" insieme ai dati, eliminando la necessità di qualsiasi chiamata I/O esterna per recuperare lo stato della sessione, preservando l'integrità del modello non bloccante end-to-end.
+
 \subsection{Gestione Avanzata dei Token: Rotazione e Revoca}
 Per mitigare il rischio della difficile revoca dei token, la best practice consiste nell'utilizzare access token a breve durata \cite{flanagan2024token}. Per non danneggiare l'esperienza utente, si adotta il pattern dei refresh token, credenziali a lunga durata usate per ottenere un nuovo access token. Per affrontare la sicurezza del potente refresh token, le più recenti best practice per OAuth 2.0 raccomandano la rotazione dei refresh token. Il meccanismo prevede che quando un client utilizza un refresh token (RT\_A), il server emetta un nuovo access token e un nuovo refresh token (RT\_B), invalidando contestualmente RT\_A. Se un aggressore riutilizza RT\_A, il server rileva il tentativo e deve invalidare l'intera famiglia di token discendenti, forzando una ri-autenticazione completa \cite{flanagan2024token}.
-
-\subsection{Analisi delle Vulnerabilità del Framework OAuth 2.0}
-OAuth 2.0, definito nella RFC 6749, non è un protocollo, ma un framework di autorizzazione \cite{rfc6749}. La sua sicurezza dipende dalla corretta implementazione. Vulnerabilità comuni includono la Cross-Site Request Forgery (CSRF), mitigabile con l'uso del parametro `state` \cite{fett2015security}, e l'Open Redirector. Ricerche più recenti hanno messo in luce vulnerabilità sistemiche in piattaforme di integrazione su larga scala, che possono portare ad attacchi come il Cross-app OAuth Account Takeover (COAT) \cite{luo2025universal}. Questo dimostra che è essenziale seguire le "Best Current Practices" (BCP) e le raccomandazioni di sicurezza emergenti.
 
 \section{Metodologie DevOps per l'Automazione del Ciclo di Vita del Software}
 
 \subsection{Principi e Pratiche DevOps}
 DevOps è un movimento culturale e professionale che promuove la collaborazione tra sviluppatori (Dev) e operazioni IT (Ops) per accorciare il ciclo di vita dello sviluppo e fornire una distribuzione continua di alta qualità. Revisioni sistematiche della letteratura hanno identificato un insieme di pratiche tecniche chiave che abilitano la cultura DevOps: Continuous Integration (CI), Continuous Delivery/Deployment (CD), Infrastructure as Code (IaC), Automated Testing e Continuous Monitoring \cite{teixeira2020systematic}.
 
-\subsection{Containerizzazione e Orchestrazione: Analisi di Sicurezza}
-La containerizzazione, con standard Docker, impacchetta un'applicazione e le sue dipendenze in un'unità portabile (container), garantendo coerenza tra gli ambienti. L'orchestrazione (con standard Kubernetes) automatizza il deployment e la gestione di applicazioni multi-container. L'adozione di container e Kubernetes introduce però una nuova superficie di attacco e richiede una configurazione proattiva della sicurezza. Le sfide principali includono le vulnerabilità delle immagini, le misconfigurazioni, la sicurezza della rete interna, che richiede l'uso di `Network Policies` \cite{salah2021network}, e la gestione degli accessi tramite Role-Based Access Control (RBAC) \cite{shamim2022mitigation, karka2025security}.
+\subsection{Containerizzazione}
+La containerizzazione è un paradigma di virtualizzazione a livello di sistema operativo che consente di isolare le applicazioni in ambienti leggeri e portabili, noti come \textbf{container}. A differenza delle macchine virtuali (VM), che richiedono un intero sistema operativo guest e la virtualizzazione dell'hardware, i container condividono il kernel del sistema operativo host. Questa architettura produce un'efficienza notevolmente superiore: i container hanno un footprint di memoria e disco molto più ridotto, tempi di avvio nell'ordine dei secondi e un overhead prestazionale quasi nullo rispetto all'esecuzione nativa, specialmente per carichi di lavoro legati alla CPU e alla memoria \cite{moravcik2024experimental}. Il principio fondamentale è l'incapsulamento di un'applicazione con tutte le sue dipendenze (come librerie, binari e file di configurazione) in un'unità atomica. Ciò garantisce la \textbf{portabilità} e la \textbf{consistenza} del comportamento dell'applicazione attraverso l'intero ciclo di vita dello sviluppo, eliminando la comune discrepanza tra ambienti di sviluppo, test e produzione, spesso riassunta nel problema "funziona sulla mia macchina" \cite{syrjamaki2023exploring}.
+
+\textbf{Docker} si è affermato come lo standard de facto per l'implementazione della tecnologia di containerizzazione, grazie a un ecosistema di strumenti che ne ha reso l'utilizzo accessibile e potente. Il processo di creazione di un container si basa su un' \textbf{immagine}, un template read-only che ne definisce lo stato. Le immagini sono costruite a partire da un \textbf{Dockerfile}, un file di testo che funge da manifesto dichiarativo, specificando una serie di istruzioni sequenziali. Una delle innovazioni chiave di Docker è il suo filesystem basato su \textbf{immagini stratificate} (layered images). Ogni istruzione in un Dockerfile crea un nuovo strato (layer) read-only che si sovrappone ai precedenti. Docker utilizza un meccanismo di \textbf{copy-on-write (CoW)}: quando un container viene avviato, viene aggiunto uno strato scrivibile sopra la pila di strati read-only dell'immagine. Qualsiasi modifica apportata dal container viene registrata in questo strato superiore. Questa architettura offre due vantaggi cruciali: efficienza nello storage, poiché gli strati comuni a più immagini vengono memorizzati una sola volta, e velocità nella distribuzione, dato che durante un aggiornamento è necessario trasferire solo gli strati che sono stati modificati \cite{coha2019evaluating}. Le immagini vengono poi distribuite tramite un \textbf{Container Registry}, un repository centralizzato che funge da catalogo per la loro condivisione e il loro versionamento.
+
+L'adozione della containerizzazione con Docker è diventata una pratica fondante delle metodologie DevOps e delle pipeline di \textbf{Integrazione e Distribuzione Continua (CI/CD)}. L'immagine containerizzata diventa l'artefatto immutabile che viene costruito una sola volta e promosso attraverso i vari stadi della pipeline (build, test, staging, produzione). Questo garantisce che l'unità software testata sia esattamente la stessa che viene eseguita in produzione, aumentando drasticamente l'affidabilità dei rilasci \cite{shafique2024containerization}.
 
 \subsection{Integrazione e Distribuzione Continua (CI/CD)}
-Continuous Integration (CI) è la pratica di fusioni frequenti del codice in un repository centrale, seguite da build e test automatizzati. Continuous Deployment (CD) è il rilascio automatico in produzione di ogni modifica che supera i test. Studi empirici mostrano che l'adozione della CI è correlata a una maggiore frequenza di commit e a una risoluzione più rapida dei bug \cite{rahman2018influence}. Una delle sfide principali è il mantenimento di build rapide, poiché durate eccessive annullano i vantaggi del ciclo di feedback veloce \cite{ghaleb2019empirical}.
+La Continuous Integration (CI) è una pratica di sviluppo software che prevede l'integrazione frequente delle modifiche del codice in un repository centrale condiviso, seguita dall'esecuzione automatizzata di build e test. Questo approccio si contrappone al tradizionale modello di sviluppo "feature branch" a lunga durata, dove le modifiche vengono integrate raramente, spesso causando conflitti complessi e difficili da risolvere. La CI promuove invece commit piccoli e frequenti, tipicamente multiple volte al giorno, con l'obiettivo di identificare e risolvere rapidamente i problemi di integrazione \cite{Rahman_2018}.
+Il processo di CI si articola in diverse fasi automatizzate. Quando uno sviluppatore effettua un commit, un CI server (come Jenkins, GitLab CI, o GitHub Actions) rileva automaticamente la modifica e avvia una build pipeline. Questa pipeline comprende tipicamente: il checkout del codice sorgente, la risoluzione delle dipendenze, la compilazione dell'applicazione, l'esecuzione di test unitari e di integrazione, l'analisi statica del codice per rilevare vulnerabilità di sicurezza o violazioni di standard di coding, e infine la generazione di artefatti deployabili (come immagini Docker). Se una qualsiasi di queste fasi fallisce, la pipeline si interrompe e gli sviluppatori ricevono un feedback immediato, permettendo una correzione rapida prima che il problema si propaghi \cite{ghaleb2019empirical}.
+La Continuous Delivery (CD) estende il concetto di CI automatizzando anche il processo di rilascio, preparando ogni build che supera i test per il deployment in produzione. Tuttavia, il rilascio effettivo rimane un'azione manuale, solitamente innescata da un'approvazione umana. Il Continuous Deployment rappresenta il livello più avanzato di automazione, dove ogni modifica che supera con successo l'intera pipeline viene automaticamente rilasciata in produzione senza intervento umano. Questo approccio richiede un'estrema fiducia nella suite di test e nei meccanisms di monitoraggio, ma permette di ottenere un feedback loop estremamente rapido dal mercato \cite{teixeira2020systematic}.
+Una delle sfide tecniche più significative nell'implementazione di pipeline CI/CD efficaci è la gestione dei tempi di build. Build lente (superiori ai 10-15 minuti) compromettono il valore del feedback rapido, scoraggiando gli sviluppatori dall'effettuare commit frequenti e riducendo l'efficacia dell'intero processo. Strategie di ottimizzazione includono la parallelizzazione dei test, l'utilizzo di cache intelligenti per evitare la ricompilazione di componenti non modificati, e l'implementazione di test pyramids che privilegiano test unitari veloci rispetto a test di integrazione più lenti \cite{ghaleb2019empirical}.
+L'integrazione con la containerizzazione rappresenta un'evoluzione naturale delle pipeline CI/CD. Gli artefatti prodotti non sono più semplici file binari o archivi, ma immagini Docker immutabili che incapsulano l'applicazione e tutte le sue dipendenze. Questo approccio elimina le discrepanze ambientali e garantisce che l'esatto software testato nella pipeline sia quello che viene eseguito in produzione. Inoltre, le immagini Docker possono essere taggate con metadati di versioning automatici (come commit hash, build number, timestamp), facilitando la tracciabilità e il rollback in caso di problemi.
 
 \subsection{Infrastructure as Code (IaC)}
-L'Infrastructure as Code (IaC) è la pratica di gestire l'infrastruttura tramite file di definizione leggibili dalla macchina (es. YAML), trattandola come un artefatto software. I benefici includono la possibilità di versionare, testare e distribuire l'infrastruttura in modo ripetibile e coerente. L'approccio può essere dichiarativo (si definisce lo stato finale desiderato) o imperativo (si specificano i passaggi esatti). L'utilizzo di file Dockerfile e manifesti YAML nel presente progetto è un'applicazione diretta dell'approccio dichiarativo.
+L'Infrastructure as Code (IaC) rappresenta un paradigma fondamentale nell'ingegneria delle infrastrutture moderne, che tratta l'infrastruttura IT come un artefatto software gestibile tramite codice sorgente. Invece di configurare manualmente server, reti, database e altri componenti infrastrutturali attraverso interfacce grafiche o comandi imperativi, l'IaC utilizza file di definizione dichiarativi (tipicamente in formato YAML, JSON, o linguaggi specifici come HCL per Terraform) per specificare lo stato desiderato dell'infrastruttura \cite{teixeira2020systematic}.
+Il principio fondamentale dell'IaC è la separazione tra dichiarazione e implementazione. Lo sviluppatore o l'ingegnere DevOps definisce "cosa" vuole ottenere (ad esempio, "voglio un cluster Kubernetes con 3 nodi, un load balancer e un database PostgreSQL"), mentre lo strumento di IaC si occupa del "come" raggiunger tale stato, traducendo la dichiarazione in una serie di API calls verso i provider cloud o i sistemi di gestione dell'infrastruttura. Questo approccio dichiarativo si contrappone al tradizionale approccio imperativo, dove è necessario specificare esplicitamente ogni passo di configurazione in sequenza.
+Un concetto chiave nell'IaC è l'idempotenza: l'esecuzione ripetuta della stessa definizione infrastrutturale deve produrre sempre lo stesso risultato, indipendentemente dal numero di esecuzioni. Questo è possibile grazie alla capacità degli strumenti IaC di calcolare il delta tra lo stato corrente dell'infrastruttura e quello desiderato, applicando solo le modifiche necessarie. Ad esempio, se una definizione specifica 5 istanze di un servizio ma ne esistono già 3, lo strumento creerà automaticamente solo le 2 istanze mancanti, senza toccare quelle esistenti.
+I vantaggi dell'IaC sono molteplici e sostanziali. La versionabilità permette di tracciare ogni modifica all'infrastruttura attraverso sistemi di version control come Git, abilitando pratiche come code review, branching strategies, e rollback sicuri. La riproducibilità garantisce che ambienti identici possano essere creati on-demand, eliminando le discrepanze tra sviluppo, testing e produzione che spesso causano il famigerato problema "funziona sulla mia macchina". La scalabilità consente di replicare facilmente configurazioni complesse su scala globale, mentre la disaster recovery diventa un processo automatizzato e testabile, poiché l'intera infrastruttura può essere ricreata da zero a partire dai file di definizione.
+Nel contesto delle applicazioni containerizzate, l'IaC assume forme specifiche e complementari. I Dockerfile rappresentano l'IaC a livello di runtime environment, definendo in modo dichiarativo come costruire l'immagine di un container. I file docker-compose.yml estendono questo concetto a livello di applicazione multi-container, specificando le relazioni, le reti e i volumi necessari. Per deployment su larga scala, i manifesti Kubernetes (scritti in YAML) definiscono l'orchestrazione di container attraverso concetti come Deployments, Services, ConfigMaps e Secrets.
+Un aspetto critico nell'implementazione di IaC è la gestione degli stati (state management). Strumenti come Terraform mantengono un state file che rappresenta la mappatura tra la dichiarazione logica dell'infrastruttura e le risorse fisiche create nei provider cloud. Questo state file deve essere condiviso tra team members e mantenuto in modo sicuro, tipicamente attraverso remote state backends che supportano locking distribuito per evitare conflitti durante modifiche concorrenti.
+La sinergia tra IaC e pipeline CI/CD crea un ecosistema completamente automatizzato per la gestione dell'intero stack applicativo. Le modifiche ai file di definizione infrastrutturale vengono processate attraverso pipeline dedicate che includono validazione sintattica, testing dell'infrastruttura (attraverso strumenti come Terratest), e deployment graduale utilizzando strategie come blue-green deployment o canary releases. Questo approccio trasforma l'infrastruttura da un elemento statico e difficile da modificare a un componente agile e continuamente evolutivo, perfettamente allineato con i principi DevOps di integrazione e deployment continui.
 
 \chapter{Analisi}
 \label{chap:analisi}
@@ -219,33 +229,31 @@ Per rispondere ai requisiti di portabilità e riproducibilità degli ambienti (R
 
 La struttura logica del sistema è decomposta in tre componenti principali:
 
-\begin{itemize}
-    \item \textbf{Componente di Presentazione (Frontend)}: Questo componente ha la responsabilità di gestire l'interfaccia utente. È disegnato come una Single Page Application (SPA) servita da un web server. Il suo unico scopo è renderizzare le viste, gestire le interazioni con l'utente e comunicare con il componente applicativo per il recupero e la visualizzazione dei dati.
 
-    \item \textbf{Componente Applicativo (Backend)}: Rappresenta il nucleo logico del sistema e agisce come unico punto di contatto per il componente di presentazione. Il suo design prevede una duplice responsabilità:
+    \paragraph{Componente di Presentazione (Frontend)} Questo componente ha la responsabilità di gestire l'interfaccia utente. È disegnato come una Single Page Application (SPA) servita da un web server. Il suo unico scopo è renderizzare le viste, gestire le interazioni con l'utente e comunicare con il componente applicativo per il recupero e la visualizzazione dei dati.
+
+    \paragraph{Componente Applicativo (Backend)} Rappresenta il nucleo logico del sistema e agisce come unico punto di contatto per il componente di presentazione. Il suo design prevede una duplice responsabilità:
           \begin{enumerate}
               \item Gestire la logica di business interna, come l'autenticazione degli utenti e la gestione delle sessioni.
               \item Fungere da intermediario (secondo il pattern Architetturale API Gateway) verso i servizi esterni, astraendo la loro complessità dal frontend.
           \end{enumerate}
 
-    \item \textbf{Componente di Persistenza Dati (Database)}: Questo componente è dedicato alla memorizzazione e al recupero dei dati necessari al funzionamento intrinseco dell'applicazione. In accordo con il requisito di sola lettura (RNF1) per i dati di business, il suo perimetro è strettamente limitato alla persistenza dei dati di sessione e delle anagrafiche utente.
-\end{itemize}
+    \paragraph{Componente di Persistenza Dati (Database)} Questo componente è dedicato alla memorizzazione e al recupero dei dati necessari al funzionamento intrinseco dell'applicazione. In accordo con il requisito di sola lettura (RNF1) per i dati di business, il suo perimetro è strettamente limitato alla persistenza dei dati di sessione e delle anagrafiche utente.
+
 
 Il flusso di interazione tra questi componenti è lineare e disaccoppiato. Il client utente interagisce esclusivamente con il Componente di Presentazione. Le richieste di dati vengono inoltrate da quest'ultimo al Componente Applicativo, che si occupa di elaborarle, interagendo a sua volta con il Componente di Persistenza per le operazioni relative all'autenticazione, o con i sistemi esterni (come descritto in Sezione \ref{sec:analisi_contesto}) per i dati di business.
 
-\vspace{1cm} % Spazio per il diagramma
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/components.pdf}
     \caption{Diagramma dell'architettura logica di sistema, che illustra i componenti principali e i loro flussi di interazione.}
     \label{fig:logical_architecture_diagram}
 \end{figure}
 
-\vspace{1cm} % Spazio dopo il diagramma
 
 Questa architettura a tre livelli logici permette di isolare le diverse responsabilità, migliorando la coesione di ciascun componente e riducendo l'accoppiamento tra di essi, a totale beneficio della manutenibilità e della testabilità del sistema.
-\section{Design del Backend e Pattern OOP Applicati}
+\section{Design del Backend}
 \label{sec:design_backend_oop}
 
 Il componente backend rappresenta il nucleo logico dell'intera applicazione. La sua progettazione è stata affrontata con un approccio orientato agli oggetti, con l'obiettivo di creare un sistema modulare, poco accoppiato e facilmente estensibile. Per raggiungere tale scopo, sono stati impiegati diversi design pattern fondamentali, scelti per risolvere specifiche problematiche emerse durante la fase di analisi.
@@ -265,16 +273,18 @@ Il design si completa con la creazione di due classi "fabbrica" concrete:
     \item \texttt{ApiHqAuthGatewayFilterFactory}: Una fabbrica concreta che implementa il factory method per produrre un'istanza di \texttt{GatewayFilter} specializzata nell'aggiungere l'header di autenticazione Basic Auth, necessario per le chiamate verso l'endpoint API HQ.
     \item \texttt{FsfltApiKeyGatewayFilterFactory}: Un'altra fabbrica concreta il cui factory method produce un'istanza di \texttt{GatewayFilter} che si occupa di recuperare la chiave API dell'utente autenticato e di inserirla in un header specifico per le chiamate verso l'API Principale.
 \end{itemize}
-Questo approccio delega la responsabilità dell'istanziazione dei filtri alle sottoclassi, permettendo al sistema principale di configurazione delle rotte di operare a un alto livello di astrazione, senza conoscere i dettagli concreti di ciascun filtro. Ciò aumenta la modularità e semplifica l'eventuale aggiunta di nuovi filtri in futuro.
 
-\vspace{1cm}
-\begin{figure}[h!]
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/gwfactory.pdf}
     \caption{Diagramma delle classi che illustra l'applicazione del pattern Factory Method per la creazione dei filtri del gateway.}
     \label{fig:factory_method_uml}
 \end{figure}
-\vspace{1cm}
+
+Questo approccio delega la responsabilità dell'istanziazione dei filtri alle sottoclassi, permettendo al sistema principale di configurazione delle rotte di operare a un alto livello di astrazione, senza conoscere i dettagli concreti di ciascun filtro. Ciò aumenta la modularità e semplifica l'eventuale aggiunta di nuovi filtri in futuro.
+
+
 
 \subsection{Pattern Singleton per la Gestione dei Servizi}
 \label{subsec:design_singleton}
@@ -285,7 +295,7 @@ Molti componenti del backend, come i servizi per la gestione della logica di bus
 \paragraph{Soluzione di Design}
 Per questo requisito, il design si affida all'applicazione del pattern \textbf{Singleton}. Piuttosto che implementare manualmente il pattern in ogni classe, si è deciso di delegarne la gestione a un container \textit{Inversion of Control} (IoC), un componente fondamentale del framework scelto. Il design prevede che i componenti di servizio (\texttt{AuthenticationService}, \texttt{JwtService}) e di accesso ai dati (\texttt{UserRepository}) vengano definiti come "bean" gestiti dal container. Sarà responsabilità del container stesso garantire che per ciascuno di questi bean venga creata una sola istanza (ambito singleton) e che questa venga condivisa e "iniettata" in tutti gli altri componenti che ne dichiarano una dipendenza. Questo approccio, oltre a risolvere il problema dell'istanza unica, promuove un basso accoppiamento e semplifica la gestione delle dipendenze del sistema.
 
-\subsection{Pattern Facade per la Semplificazione dei Sottosistemi}
+\subsection{Pattern Facade per l'Autenticazione e la Gestione delle Sessioni}
 \label{subsec:design_facade}
 
 \paragraph{Problema di Design}
@@ -296,14 +306,12 @@ Per nascondere questa complessità e fornire un punto di accesso unificato e sem
 
 Questa classe espone un set di metodi ad alto livello, come \texttt{autenticaUtente(...)} o \texttt{ruotaRefreshToken(...)}. Al suo interno, la facciata orchestra le chiamate ai vari componenti del sottosistema (il repository degli utenti, il gestore dei token, il validatore delle password, etc.), ma nasconde completamente questi dettagli di interazione al chiamante. In questo modo, il client (il \texttt{AuthController}) dipende unicamente dall'interfaccia semplificata della Facade, risultando completamente disaccoppiato dalla logica interna del sottosistema. Questo non solo semplifica il codice del client, ma permette anche di modificare e far evolvere il sottosistema di autenticazione in modo indipendente, senza impattare il resto dell'applicazione.
 
-\vspace{1cm}
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/facade.pdf}
     \caption{Diagramma delle classi che mostra come \texttt{AuthenticationService} agisca da Facade, semplificando l'accesso al sottosistema di autenticazione.}
     \label{fig:facade_uml}
 \end{figure}
-\vspace{1cm}
 
 \subsection{Pattern Data Transfer Object (DTO) per lo Scambio di Dati}
 \label{subsec:design_dto}
@@ -356,14 +364,12 @@ Per risolvere questo problema in modo elegante, è stato applicato un design che
 
 Questo oggetto di configurazione definisce la "strategia" completa per un particolare grafico: l'endpoint da chiamare, i parametri della query, la funzione per trasformare la risposta dell'API in un formato compatibile con la libreria di grafici, e le opzioni di rendering. Le diverse strategie sono definite centralmente nel file \texttt{chartConfigs.ts}. In questo modo, per renderizzare un nuovo tipo di grafico è sufficiente definire una nuova strategia, senza modificare il componente \texttt{GenericChart}, promuovendo i principi di Open/Closed e di riuso del software.
 
-\vspace{1cm}
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/strategy.pdf}
     \caption{Diagramma che illustra come il componente \texttt{GenericChart} utilizzi diversi oggetti \texttt{ChartConfig} (strategie) per renderizzare grafici differenti.}
     \label{fig:strategy_frontend_uml}
 \end{figure}
-\vspace{1cm}
 
 
 
@@ -394,67 +400,12 @@ Su questa istanza unica, viene applicato un pattern riconducibile al \textbf{Dec
 \end{itemize}
 Questo design a strati astrae completamente la complessità della comunicazione autenticata, lasciando ai componenti della UI la sola responsabilità di richiedere i dati di cui hanno bisogno.
 
-\section{Design del Flusso di Sicurezza}
-\label{sec:design_security_flow}
-
-In accordo con il requisito di sicurezza per le sessioni utente (RNF3), la progettazione del meccanismo di autenticazione e autorizzazione è stata un'area di focus primario. L'obiettivo era realizzare un sistema che fosse al contempo sicuro, scalabile (stateless) e in grado di offrire un'esperienza utente fluida, senza richiedere login frequenti. Per raggiungere questo equilibrio, è stato progettato un flusso ibrido che impiega token JWT e cookie sicuri, basato su una strategia di rotazione attiva per mitigare i rischi di sicurezza.
-
-\subsection{Componenti del Design di Sicurezza}
-Il design si fonda su due componenti crittografici distinti, ciascuno con un ruolo e un ciclo di vita specifici.
-
-\paragraph{Access Token (AT)}
-L'Access Token è il componente utilizzato per l'autorizzazione di ogni singola richiesta API verso risorse protette.
-\begin{itemize}
-    \item \textbf{Struttura e Scopo:} È un JSON Web Token (JWT) firmato dal server. Al suo interno contiene i \textit{claims}, ovvero delle asserzioni sull'identità dell'utente (come il suo username/email) e sui suoi permessi.
-    \item \textbf{Ciclo di Vita:} La scelta di design cruciale è stata quella di assegnargli una scadenza molto breve (es. 15-60 minuti). Questo limita drasticamente la finestra temporale in cui un token, se intercettato, può essere sfruttato da un malintenzionato.
-    \item \textbf{Trasporto e Memorizzazione:} Viene trasmesso dal client al server nell'header HTTP \texttt{Authorization} secondo lo schema \texttt{Bearer}. Nel client, il design prevede la sua memorizzazione esclusivamente in memoria (non in \texttt{localStorage} o \texttt{sessionStorage}), per ridurre l'esposizione a vulnerabilità di tipo Cross-Site Scripting (XSS).
-\end{itemize}
-
-\paragraph{Refresh Token (RT)}
-Il Refresh Token è una credenziale a lunga scadenza (es. 7 giorni) il cui unico scopo è permettere al client di ottenere un nuovo Access Token quando quello corrente scade, senza costringere l'utente a inserire nuovamente le proprie credenziali.
-\begin{itemize}
-    \item \textbf{Struttura e Scopo:} A differenza dell'Access Token, è un token opaco, una stringa casuale e imprevedibile. La sua validità è gestita e verificata esclusivamente lato server.
-    \item \textbf{Trasporto e Sicurezza:} Il suo design di trasporto è il fulcro della sicurezza. Il token viene inviato dal server al browser tramite un \textbf{cookie}, configurato con gli attributi di sicurezza \texttt{HttpOnly} e \texttt{Secure}.
-    \begin{itemize}
-        \item \texttt{HttpOnly}: Impedisce l'accesso al cookie da parte di qualsiasi script JavaScript in esecuzione nel browser, rendendolo immune al furto tramite attacchi XSS.
-        \item \texttt{Secure}: Garantisce che il cookie venga trasmesso solo su connessioni HTTPS, proteggendolo da intercettazioni in transito (Man-in-the-Middle).
-    \end{itemize}
-    \item \textbf{Persistenza lato Server:} Per poter validare i Refresh Token, il design prevede che il backend mantenga una loro traccia in un'apposita tabella del database. Questa è una scelta deliberata che introduce un minimo di stato in un'architettura altrimenti stateless, un trade-off accettato in cambio di un significativo aumento della sicurezza.
-\end{itemize}
-
-\subsection{Il Processo di Rotazione: Sicurezza Attiva}
-Il cuore del design di sicurezza è il meccanismo di \textbf{rotazione del refresh token}, un processo proattivo per la mitigazione dei rischi.
-
-\paragraph{Innesco del Flusso} Il processo si avvia quando il client effettua una richiesta API con un Access Token scaduto e il backend risponde con uno stato HTTP \texttt{401 Unauthorized}. Il design del client prevede un meccanismo centralizzato (un "intercettore") che cattura questo specifico errore e avvia automaticamente la procedura di rinnovo, in modo trasparente all'utente.
-
-\paragraph{Logica di Rotazione} Una volta avviato il flusso di rinnovo:
-\begin{enumerate}
-    \item Il client invia una richiesta a un endpoint dedicato (\texttt{/auth/refresh}). Il browser allega automaticamente il cookie \texttt{HttpOnly} contenente il Refresh Token.
-    \item Il backend riceve la richiesta e valida il Refresh Token confrontandolo con quelli presenti nel database.
-    \item \textbf{Se il token è valido}, il server esegue l'operazione di rotazione:
-    \begin{itemize}
-        \item Il Refresh Token appena utilizzato viene \textbf{immediatamente invalidato o cancellato} dal database. Questo lo rende a tutti gli effetti un token "monouso" e previene attacchi di tipo \textit{replay}.
-        \item Viene generata una \textbf{nuova coppia di token}: un nuovo Access Token e un nuovo Refresh Token.
-        \item Il backend salva il nuovo Refresh Token nel database e invia la risposta al client, contenente il nuovo Access Token nel corpo della risposta e il nuovo Refresh Token in un nuovo cookie \texttt{HttpOnly}.
-    \end{itemize}
-    \item \textbf{Se il token non è valido} (perché scaduto, già utilizzato o inesistente), il server risponde con un errore \texttt{401 Unauthorized}, invalidando di fatto la sessione. Il client, ricevendo questo errore, reindirizzerà l'utente alla pagina di login.
-\end{enumerate}
-Questo design di rotazione non solo migliora la sicurezza rendendo i token di lunga durata monouso, ma permette anche di implementare strategie di rilevamento del furto di token.
-
-\vspace{1cm}
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=\textwidth]{figures/expired_ac.pdf}
-    \caption{Diagramma di sequenza che illustra il flusso di gestione di un Access Token scaduto e la rotazione del Refresh Token, evidenziando le interazioni tra client, backend e database.}
-    \label{fig:token_rotation_sequence_uml}
-\end{figure}
-\vspace{1cm}
 %----------------------------------------------------------------------------------------
 \chapter{Implementazione}
 \label{chap:implementazione}
 
 % Introduzione al capitolo
-Questo capitolo illustra i dettagli implementativi salienti del progetto, con l'obiettivo di dimostrare come i concetti e i pattern architetturali discussi nel capitolo di \texttt{Design} (Capitolo \ref{chap:design}) siano stati realizzati concretamente nel codice sorgente. Verranno presentati e analizzati frammenti di codice significativi, sia del backend sviluppato in Java con il framework Spring, sia del frontend in React con TypeScript, evidenziando le scelte tecnologiche e la loro aderenza al disegno progettuale.
+Questo capitolo illustra i dettagli implementativi salienti del progetto, con l'obiettivo di dimostrare come i concetti e i pattern architetturali discussi nel capitolo di \texttt{Design} (Capitolo \ref{chap:design}) siano stati realizzati concretamente nel codice sorgente. 
 
 \section{Dettagli Implementativi del Backend}
 \label{sec:impl_backend}
@@ -466,7 +417,7 @@ Il componente backend è stato sviluppato utilizzando Java 17 e il framework Spr
 Come descritto nella sezione di design \ref{subsec:design_factory}, il pattern Factory Method è stato utilizzato per creare filtri dinamici nel gateway.
 
 \paragraph{Realizzazione della Factory Concreta}
-La classe \texttt{ApiHqAuthGatewayFilterFactory} rappresenta una delle fabbriche concrete. L'annotazione \texttt{@Component} la registra come bean di Spring, rendendola disponibile per l'iniezione delle dipendenze. Il metodo \texttt{apply}, che è l'effettivo "factory method", restituisce una lambda expression che implementa l'interfaccia funzionale \texttt{GatewayFilter}. Questa lambda incapsula la logica per aggiungere l'header di autenticazione \texttt{Basic Auth} a ogni richiesta.
+La classe \texttt{ApiHq\allowbreak Auth\allowbreak Gateway\allowbreak Filter\allowbreak Factory} rappresenta una delle fabbriche concrete. L'annotazione \texttt{@Component} la registra come bean di Spring, rendendola disponibile per l'iniezione delle dipendenze. Il metodo \texttt{apply}, che è l'effettivo "factory method", restituisce una lambda expression che implementa l'interfaccia funzionale \texttt{GatewayFilter}. Questa lambda incapsula la logica per aggiungere l'header di autenticazione \texttt{Basic Auth} a ogni richiesta.
 
 % Includi qui lo snippet di codice Java
 % Esempio:
@@ -535,34 +486,47 @@ Le strategie concrete sono definite come oggetti di configurazione nel file \tex
 \paragraph{Utilizzo del Componente Contestuale}
 La pagina \texttt{Home} istanzia poi molteplici volte il componente \texttt{GenericChart}, passando a ciascuno una diversa strategia tramite la prop \texttt{config}. Questo dimostra come lo stesso componente possa esibire comportamenti radicalmente diversi in base alla strategia iniettata.
 
-% Includi qui lo snippet JSX dalla pagina Home.tsx che mostra l'uso di GenericChart
+\section{Implementazione del Flusso di Sicurezza End-to-End}
+\label{sec:impl_security}
 
-\subsection{Implementazione del Flusso di Autenticazione Centralizzato}
-\label{subsec:impl_auth_frontend}
-La gestione centralizzata delle chiamate API e del rinnovo dei token, come da design, è implementata nel file \texttt{axiosInstance.ts}.
+Questa sezione descrive la realizzazione pratica del flusso di sicurezza, traducendo il design concettuale in componenti software specifici sia nel backend che nel frontend. Il sistema implementa un'autenticazione stateless basata su JSON Web Tokens (JWT) con un meccanismo di rotazione per i refresh token, in accordo con il requisito RNF3.
 
-\paragraph{L'Intercettore di Risposta}
-Il cuore della logica di rinnovo automatico risiede nell'intercettore di risposta. Questo frammento di codice intercetta ogni risposta fallita. Se il codice di stato è \texttt{401}, avvia il processo di refresh, mettendo in attesa le altre richieste e ritentando la chiamata originale al termine del processo.
+\subsection{Implementazione nel Backend}
+La logica principale di generazione, validazione e gestione dei token è interamente confinata nel backend, sviluppato con Spring Boot.
 
-% Includi qui lo snippet dell'intercettore di risposta da axiosInstance.ts
+\paragraph{Generazione dei Token e Gestione dei Cookie}
+Al momento del login, l' \texttt{AuthController} riceve le credenziali e le delega all' \texttt{AuthenticationService}. Questo servizio, agendo come \textbf{Facade}, orchestra la validazione e, in caso di successo, invoca un \texttt{JwtService} dedicato. Questa classe utilizza la libreria \texttt{io.jsonwebtoken.jjwt} per creare e firmare i token.
+\begin{itemize}
+    \item L'\textbf{Access Token} viene generato come un JWT firmato, contenente i \textit{claims} dell'utente (username e ruoli) e una scadenza breve di 15 minuti.
+    \item Il \textbf{Refresh Token} viene generato come stringa crittograficamente sicura e con una scadenza lunga (7 giorni). L'hash del token viene salvato nel database PostgreSQL tramite il \texttt{RefreshTokenRepository} per la validazione futura.
+\end{itemize}
+L' \texttt{AuthController} si occupa poi di inviare i token al client. L'Access Token viene restituito nel corpo della risposta JSON, mentre il Refresh Token viene inserito in un cookie. Per questa operazione si utilizza la classe helper \texttt{ResponseCookie} di Spring, che permette di configurare in modo dichiarativo gli attributi di sicurezza \textbf{\texttt{HttpOnly}}, \textbf{\texttt{Secure}}, \textbf{\texttt{Path}} e \textbf{\texttt{Max-Age}}, garantendo che il refresh token sia protetto da accessi via JavaScript (XSS) e trasmesso solo su connessioni HTTPS.
 
-\paragraph{Gestione dello Stato con React Context}
-Il \texttt{AuthContext.tsx} implementa la parte "Observer" del flusso. I metodi \texttt{login} e \texttt{logout} modificano lo stato dell'access token (salvato in memoria tramite \texttt{authStorage.ts}). La modifica di questo stato, condiviso tramite il \textit{provider} del contesto, causa l'aggiornamento automatico di tutti i componenti che usano l'hook \texttt{useAuth()}, come il componente \texttt{PrivateRoute} che decide se renderizzare o meno le pagine protette.
+\paragraph{Implementazione della Rotazione del Token}
+Il cuore della sicurezza del sistema è implementato nel metodo \texttt{validateAndRotateRefreshToken} all'interno dell' \texttt{AuthenticationService}. Quando l'endpoint \texttt{/auth/refresh} viene chiamato, questo metodo esegue la logica di rotazione. L'intero processo è annotato con \texttt{@Transactional} di Spring, per assicurare che la ricerca, la cancellazione del vecchio token e il salvataggio del nuovo avvengano come una transazione atomica sul database, prevenendo condizioni di gara (\textit{race conditions}) e garantendo la consistenza dei dati. Se il token fornito è valido, viene immediatamente invalidato e sostituito, rendendolo a tutti gli effetti un token monouso per prevenire attacchi di tipo \textit{replay}.
 
-% Includi qui uno snippet da AuthContext.tsx che mostra la funzione di login/logout
+\subsection{Implementazione nel Frontend}
+Il frontend React è responsabile della gestione dell'Access Token e dell'orchestrazione trasparente del processo di rinnovo.
 
-\subsection{Implementazione della Sicurezza: Rotazione dei Token}
-\label{subsec:impl_security}
-% Link di riferimento alla sezione di design
-L'implementazione del flusso di rotazione dei token, come descritto nella sezione \ref{sec:design_security_flow}, è il pilastro della sicurezza delle sessioni.
+\paragraph{Memorizzazione dell'Access Token e Gestione dello Stato}
+In accordo con le best practice di sicurezza, l'Access Token non viene mai memorizzato nel \texttt{localStorage} o \texttt{sessionStorage}. Viene invece mantenuto esclusivamente nello stato in memoria dell'applicazione, gestito tramite un \textbf{React Context} (\texttt{AuthContext}). Questo minimizza l'esposizione del token a vulnerabilità di tipo Cross-Site Scripting. I componenti che effettuano chiamate API protette recuperano il token corrente dal contesto tramite un custom hook \texttt{useAuth()}.
 
-\paragraph{Logica di Rotazione nel Backend}
-Il metodo \texttt{validateAndRotateRefreshToken} in \texttt{AuthenticationService.java} è il punto cruciale. Ricevuto un refresh token, esso viene prima cercato nel database. Se trovato e valido, viene immediatamente cancellato per prevenirne il riutilizzo, e solo dopo ne viene generato e salvato uno nuovo, che verrà restituito al client. L'uso dell'annotazione \texttt{@Transactional} garantisce l'atomicità di queste operazioni.
+\paragraph{Intercettore per il Rinnovo Automatico}
+La logica di rinnovo è centralizzata in un \textbf{intercettore} configurato sull'istanza globale di \textbf{Axios} (\texttt{axiosInstance.ts}). Questo intercettore ispeziona ogni risposta proveniente dal server.
+\begin{itemize}
+    \item Se la risposta ha uno stato HTTP \texttt{401 Unauthorized}, l'intercettore "cattura" l'errore.
+    \item Mette in pausa la richiesta originale fallita e avvia una nuova chiamata all'endpoint \texttt{/auth/refresh}. Essendo una normale richiesta HTTP, il browser allega automaticamente il cookie \texttt{HttpOnly} contenente il Refresh Token.
+    \item In caso di successo, il nuovo Access Token viene salvato nel \texttt{AuthContext}, e la richiesta originale viene ritentata con il nuovo token.
+    \item In caso di fallimento del refresh, l'utente viene disconnesso e reindirizzato alla pagina di login.
+\end{itemize}
+Questo approccio astrae completamente la complessità della gestione delle sessioni dai componenti della UI, che possono effettuare chiamate API senza doversi preoccupare della scadenza dei token.
 
-% Includi qui lo snippet del metodo validateAndRotateRefreshToken
-
-\paragraph{Gestione dei Cookie nel Frontend}
-Il frontend non interagisce mai direttamente con il refresh token. Il backend lo imposta come cookie \texttt{HttpOnly} tramite l'header \texttt{Set-Cookie}, come visibile nel controller \texttt{AuthController.java}. Il browser si occupa poi di allegare automaticamente questo cookie a ogni richiesta verso il dominio di origine (inclusa la chiamata a \texttt{/auth/refresh}), in modo sicuro e trasparente al codice JavaScript.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/expired_ac.pdf}
+    \caption{Diagramma di sequenza che illustra il flusso di gestione di un Access Token scaduto e la rotazione del Refresh Token, evidenziando le interazioni tra client, backend e database.}
+    \label{fig:token_rotation_sequence_uml}
+\end{figure}
 
 
 \chapter{Metodologia e Infrastruttura di Sviluppo}
@@ -593,9 +557,7 @@ Per garantire la qualità, la robustezza e la non regressione del software, è s
 \subsection{Testing del Backend}
 Per il backend Java, sono state implementate due tipologie principali di test, sfruttando il framework di testing JUnit 5 e la libreria Mockito per la creazione di mock.
 
-\paragraph{Unit Test} I test unitari si concentrano sulla verifica del comportamento di singole classi o metodi in isolamento. Un esempio significativo è la classe \texttt{AuthenticationServiceTest}, dove le dipendenze esterne (come \texttt{UserRepository} e \texttt{RefreshTokenRepository}) sono state sostituite con oggetti mock. Questo ha permesso di testare in modo isolato la logica di rotazione dei token, la validazione delle credenziali e la gestione degli errori, senza dipendere da un database reale.
-
-% Potresti inserire un piccolo snippet di un test da AuthenticationServiceTest.java
+\paragraph{Unit Test} I test unitari si concentrano sulla verifica del comportamento di singole classi o metodi in isolamento. Un esempio tipico è la verifica dei servizi di autenticazione, dove le dipendenze esterne (come repository di dati e servizi di validazione) vengono sostituite con oggetti mock. Questo approccio permette di testare in modo isolato la logica di business critica, come la rotazione dei token, la validazione delle credenziali e la gestione degli errori, senza dipendere da risorse esterne come database o servizi di rete.
 
 \paragraph{Integration Test} Per verificare l'interazione tra più componenti, come la logica di servizio e il layer di persistenza, sono stati scritti test di integrazione. Questi test utilizzano un database in-memory H2, configurato per emulare PostgreSQL, come specificato nel file di properties dei test. Ciò permette di testare il flusso completo di salvataggio e recupero dati (es. la creazione di un utente e del suo refresh token) in un ambiente controllato ma realistico.
 
@@ -635,8 +597,7 @@ Il fondamento dell'infrastruttura è la containerizzazione. L'intera applicazion
           \end{itemize}
 \end{enumerate}
 
-% Qui sarebbe perfetto un diagramma che illustra il flusso della pipeline CI/CD
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/workflow.pdf}
     \caption{Diagramma che illustra il flusso di Continuous Integration e Continuous Deployment, dal push su Git al deployment sul server.}

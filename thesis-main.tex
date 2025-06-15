@@ -251,7 +251,7 @@ L'applicazione oggetto di studio non è un sistema autocontenuto, ma deve operar
 
 Un'analisi dell'infrastruttura esistente ha identificato due distinti endpoint di servizio che espongono le informazioni richieste:
 \begin{itemize}
-    \item \textbf{\texttt{http://apihq.flashstart.com}}: Un servizio specializzato che fornisce funzionalità di diagnostica e amministrazione. Ai fini di questo progetto, l'endpoint di maggior interesse è quello relativo al "lookup" di un dominio, che ne restituisce lo stato di filtraggio. Per comunicare con questo servizio, le richieste HTTP devono essere autenticate tramite il meccanismo di Basic Auth.
+    \item \textbf{\texttt{http://apihq.flashstart.com/}}: Un servizio specializzato che fornisce funzionalità di diagnostica e amministrazione. Ai fini di questo progetto, l'endpoint di maggior interesse è quello relativo al "lookup" di un dominio, che ne restituisce lo stato di filtraggio. Per comunicare con questo servizio, le richieste HTTP devono essere autenticate tramite il meccanismo di Basic Auth.
 
     \item \textbf{\texttt{https://api.fsflt.net/}}: Costituisce la fonte dati primaria per la maggior parte delle funzionalità del pannello. Da questo servizio è possibile recuperare tutte le informazioni operative, tra cui le configurazioni dei profili, le liste di protezione, i dati statistici per i report e l'elenco delle reti dei clienti. Le richieste a questo endpoint richiedono un'autenticazione basata su una chiave API (API key) univoca, associata all'utente che effettua la chiamata.
 \end{itemize}
@@ -276,7 +276,7 @@ La struttura logica del sistema è decomposta in tre componenti principali:
     \paragraph{Componente Applicativo (Backend)} Rappresenta il nucleo logico del sistema e agisce come unico punto di contatto per il componente di presentazione. Il suo design prevede una duplice responsabilità:
           \begin{enumerate}
               \item Gestire la logica di business interna, come l'autenticazione degli utenti e la gestione delle sessioni.
-              \item Fungere da intermediario (secondo il pattern Architetturale API Gateway) verso i servizi esterni, astraendo la loro complessità dal frontend.
+              \item Fungere da intermediario verso i servizi esterni, astraendo la loro complessità dal frontend.
           \end{enumerate}
 
     \paragraph{Componente di Persistenza Dati (Database)} Questo componente è dedicato alla memorizzazione e al recupero dei dati necessari al funzionamento intrinseco dell'applicazione. In accordo con il requisito di sola lettura (RNF1) per i dati di business, il suo perimetro è strettamente limitato alla persistenza dei dati di sessione e delle anagrafiche utente.
@@ -294,10 +294,47 @@ Il flusso di interazione tra questi componenti è lineare e disaccoppiato. Il cl
 
 
 Questa architettura a tre livelli logici permette di isolare le diverse responsabilità, migliorando la coesione di ciascun componente e riducendo l'accoppiamento tra di essi, a totale beneficio della manutenibilità e della testabilità del sistema.
+
 \section{Design del Backend}
 \label{sec:design_backend_oop}
 
-Il componente backend rappresenta il nucleo logico dell'intera applicazione. La sua progettazione è stata affrontata con un approccio orientato agli oggetti, con l'obiettivo di creare un sistema modulare, poco accoppiato e facilmente estensibile. Per raggiungere tale scopo, sono stati impiegati diversi design pattern fondamentali, scelti per risolvere specifiche problematiche emerse durante la fase di analisi.
+Il componente backend rappresenta il nucleo logico dell'intera applicazione. La sua progettazione è stata affrontata con un approccio orientato agli oggetti, con l'obiettivo di creare un sistema modulare, poco accoppiato e facilmente estensibile. Per raggiungere tale scopo, sono state effettuate scelte di design mirate, partendo dalla definizione di un'architettura di alto livello fino all'applicazione di pattern specifici per risolvere le problematiche emerse durante la fase di analisi.
+
+\subsection{Architettura a Strati per la Separazione delle Responsabilità}
+\label{subsec:design_layered}
+
+\paragraph{Problema di Design}
+Un'applicazione web complessa deve gestire diverse responsabilità: interpretare le richieste HTTP, eseguire la logica di business e interagire con un sistema di persistenza dati. Senza una struttura chiara, queste responsabilità tendono a mescolarsi, creando un codice monolitico, difficile da comprendere, testare e manutenere. Questo fenomeno, noto come alto accoppiamento e bassa coesione, rende qualsiasi modifica futura rischiosa e costosa.
+
+\paragraph{Soluzione di Design}
+Per risolvere questo problema, il design del backend adotta il pattern architetturale \textbf{Layered Architecture} (Architettura a Strati). Questo pattern scompone l'applicazione in due tipologie di componenti: un insieme di strati orizzontali con responsabilità comportamentali, e un layer trasversale che contiene i modelli dei dati.
+
+\paragraph{Model Layer (Strato dei Modelli Dati)}
+Questo non è uno strato comportamentale, ma un componente trasversale che definisce gli oggetti di dominio e le strutture dati dell'applicazione. È utilizzato da tutti gli altri strati. Il design distingue due tipi di modelli:
+\begin{itemize}
+    \item Le \textbf{Entità del Dominio} che rappresentano i dati nel loro stato più puro e strutturato. Contengono la "verità" del sistema e vengono utilizzate principalmente dal Service Layer e dal Data Access Layer.
+    \item I \textbf{Data Transfer Objects (DTO)}, che fungono da "contratto" dati per la comunicazione con l'esterno (il frontend) o tra gli strati stessi. Sono strutture dati semplici, ottimizzate per il trasferimento e spesso modellate per nascondere o aggregare i dati delle entità sottostanti.
+\end{itemize}
+
+\paragraph{Strati Comportamentali}
+Gli strati che contengono la logica applicativa sono tre e comunicano in modo rigorosamente unidirezionale (dall'alto verso il basso):
+
+\begin{itemize}
+    \item \textbf{Presentation Layer (Strato di Presentazione):} È il punto di ingresso dell'applicazione. La sua unica responsabilità è quella di gestire la comunicazione HTTP. Riceve le richieste, valida e mappa i dati in ingresso in \textit{Data Transfer Objects (DTO)} e li passa allo strato di servizio. Al ritorno, riceve i DTO dal Service Layer e li serializza nella risposta HTTP. In questo progetto, questo strato è rappresentato dai \textit{Controller}.
+
+    \item \textbf{Service Layer (Strato di Servizio):} Rappresenta il cuore dell'applicazione. Contiene tutta la logica di business e orchestra le operazioni. Opera sulle \textit{Entità} del dominio, applica le regole di business e coordina le interazioni con il Data Access Layer. È completamente agnostico rispetto al protocollo HTTP o alla fonte di persistenza.
+
+    \item \textbf{Data Access Layer (Strato di Accesso ai Dati):} La sua unica responsabilità è la comunicazione con il database. Incapsula tutta la logica per mappare le \textit{Entità} del dominio da e verso le tabelle del database. In questo progetto, tale strato è implementato tramite il \textbf{Repository Pattern}.
+\end{itemize}
+
+Questa struttura garantisce un basso accoppiamento e un'alta coesione, rendendo il sistema più testabile (ogni strato può essere testato in isolamento, mockando le sue dipendenze) e più facile da manutenere ed estendere.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/layer_design.pdf} % 
+    \caption{Diagramma che illustra l'architettura a tre strati del backend e il flusso di comunicazione unidirezionale.}
+    \label{fig:layered_architecture_uml}
+\end{figure}
 
 \subsection{Pattern Factory Method per la Creazione di Filtri Gateway}
 \label{subsec:design_factory}
@@ -334,7 +371,9 @@ Questo approccio delega la responsabilità dell'istanziazione dei filtri alle so
 Molti componenti del backend, come i servizi per la gestione della logica di business (es. autenticazione, generazione JWT) o i repository per l'accesso ai dati, sono intrinsecamente \textit{stateless} (privi di stato di istanza). La creazione di più istanze di tali oggetti sarebbe inefficiente e potrebbe portare a comportamenti anomali, rendendo necessaria una strategia per garantire che esista una e una sola istanza di questi componenti per tutta l'applicazione.
 
 \paragraph{Soluzione di Design}
-Per questo requisito, il design si affida all'applicazione del pattern Singleton. Piuttosto che implementare manualmente il pattern in ogni classe, si è deciso di delegarne la gestione a un container \textit{Inversion of Control} (IoC), un componente fondamentale del framework scelto. Il design prevede che i componenti di servizio (\texttt{AuthenticationService}, \texttt{JwtService}) e di accesso ai dati (\texttt{UserRepository}) vengano definiti come "bean" gestiti dal container. Sarà responsabilità del container stesso garantire che per ciascuno di questi bean venga creata una sola istanza (ambito singleton) e che questa venga condivisa e "iniettata" in tutti gli altri componenti che ne dichiarano una dipendenza. Questo approccio, oltre a risolvere il problema dell'istanza unica, promuove un basso accoppiamento e semplifica la gestione delle dipendenze del sistema.
+Per questo requisito, il design adotta il pattern Singleton. Tuttavia, invece di ricorrere a un'implementazione manuale e statica del pattern, che può introdurre rigidità e problemi di testabilità, il design prevede di delegare la gestione del ciclo di vita di questi oggetti a un componente infrastrutturale basato sul principio di Inversion of Control (IoC).
+
+Secondo questo approccio, i componenti di servizio (come quelli per l'autenticazione o la generazione di token) e di accesso ai dati vengono registrati presso un gestore centrale. Sarà responsabilità di questo gestore istanziarli una sola volta (garantendo l'unicità del Singleton) e fornire tale istanza a qualsiasi altro componente che ne dichiari una dipendenza. Questo meccanismo, noto anche come Dependency Injection, permette ai componenti di essere ignari dei dettagli di creazione e del ciclo di vita delle proprie dipendenze.
 
 \subsection{Pattern Facade per l'Autenticazione e la Gestione delle Sessioni}
 \label{subsec:design_facade}

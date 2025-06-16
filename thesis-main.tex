@@ -23,7 +23,7 @@
 \academicyear{2024-2025}
 
 
-\mainlinespacing{1.241} % line spacing in mainmatter, comment to default (1)
+\mainlinespacing{1.241}
 
 \begin{document}
 
@@ -39,23 +39,22 @@
 
 \end{abstract}
 
-\begin{dedication} % this is optional
+\begin{dedication}
     Alla mia famiglia, a Linda e ai miei amici.
 \end{dedication}
 
-%----------------------------------------------------------------------------------------
+
 \tableofcontents
-\listoffigures     % (optional) comment if empty
-%\lstlistoflistings % (optional) comment if empty
-%----------------------------------------------------------------------------------------
+\listoffigures
+
 
 \mainmatter
 
-%----------------------------------------------------------------------------------------
-\chapter{Introduzione}
+
+\chapterWithoutNumber{Introduzione}
 \label{chap:introduzione}
 
-\section{Contesto Aziendale e Motivazione del Progetto}
+\section*{Contesto Aziendale e Motivazione del Progetto}
 \label{sec:contesto_e_motivazione}
 
 Il presente lavoro di tesi si inserisce in un contesto industriale specifico, frutto della collaborazione con FlashStart SRL, un'azienda italiana con sede a Cesena, specializzata nello sviluppo e nella fornitura di soluzioni di filtraggio dei contenuti e protezione da minacce informatiche basate su tecnologia DNS (Domain Name System). I servizi offerti da FlashStart si rivolgono a una clientela diversificata, che include aziende, istituzioni educative e pubbliche amministrazioni, fornendo loro strumenti per garantire una navigazione sicura e controllata.
@@ -66,7 +65,7 @@ In questo scenario di transizione, è emersa una criticità tanto specifica quan
 
 Il progetto di tesi nasce per rispondere a questa precisa esigenza. Data l'impossibilità di attendere il rilascio della nuova piattaforma, si è optato per lo sviluppo di una soluzione tattica e mirata: un'applicazione web temporanea, concepita come "ponte" (bridge) tecnologico. Lo scopo primario di questa applicazione è fornire ai clienti un pannello di controllo readonly per le funzionalità standard di analisi dei dati, garantendo continuità operativa e soddisfacendo le richieste del mercato fino alla migrazione sulla nuova infrastruttura. Questo lavoro di tesi documenta pertanto non solo la realizzazione di un prodotto software, ma anche l'approccio ingegneristico adottato per sviluppare una soluzione efficace e affidabile in un contesto agile e con vincoli temporali definiti.
 
-\section{Obiettivi della Tesi}
+\section*{Obiettivi della Tesi}
 \label{sec:obiettivi_tesi}
 
 A partire dal contesto delineato, questo elaborato si pone obiettivi che trascendono la semplice descrizione di un prodotto software, per configurarsi come un'analisi approfondita delle metodologie di ingegneria del software applicate a un caso di studio reale. Il fine principale della tesi è, pertanto, analizzare e documentare come i paradigmi della Programmazione Orientata agli Oggetti (OOP) e le relative pratiche di progettazione, quali i design pattern, vengano impiegati per realizzare un'applicazione web complessa in un contesto industriale. Si intende dimostrare come tali principi, spesso affrontati in ambito teorico, rappresentino strumenti pratici e fondamentali per guidare le scelte architetturali e per garantire qualità essenziali come la manutenibilità, la scalabilità e la robustezza del software.
@@ -75,7 +74,6 @@ Per supportare tale analisi, un primo passo fondamentale sarà la documentazione
 
 Il cuore analitico della tesi si concentrerà sull'applicazione pratica dei Design Pattern. Verranno identificati e discussi esempi concreti di pattern implementati nel codice sorgente, spiegando per ciascuno il problema che risolve e i benefici apportati in termini di flessibilità e organizzazione del codice. In questo modo, si intende creare un collegamento esplicito tra i concetti teorici dell'ingegneria del software e la loro implementazione pratica. Particolare attenzione sarà data a come le scelte di design abbiano promosso un'architettura dinamica e facilmente manutenibile; un requisito fondamentale dato che l'applicazione doveva interfacciarsi con servizi interni di FlashStart a loro volta in piena fase di reingegnerizzazione. Verrà quindi evidenziato come le decisioni di design non siano state casuali, ma guidate da principi consolidati volti a massimizzare l'efficienza e la qualità, nel pieno rispetto della natura strategica ma temporanea del progetto.
 
-%----------------------------------------------------------------------------------------
 \chapter{Background}
 \label{chap:background}
 
@@ -101,7 +99,7 @@ Per superare questi limiti, è stato introdotto il modello di I/O non bloccante,
 
 Nel contesto dell'ecosistema Spring, questo paradigma è implementato dal modulo Spring WebFlux, che si fonda su Project Reactor per fornire un'API ricca e componibile per la gestione di flussi asincroni. Reactor introduce due tipi fondamentali: \texttt{Mono}, un \textit{publisher} che rappresenta un flusso asincrono di 0 o 1 elemento (es. il risultato di una query che restituisce un singolo utente), e \texttt{Flux}, che rappresenta un flusso di 0 o N elementi (es. una lista di risultati). Attraverso questi tipi, è possibile costruire pipeline di elaborazione dati in modo dichiarativo e funzionale. Anziché scrivere codice imperativo (con cicli e costrutti condizionali), lo sviluppatore definisce una catena di operatori (es. .map() per trasformare, .filter() per selezionare, .flatMap() per operazioni asincrone nidificate) che descrivono la logica di business. Questa "ricetta" viene eseguita dal framework solo quando un client "sottoscrive" il flusso, promuovendo un codice più espressivo e disaccoppiato dalla gestione della concorrenza \cite{spring_reactive}.
 
-Un principio fondamentale dei sistemi reattivi è che il paradigma non bloccante deve essere preservato end-to-end, dall'interfaccia di rete fino alla fonte dei dati. Utilizzare un web layer reattivo sarebbe inutile se il thread dell'Event Loop dovesse poi bloccarsi in attesa di una risposta dal database. La tradizionale API JDBC (Java Database Connectivity) è, per sua natura, bloccante. Per risolvere questa incompatibilità, è stata sviluppata la specifica R2DBC (Reactive Relational Database Connectivity), che definisce un Service Provider Interface (SPI) per driver di database che supportano operazioni non bloccanti e basate su flussi. Per semplificare l'utilizzo di R2DBC,Spring Data R2DBC offre un'astrazione di alto livello, coerente con il resto dell'ecosistema Spring Data. Fornisce un modello di programmazione familiare, basato sul pattern Repository (es. \texttt{ReactiveCrudRepository}), la cui differenza cruciale è che i metodi non restituiscono entità o collezioni, ma \textit{publishers} reattivi (Mono o Flux), integrando così l'accesso ai dati in modo trasparente all'interno della catena reattiva \cite{spring_reactive}. 
+Un principio fondamentale dei sistemi reattivi è che il paradigma non bloccante deve essere preservato end-to-end, dall'interfaccia di rete fino alla fonte dei dati. Utilizzare un web layer reattivo sarebbe inutile se il thread dell'Event Loop dovesse poi bloccarsi in attesa di una risposta dal database. La tradizionale API JDBC (Java Database Connectivity) è, per sua natura, bloccante. Per risolvere questa incompatibilità, è stata sviluppata la specifica R2DBC (Reactive Relational Database Connectivity), che definisce un Service Provider Interface (SPI) per driver di database che supportano operazioni non bloccanti e basate su flussi. Per semplificare l'utilizzo di R2DBC,Spring Data R2DBC offre un'astrazione di alto livello, coerente con il resto dell'ecosistema Spring Data. Fornisce un modello di programmazione familiare, basato sul pattern Repository (es. \texttt{ReactiveCrudRepository}), la cui differenza cruciale è che i metodi non restituiscono entità o collezioni, ma \textit{publishers} reattivi (Mono o Flux), integrando così l'accesso ai dati in modo trasparente all'interno della catena reattiva \cite{spring_reactive}.
 
 I vantaggi di un'architettura reattiva correttamente implementata sono molteplici e significativi. Il più evidente è la scalabilità verticale e l'efficienza delle risorse: un'applicazione reattiva può gestire un numero molto più elevato di richieste concorrenti con un numero inferiore di thread, riducendo drasticamente il consumo di memoria e l'overhead della CPU. Questo si traduce in una maggiore responsività del sistema, che rimane reattivo e con bassa latenza anche sotto carichi pesanti, poiché i thread non vengono mai monopolizzati da operazioni lente. Un altro vantaggio cruciale è la resilienza. Gli errori in un flusso reattivo sono eventi di prima classe, gestiti all'interno della pipeline tramite operatori dedicati (es. .onErrorResume, .retry), permettendo di implementare logiche di fallback e di recupero dagli errori in modo più robusto e isolato. Infine, il protocollo Reactive Streams incorpora nativamente il concetto di contropressione (backpressure), un meccanismo di controllo del flusso con cui il consumatore di dati (Subscriber) segnala al produttore (Publisher) quanti elementi è in grado di processare. Questo previene che un produttore veloce possa sopraffare un consumatore più lento, garantendo la stabilità del sistema ed evitando errori di OutOfMemoryError.
 
@@ -159,7 +157,6 @@ La sinergia tra IaC e pipeline CI/CD crea un ecosistema completamente automatizz
 \chapter{Analisi}
 \label{chap:analisi}
 
-% Introduzione al capitolo
 In questo capitolo si definiscono le fondamenta progettuali dell'applicazione web. Partendo dal contesto aziendale e dalle motivazioni esposte nell'Introduzione, verranno delineati in modo formale i requisiti che la soluzione software dovrà soddisfare. L'analisi si articola nella definizione delle funzionalità attese (requisiti funzionali), dei vincoli qualitativi e operativi (requisiti non funzionali) e del panorama di sistemi esterni con cui l'applicazione dovrà necessariamente interagire. Questo capitolo ha lo scopo di definire il perimetro e gli obiettivi del sistema, fungendo da guida per le successive fasi di progettazione e implementazione.
 
 \section{Analisi dei Requisiti}
@@ -172,45 +169,45 @@ I requisiti funzionali descrivono le capacità che l'applicazione dovrà offrire
 
 \begin{itemize}
     \item \textbf{RF1: Autenticazione e Gestione della Sessione Utente.} Il sistema deve garantire un accesso sicuro e controllato.
-    \begin{itemize}
-        \item Permettere l'autenticazione tramite e-mail e password.
-        \item Gestire una sessione utente sicura dopo il login e consentire il logout.
-        \item Rinnovare automaticamente la sessione fino alla sua scadenza definitiva, senza richiedere un nuovo login manuale.
-    \end{itemize}
+          \begin{itemize}
+              \item Permettere l'autenticazione tramite e-mail e password.
+              \item Gestire una sessione utente sicura dopo il login e consentire il logout.
+              \item Rinnovare automaticamente la sessione fino alla sua scadenza definitiva, senza richiedere un nuovo login manuale.
+          \end{itemize}
 
     \item \textbf{RF2: Gestione del Contesto Operativo.} L'interfaccia deve permettere all'utente di definire e persistere il proprio contesto di analisi.
-    \begin{itemize}
-        \item Consentire la selezione di un "Customer" attivo da una lista.
-        \item Consentire la selezione di un "Profile" di protezione associato al customer, inclusa un'opzione per aggregare i dati di tutti i profili ("All Profiles").
-        \item Mantenere la selezione di Customer e Profile tra le diverse sessioni di utilizzo (es. tramite \texttt{localStorage}).
-        \item Aggiornare dinamicamente i dati visualizzati al cambio del Customer o del Profile selezionato.
-    \end{itemize}
+          \begin{itemize}
+              \item Consentire la selezione di un "Customer" attivo da una lista.
+              \item Consentire la selezione di un "Profile" di protezione associato al customer, inclusa un'opzione per aggregare i dati di tutti i profili ("All Profiles").
+              \item Mantenere la selezione di Customer e Profile tra le diverse sessioni di utilizzo (es. tramite \texttt{localStorage}).
+              \item Aggiornare dinamicamente i dati visualizzati al cambio del Customer o del Profile selezionato.
+          \end{itemize}
 
     \item \textbf{RF3: Presentazione della Dashboard di Riepilogo.} La pagina principale deve fornire una sintesi visiva immediata dei dati di traffico.
-    \begin{itemize}
-        \item Mostrare statistiche aggregate (Total Queries, Blocked, Allowed, Threats Detected) con contatori animati per un feedback visivo immediato.
-        \item Visualizzare una serie di grafici, ciascuno con la possibilità di selezionare un intervallo temporale indipendente (24h, 48h, 7d, etc.):
-        \begin{itemize}
-            \item Un grafico a barre orizzontali per le "Categorie Bloccate" (Top N).
-            \item Un grafico a barre orizzontali per le "Categorie Più Richieste" (Top N).
-            \item Un grafico a ciambella (Donut) per la distribuzione delle minacce, con il totale delle query al centro.
-            \item Un istogramma (barre verticali) per i "Domini Più Richiesti" (Top N).
-        \end{itemize}
-    \end{itemize}
-    
+          \begin{itemize}
+              \item Mostrare statistiche aggregate (Total Queries, Blocked, Allowed, Threats Detected) con contatori animati per un feedback visivo immediato.
+              \item Visualizzare una serie di grafici, ciascuno con la possibilità di selezionare un intervallo temporale indipendente (24h, 48h, 7d, etc.):
+                    \begin{itemize}
+                        \item Un grafico a barre orizzontali per le "Categorie Bloccate" (Top N).
+                        \item Un grafico a barre orizzontali per le "Categorie Più Richieste" (Top N).
+                        \item Un grafico a ciambella (Donut) per la distribuzione delle minacce, con il totale delle query al centro.
+                        \item Un istogramma (barre verticali) per i "Domini Più Richiesti" (Top N).
+                    \end{itemize}
+          \end{itemize}
+
     \item \textbf{RF4: Consultazione e Analisi delle Configurazioni di Protezione.} L'applicazione deve permettere un'ispezione dettagliata delle policy di sicurezza attive.
-    \begin{itemize}
-        \item Mostrare la configurazione della protezione in una struttura gerarchica espandibile (Moduli, Macro Categorie, Categorie).
-        \item Visualizzare lo stato ("Allowed" / "Blocked") per ogni categoria e per ogni paese nelle regole di Geo-blocking.
-        \item Mostrare il contenuto delle liste Blacklist e Whitelist.
-        \item Fornire uno strumento di "Domain Check" che permetta di interrogare un dominio specifico e visualizzare il suo stato su tutti i profili del customer, indicando la ragione di un eventuale blocco (es. "Categoria Social Network bloccata", "Dominio in blacklist").
-    \end{itemize}
+          \begin{itemize}
+              \item Mostrare la configurazione della protezione in una struttura gerarchica espandibile (Moduli, Macro Categorie, Categorie).
+              \item Visualizzare lo stato ("Allowed" / "Blocked") per ogni categoria e per ogni paese nelle regole di Geo-blocking.
+              \item Mostrare il contenuto delle liste Blacklist e Whitelist.
+              \item Fornire uno strumento di "Domain Check" che permetta di interrogare un dominio specifico e visualizzare il suo stato su tutti i profili del customer, indicando la ragione di un eventuale blocco (es. "Categoria Social Network bloccata", "Dominio in blacklist").
+          \end{itemize}
 
     \item \textbf{RF5: Visualizzazione delle Configurazioni di Rete.} Deve essere presente una sezione per l'analisi delle reti associate al cliente.
-    \begin{itemize}
-        \item Listare le configurazioni di rete (IP Statico, Dinamico, DoH/DoT) in formato tabellare.
-        \item Visualizzare il profilo di protezione, i server DNS associati, lo stato di attività ("Up"/"Down") e l'ultimo "signin" per ogni rete.
-    \end{itemize}
+          \begin{itemize}
+              \item Listare le configurazioni di rete (IP Statico, Dinamico, DoH/DoT) in formato tabellare.
+              \item Visualizzare il profilo di protezione, i server DNS associati, lo stato di attività ("Up"/"Down") e l'ultimo "signin" per ogni rete.
+          \end{itemize}
 \end{itemize}
 
 \subsection{Requisiti Non Funzionali}
@@ -219,29 +216,29 @@ I requisiti non funzionali impongono vincoli sulla qualità e sulle modalità op
 
 \begin{itemize}
     \item \textbf{RNF1: Modalità di Sola Lettura.} Requisito primario del progetto. L'applicazione deve operare esclusivamente in modalità di consultazione. Nessuna funzionalità di modifica, creazione o cancellazione dei dati e delle configurazioni deve essere implementata.
-        
+
     \item \textbf{RNF2: Sicurezza.} Il sistema deve proteggere la confidenzialità e l'integrità dei dati.
-        \begin{itemize}
-            \item La comunicazione tra client e server deve avvenire esclusivamente tramite protocollo HTTPS.
-            \item Le password degli utenti devono essere archiviate nel database in modo sicuro (utilizzando funzioni di hash).
-            \item Il meccanismo di autenticazione deve essere stateless e implementare una strategia di rotazione dei refresh token per mitigare i rischi legati a sessioni di lunga durata.
-        \end{itemize}
+          \begin{itemize}
+              \item La comunicazione tra client e server deve avvenire esclusivamente tramite protocollo HTTPS.
+              \item Le password degli utenti devono essere archiviate nel database in modo sicuro (utilizzando funzioni di hash).
+              \item Il meccanismo di autenticazione deve essere stateless e implementare una strategia di rotazione dei refresh token per mitigare i rischi legati a sessioni di lunga durata.
+          \end{itemize}
 
     \item \textbf{RNF3: Usabilità e Esperienza Utente (UX).} L'interfaccia deve essere intuitiva e comunicare chiaramente il suo stato.
-        \begin{itemize}
-            \item Fornire indicazioni visive dello stato di caricamento dei dati (es. spinners/loaders).
-            \item Gestire gli errori di comunicazione con le API mostrando messaggi informativi all'utente.
-            \item Le sessioni utente devono essere persistenti per evitare la necessità di login frequenti.
-        \end{itemize}
+          \begin{itemize}
+              \item Fornire indicazioni visive dello stato di caricamento dei dati (es. spinners/loaders).
+              \item Gestire gli errori di comunicazione con le API mostrando messaggi informativi all'utente.
+              \item Le sessioni utente devono essere persistenti per evitare la necessità di login frequenti.
+          \end{itemize}
 
 
     \item \textbf{RNF4: Conformità con le prassi aziendali.} Il sistema deve aderire a uno stack tecnologico e a un modello di deployment predefiniti.
-        \begin{itemize}
-            \item L'intera applicazione deve essere containerizzata con Docker e orchestrata tramite Docker Compose.
-            \item Il database deve essere PostgreSQL.
-            \item Il frontend deve utilizzare React, TypeScript e pnpm come package manager.
-            \item Il deployment deve avvenire su un server AlmaLinux interno all'infrastruttura aziendale, utilizzando immagini Docker ospitate su un container registry.
-        \end{itemize}
+          \begin{itemize}
+              \item L'intera applicazione deve essere containerizzata con Docker e orchestrata tramite Docker Compose.
+              \item Il database deve essere PostgreSQL.
+              \item Il frontend deve utilizzare React, TypeScript e pnpm come package manager.
+              \item Il deployment deve avvenire su un server AlmaLinux interno all'infrastruttura aziendale, utilizzando immagini Docker ospitate su un container registry.
+          \end{itemize}
 
 \end{itemize}
 
@@ -260,7 +257,6 @@ La necessità di interagire con questi due sistemi eterogenei, ciascuno con un p
 \chapter{Design}
 \label{chap:design}
 
-% Introduzione al capitolo
 Questo capitolo illustra la progettazione architetturale e di dettaglio dell'applicazione web, rispondendo ai requisiti funzionali e non funzionali definiti nel capitolo di Analisi. Verranno descritte le scelte strategiche relative alla struttura del software, le interazioni tra i componenti e i design pattern della programmazione orientata agli oggetti impiegati per garantire un'architettura robusta, manutenibile e scalabile.
 
 \section{Progettazione dell'Architettura di Alto Livello}
@@ -271,15 +267,15 @@ Per rispondere ai requisiti di portabilità e riproducibilità degli ambienti (R
 La struttura logica del sistema è decomposta in tre componenti principali:
 
 
-    \paragraph{Componente di Presentazione (Frontend)} Questo componente ha la responsabilità di gestire l'interfaccia utente. È disegnato come una Single Page Application (SPA) servita da un web server. Il suo unico scopo è renderizzare le viste, gestire le interazioni con l'utente e comunicare con il componente applicativo per il recupero e la visualizzazione dei dati.
+\paragraph{Componente di Presentazione (Frontend)} Questo componente ha la responsabilità di gestire l'interfaccia utente. È disegnato come una Single Page Application (SPA) servita da un web server. Il suo unico scopo è renderizzare le viste, gestire le interazioni con l'utente e comunicare con il componente applicativo per il recupero e la visualizzazione dei dati.
 
-    \paragraph{Componente Applicativo (Backend)} Rappresenta il nucleo logico del sistema e agisce come unico punto di contatto per il componente di presentazione. Il suo design prevede una duplice responsabilità:
-          \begin{enumerate}
-              \item Gestire la logica di business interna, come l'autenticazione degli utenti e la gestione delle sessioni.
-              \item Fungere da intermediario verso i servizi esterni, astraendo la loro complessità dal frontend.
-          \end{enumerate}
+\paragraph{Componente Applicativo (Backend)} Rappresenta il nucleo logico del sistema e agisce come unico punto di contatto per il componente di presentazione. Il suo design prevede una duplice responsabilità:
+\begin{enumerate}
+    \item Gestire la logica di business interna, come l'autenticazione degli utenti e la gestione delle sessioni.
+    \item Fungere da intermediario verso i servizi esterni, astraendo la loro complessità dal frontend.
+\end{enumerate}
 
-    \paragraph{Componente di Persistenza Dati (Database)} Questo componente è dedicato alla memorizzazione e al recupero dei dati necessari al funzionamento intrinseco dell'applicazione. In accordo con il requisito di sola lettura (RNF1) per i dati di business, il suo perimetro è strettamente limitato alla persistenza dei dati di sessione e delle anagrafiche utente.
+\paragraph{Componente di Persistenza Dati (Database)} Questo componente è dedicato alla memorizzazione e al recupero dei dati necessari al funzionamento intrinseco dell'applicazione. In accordo con il requisito di sola lettura (RNF1) per i dati di business, il suo perimetro è strettamente limitato alla persistenza dei dati di sessione e delle anagrafiche utente.
 
 
 Il flusso di interazione tra questi componenti è lineare e disaccoppiato. Il client utente interagisce esclusivamente con il Componente di Presentazione. Le richieste di dati vengono inoltrate da quest'ultimo al Componente Applicativo, che si occupa di elaborarle, interagendo a sua volta con il Componente di Persistenza per le operazioni relative all'autenticazione, o con i sistemi esterni (come descritto in Sezione \ref{sec:analisi_contesto}) per i dati di business.
@@ -331,7 +327,7 @@ Questa struttura garantisce un basso accoppiamento e un'alta coesione, rendendo 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/layer_design.pdf} % 
+    \includegraphics[width=0.7\textwidth]{figures/layer_design.pdf}
     \caption{Diagramma che illustra l'architettura a tre strati del backend e il flusso di comunicazione unidirezionale.}
     \label{fig:layered_architecture_uml}
 \end{figure}
@@ -413,7 +409,7 @@ Questo approccio offre molteplici vantaggi:
 
 L'uso dei DTO definisce un "contratto" chiaro e stabile per le API, fondamentale per un'architettura a servizi in cui frontend e backend evolvono in modo indipendente.
 
-\section{Design del Frontend e Principi OOP Applicati}
+\section{Design del Frontend}
 \label{sec:design_frontend}
 
 Sebbene il paradigma dominante nello sviluppo con React sia funzionale/dichiarativo, i principi fondamentali della programmazione orientata agli oggetti -- come l'incapsulamento, la composizione e la separazione delle responsabilità -- sono stati la guida per la progettazione del frontend. L'obiettivo era creare un'architettura a componenti che fosse non solo reattiva e performante, ma anche logicamente strutturata e scalabile.
@@ -480,80 +476,39 @@ Su questa istanza unica, viene applicato un pattern riconducibile al Decorator, 
 \end{itemize}
 Questo design a strati astrae completamente la complessità della comunicazione autenticata, lasciando ai componenti della UI la sola responsabilità di richiedere i dati di cui hanno bisogno.
 
-%----------------------------------------------------------------------------------------
 \chapter{Implementazione}
 \label{chap:implementazione}
 
-% Introduzione al capitolo
-Questo capitolo illustra i dettagli implementativi salienti del progetto, con l'obiettivo di dimostrare come i concetti e i pattern architetturali discussi nel capitolo di \texttt{Design} (Capitolo \ref{chap:design}) siano stati realizzati concretamente nel codice sorgente. 
+Questo capitolo illustra come i principi e le architetture definiti nel capitolo di \ref{chap:design} siano stati tradotti in scelte tecnologiche concrete e codice sorgente. L'obiettivo non è replicare la descrizione dei pattern, ma dimostrare come le decisioni di progettazione abbiano guidato la selezione e l'utilizzo dello stack tecnologico per realizzare gli obiettivi del progetto.
 
-\section{Dettagli Implementativi del Backend}
-\label{sec:impl_backend}
-Il componente backend è stato sviluppato utilizzando Java 17 e il framework Spring Boot 3, con un focus sul paradigma reattivo offerto da Spring WebFlux. Di seguito vengono analizzate le implementazioni dei principali pattern di design adottati.
+\section{Traduzione del Design in Scelte Tecnologiche}
+\label{sec:impl_tech_choices}
 
-\subsection{Implementazione del Pattern Factory Method nei Filtri Gateway}
-\label{subsec:impl_factory}
-% Link di riferimento alla sezione di design
-Come descritto nella sezione di design \ref{subsec:design_factory}, il pattern Factory Method è stato utilizzato per creare filtri dinamici nel gateway.
+La fase implementativa ha richiesto di selezionare gli strumenti più adatti a realizzare l'architettura a strati, i pattern di comunicazione e la gestione dello stato delineati nel design.
 
-\paragraph{Realizzazione della Factory Concreta}
-La classe \texttt{ApiHq\allowbreak Auth\allowbreak Gateway\allowbreak Filter\allowbreak Factory} rappresenta una delle fabbriche concrete. L'annotazione \texttt{@Component} la registra come bean di Spring, rendendola disponibile per l'iniezione delle dipendenze. Il metodo \texttt{apply}, che è l'effettivo "factory method", restituisce una lambda expression che implementa l'interfaccia funzionale \texttt{GatewayFilter}. Questa lambda incapsula la logica per aggiungere l'header di autenticazione \texttt{Basic Auth} a ogni richiesta.
+\subsection{Backend: la Scelta di un Ecosistema Reattivo con Spring WebFlux}
+Il design del backend (Sezione \ref{sec:design_backend_oop}) richiedeva un'architettura a strati robusta, la gestione di servizi stateless (Singleton) e, soprattutto, la capacità di gestire in modo efficiente un alto numero di operazioni di I/O concorrenti (RNF2), data la necessità di interfacciarsi con API esterne.
 
-% Includi qui lo snippet di codice Java
-% Esempio:
-% \begin{lstlisting}[language=Java, caption={Implementazione della factory per il filtro di autenticazione API HQ.}]
-% @Component
-% public class ApiHqAuthGatewayFilterFactory extends AbstractGatewayFilterFactory<ApiHqAuthGatewayFilterFactory.Config> {
-%
-%     @Value("${flashstart.apihq.username}")
-%     private String apiHqUsername;
-%
-%     // ... costruttore e altri metodi ...
-%
-%     @Override
-%     public GatewayFilter apply(Config config) {
-%         return (exchange, chain) -> {
-%             String basicAuthHeader = getBasicAuthHeader();
-%             if (basicAuthHeader == null) {
-%                 // ... gestione errore ...
-%                 return chain.filter(exchange);
-%             }
-%             ServerHttpRequest request = exchange.getRequest().mutate()
-%                     .header(HttpHeaders.AUTHORIZATION, basicAuthHeader)
-%                     .build();
-%             return chain.filter(exchange.mutate().request(request).build());
-%         };
-%     }
-% }
-% \end{lstlisting}
+Per tradurre questi requisiti in una soluzione concreta, la scelta è ricaduta sull'ecosistema \textbf{Java} e sul framework \textbf{Spring Boot}. Java offre robustezza e un ecosistema maturo, mentre Spring Boot fornisce un potente meccanismo di \textit{Inversion of Control (IoC)} e \textit{Dependency Injection}, che rappresenta l'implementazione pratica perfetta per il design basato sul pattern Singleton per la gestione dei servizi, astraendo completamente lo sviluppatore dalla loro creazione e dal loro ciclo di vita.
 
-\paragraph{Consumo della Factory nella Configurazione delle Rotte}
-La factory viene poi utilizzata in modo dichiarativo nella configurazione delle rotte del gateway, come mostrato in \texttt{GatewayConfig.java}. Il framework invoca il metodo \texttt{apply} al momento opportuno per ottenere l'istanza del filtro da applicare alla rotta specificata.
+Tuttavia, per soddisfare il requisito critico della gestione dell'I/O concorrente, si è fatta una scelta implementativa fondamentale: adottare il \textbf{paradigma di programmazione reattiva}. All'interno dell'ecosistema Spring, questo ha significato scegliere \textbf{Spring WebFlux} al posto del tradizionale Spring MVC. Questa scelta permette di realizzare un backend non bloccante, che è la soluzione tecnica ideale per un'applicazione il cui carico di lavoro è dominato da attese di rete. Per mantenere la coerenza del modello reattivo end-to-end, anche per l'accesso ai dati è stata fatta una scelta conseguente: utilizzare \textbf{Spring Data R2DBC} invece del classico JDBC, garantendo che nessuna operazione, neanche sul database, potesse bloccare i thread principali dell'applicazione.
 
-% Includi qui lo snippet di codice Java della configurazione della rotta
+\subsection{Frontend: Realizzazione dei Pattern di Design con React e Axios}
+Il design del frontend (Sezione \ref{sec:design_frontend}) prevedeva un'architettura a componenti, una gestione centralizzata dello stato (pattern Observer) e un meccanismo robusto e centralizzato per la comunicazione con le API (pattern Singleton e Decorator).
 
-\subsection{Implementazione del Pattern Facade nel Servizio di Autenticazione}
-\label{subsec:impl_facade}
-% Link di riferimento alla sezione di design
-Il pattern Facade, discusso nella sezione \ref{subsec:design_facade}, è stato implementato nella classe \texttt{AuthenticationService} per semplificare il complesso sottosistema di gestione delle sessioni.
+\paragraph{Componenti e Stato}
+Il design basato sulla composizione di oggetti è stato implementato utilizzando la libreria \textbf{React}. La sua architettura nativamente basata su componenti ha permesso di tradurre direttamente il design di componenti "Container" e "Presentazionali". Per realizzare il pattern \textbf{Observer} per la gestione dello stato globale, si è scelto di utilizzare la \textbf{React Context API}. Questa soluzione, interna a React, è stata preferita a librerie esterne più complesse (come Redux) perché offriva il livello di funzionalità necessario per il progetto (sottoscrizione e notifica dei cambiamenti di stato) in modo più semplice e integrato.
 
-\paragraph{Il Metodo \texttt{authenticate}}
-Il metodo pubblico \texttt{authenticate} espone un'operazione di business semplice, ma al suo interno orchestra la collaborazione di molteplici componenti: invoca il \texttt{ReactiveAuthenticationManager} di Spring Security per validare le credenziali e, in caso di successo, chiama un metodo privato per generare e salvare il refresh token, nascondendo questa complessità al suo client, l' \texttt{AuthController}.
+\paragraph{Comunicazione API Centralizzata}
+Il design di un punto di accesso unico e decorato per le chiamate API ha guidato la scelta e l'utilizzo della libreria \textbf{Axios}. Per implementare il pattern \textbf{Singleton}, è stata creata un'unica istanza configurata di Axios (\texttt{axiosInstance.ts}), esportata e utilizzata in tutta l'applicazione. Il pattern \textbf{Decorator} è stato realizzato sfruttando la funzionalità nativa degli \textbf{intercettori} di Axios. Sono stati configurati due intercettori:
+\begin{itemize}
+    \item Un \textit{intercettore di richiesta}, che "decora" ogni chiamata in uscita aggiungendo dinamicamente l'header di autenticazione \texttt{Authorization}.
+    \item Un \textit{intercettore di risposta}, che "decora" la gestione degli errori intercettando le risposte \texttt{401 Unauthorized} per avviare in modo trasparente il flusso di rinnovo del token.
+\end{itemize}
+Questa scelta ha permesso di implementare il design in modo elegante, mantenendo i componenti della UI completamente agnostici rispetto alla logica di autenticazione.
 
-% Includi qui lo snippet del metodo authenticate() da AuthenticationService.java
 
-\subsection{Implementazione dei Data Transfer Objects (DTO)}
-\label{subsec:impl_dto}
-% Link di riferimento alla sezione di design
-Per realizzare lo scambio di dati disaccoppiato descritto nella sezione \ref{subsec:design_dto}, sono state create delle semplici classi POJO (Plain Old Java Object). Le classi \texttt{AuthRequestDTO.java} e \texttt{AuthResponseDTO.java} definiscono il "contratto" dati per l'API di autenticazione. Il loro utilizzo è evidente nelle firme dei metodi del \texttt{AuthController}, dove vengono usate per mappare il corpo delle richieste e delle risposte HTTP.
-
-% Includi qui gli snippet delle classi DTO e un esempio di firma di un metodo del controller
-
-\section{Dettagli Implementativi del Frontend}
-\label{sec:impl_frontend}
-Il frontend è stato realizzato con React 18 e TypeScript, sfruttando le funzionalità degli hook per la gestione dello stato e del ciclo di vita dei componenti. L'obiettivo era creare un'interfaccia utente non solo funzionale e reattiva, ma anche strutturata in modo logico per garantire la manutenibilità e la scalabilità.
-
-\subsection{Struttura dell'Interfaccia Utente e Navigazione}
+\paragraph{Struttura dell'Interfaccia Utente e Navigazione}
 L'applicazione segue il modello di una Single Page Application (SPA), dove la navigazione tra le diverse aree funzionali avviene senza ricaricare la pagina, garantendo un'esperienza utente fluida. La logica di navigazione è gestita dalla libreria React Router, che mappa i percorsi dell'URL ai componenti React corrispondenti.
 
 L'interfaccia è stata scomposta in quattro schermate principali, ognuna rappresentata da un componente "vista" di alto livello:
@@ -572,24 +527,11 @@ Ogni schermata è a sua volta composta da componenti più piccoli e riutilizzabi
     \label{fig:ui_screens}
 \end{figure}
 
-\subsection{Implementazione del Pattern Strategy per i Grafici}
-\label{subsec:impl_strategy_frontend}
-% Link di riferimento alla sezione di design
-Come progettato nella sezione di design \ref{subsec:design_strategy_frontend}, il pattern Strategy permette di avere un componente \texttt{GenericChart} altamente riutilizzabile.
-
-\paragraph{Definizione delle Strategie}
-Le strategie concrete sono definite come oggetti di configurazione nel file \texttt{chartConfigs.ts}. Ogni oggetto implementa l'interfaccia \texttt{ChartConfig}, specificando l'endpoint, la funzione per i parametri e la funzione per la trasformazione dei dati.
-
-\paragraph{Utilizzo del Componente Contestuale}
-La pagina \texttt{Home} (la Dashboard Principale) istanzia poi molteplici volte il componente \texttt{GenericChart}, passando a ciascuno una diversa strategia tramite la prop \texttt{config}. Questo dimostra come lo stesso componente possa esibire comportamenti radicalmente diversi in base alla strategia iniettata.
-
 \section{Implementazione del Flusso di Sicurezza End-to-End}
 \label{sec:impl_security}
 
 Questa sezione descrive la realizzazione pratica del flusso di sicurezza, traducendo il design concettuale in componenti software specifici sia nel backend che nel frontend. Il sistema implementa un'autenticazione stateless basata su JSON Web Tokens (JWT) con un meccanismo di rotazione per i refresh token, in accordo con il requisito RNF3.
-
-\subsection{Implementazione nel Backend}
-La logica principale di generazione, validazione e gestione dei token è interamente confinata nelle interazione fra backend e database.
+e.
 
 \paragraph{Generazione dei Token e Gestione dei Cookie}
 Al momento del login, l' \texttt{Auth\allowbreak Controller} riceve le credenziali e le delega all' \texttt{Authentication\allowbreak Service}. Questo servizio, agendo come Facade, orchestra la validazione e, in caso di successo, invoca un \texttt{Jwt\allowbreak Service} dedicato. Questa classe utilizza la libreria \texttt{io.\allowbreak jsonwebtoken.\allowbreak jjwt} per creare e firmare i token.
@@ -601,9 +543,6 @@ L' \texttt{AuthController} si occupa poi di inviare i token al client. L'Access 
 
 \paragraph{Implementazione della Rotazione del Token}
 Il cuore della sicurezza del sistema è implementato nel metodo \texttt{validateAndRotateRefreshToken} all'interno dell' \texttt{AuthenticationService}. Quando l'endpoint \texttt{/auth/refresh} viene chiamato, questo metodo esegue la logica di rotazione. L'intero processo è annotato con \texttt{@Transactional} di Spring, per assicurare che la ricerca, la cancellazione del vecchio token e il salvataggio del nuovo avvengano come una transazione atomica sul database, prevenendo condizioni di gara (\textit{race conditions}) e garantendo la consistenza dei dati. Se il token fornito è valido, viene immediatamente invalidato e sostituito, rendendolo a tutti gli effetti un token monouso per prevenire attacchi di tipo \textit{replay}.
-
-\subsection{Implementazione nel Frontend}
-Il frontend React è responsabile della gestione dell'Access Token e dell'orchestrazione trasparente del processo di rinnovo.
 
 \paragraph{Memorizzazione dell'Access Token e Gestione dello Stato}
 In accordo con le best practice di sicurezza, l'Access Token non viene mai memorizzato nel \texttt{localStorage} o \texttt{sessionStorage}. Viene invece mantenuto esclusivamente nello stato in memoria dell'applicazione, gestito tramite un React Context (\texttt{AuthContext}). Questo minimizza l'esposizione del token a vulnerabilità di tipo Cross-Site Scripting. I componenti che effettuano chiamate API protette recuperano il token corrente dal contesto tramite un custom hook \texttt{useAuth()}.
@@ -629,7 +568,6 @@ Questo approccio astrae completamente la complessità della gestione delle sessi
 \chapter{Metodologia e Infrastruttura di Sviluppo}
 \label{chap:metodologia}
 
-% Introduzione al capitolo
 Oltre alla progettazione e all'implementazione del software, un progetto di successo si basa su una solida metodologia di sviluppo e su un'infrastruttura di supporto affidabile. Questo capitolo descrive il processo operativo adottato per la realizzazione del progetto, dalla gestione agile alla strategia di testing, fino all'architettura della pipeline di Continuous Integration e Continuous Deployment (CI/CD) che automatizza il rilascio dell'applicazione.
 
 \section{Metodologia di Sviluppo Agile}
@@ -669,30 +607,28 @@ Per il frontend React, è stata utilizzata la libreria React Testing Library in 
 \label{sec:ci_cd}
 Per automatizzare il processo di rilascio e garantire la coerenza degli ambienti, come richiesto da RNF4, è stata progettata e implementata una pipeline di Continuous Integration e Continuous Deployment (CI/CD).
 
-\subsection{Containerizzazione con Docker}
-Il fondamento dell'infrastruttura è la containerizzazione. L'intera applicazione (frontend, backend, database) è definita come un insieme di servizi. Questo garantisce che ogni sviluppatore e ogni ambiente di deployment esegua il software con le stesse dipendenze e configurazioni. Sono state utilizzate build multi-stage nei Dockerfile per creare immagini finali ottimizzate e leggere, separando le dipendenze di build da quelle di runtime.
+\paragraph{Containerizzazione con Docker}
+Il fondamento dell'infrastruttura è la containerizzazione. L'intera applicazione (frontend, backend, database) è definita come un insieme di servizi in un file \texttt{docker-compose.yaml}. Questo garantisce che ogni sviluppatore e ogni ambiente di deployment esegua il software con le stesse dipendenze e configurazioni. Sono state utilizzate build multi-stage nei Dockerfile per creare immagini finali ottimizzate e leggere, separando le dipendenze di build da quelle di runtime.
 
-\subsection{Pipeline Ibrida con GitHub Actions e Self-Hosted Runner}
-È stata scelta un'architettura di CI/CD ibrida:
+\paragraph{Pipeline Ibrida}
+È stata scelta un'architettura di CI/CD ibrida, sfruttando i punti di forza di diverse tecnologie:
 \begin{itemize}
-    \item \textbf{GitHub Actions} viene utilizzato come orchestratore del flusso di lavoro. La pipeline si attiva automaticamente a ogni push su rami specifici (es. \texttt{main} o \texttt{staging}).
-    \item \textbf{Self-Hosted Runner} anziché un runner gestito da GitHub, è stato installato un agente (runner) direttamente sul server di deployment aziendale. Questa scelta strategica garantisce un maggiore controllo e sicurezza: le operazioni di build e deployment avvengono all'interno dell'infrastruttura aziendale, senza esporre credenziali o artefatti all'esterno.
+    \item \textbf{GitHub Actions} viene utilizzato come orchestratore del flusso di lavoro. La pipeline si attiva automaticamente a ogni push sul branch \texttt{main} o può essere avviata manualmente.
+    \item \textbf{Self-Hosted Runner}, un agente installato direttamente sul server di deployment aziendale, esegue i job di build e deployment. Questa scelta strategica garantisce un maggiore controllo e sicurezza, mantenendo le operazioni critiche all'interno dell'infrastruttura aziendale.
 \end{itemize}
 
-\paragraph{Flusso di Deployment} Il flusso tipico della pipeline è il seguente:
+\paragraph{Flusso di Deployment a Fasi} Il flusso di lavoro è stato progettato per essere sicuro e controllato, suddividendolo in quattro fasi principali che dipendono l'una dall'altra:
+
 \begin{enumerate}
-    \item Lo sviluppatore effettua un push sul repository GitHub.
-    \item GitHub Actions avvia il workflow definito.
-    \item Il job viene assegnato al self-hosted runner.
-    \item Il runner esegue i seguenti passi:
-          \begin{itemize}
-              \item Esegue il build delle immagini Docker per frontend e backend.
-              \item Esegue i test automatici per validare la build.
-              \item Se i test passano, effettua il push delle nuove immagini su un registry privato (es. Docker Hub).
-              \item Esegue il pull delle nuove immagini sul server di deployment.
-              \item Riavvia i servizi utilizzando \texttt{docker compose up -d} per applicare l'aggiornamento senza downtime significativo.
-          \end{itemize}
+    \item \textbf{Build e Push delle Immagini:} Al push sul branch \texttt{main}, il self-hosted runner avvia il primo job. Vengono costruite le immagini Docker per il frontend e per il backend. Una scelta di design importante è la strategia di tagging: ogni immagine viene taggata sia con \texttt{latest}, per indicare la versione più recente, sia con l'hash del commit Git. Quest'ultimo tag garantisce un riferimento immutabile e tracciabile alla versione esatta del codice, fondamentale per la diagnostica e per eventuali rollback. Le immagini vengono quindi caricate su un container registry (Docker Hub).
+
+    \item \textbf{Deployment nell'Ambiente di Staging:} Una volta che le immagini sono state costruite con successo, la pipeline procede automaticamente al deployment in un ambiente di \textit{staging}. Questo ambiente è una replica fedele di quello di produzione e serve come area di validazione. La scelta di utilizzare uno stage intermedio è cruciale per la riduzione del rischio: permette al team e agli stakeholder di testare manualmente la nuova versione in un contesto realistico e isolato, prima che questa raggiunga gli utenti finali.
+
+    \item \textbf{Gate di Approvazione Manuale:} Questa fase rappresenta un punto di controllo umano fondamentale. Dopo il successo del deployment in staging, la pipeline si mette in pausa e, tramite un'azione automatizzata, crea una "Issue" su GitHub richiedendo un'approvazione manuale per il rilascio in produzione. Questa scelta garantisce che nessuna modifica arrivi agli utenti senza una revisione e un'approvazione esplicita, creando una cronologia tracciabile e documentata di ogni decisione di rilascio.
+
+    \item \textbf{Deployment nell'Ambiente di Produzione:} Solo dopo aver ricevuto l'approvazione tramite un commento sulla Issue di GitHub, la pipeline procede all'ultimo passo. Il self-hosted runner esegue il pull delle immagini (le stesse identiche verificate in staging) e aggiorna i servizi nell'ambiente di produzione utilizzando la configurazione definita nel file \texttt{docker-compose.prod.yaml}. Questo garantisce la massima coerenza tra ciò che è stato testato e ciò che viene rilasciato, completando il ciclo di deployment in modo sicuro e affidabile.
 \end{enumerate}
+
 
 \begin{figure}[H]
     \centering
@@ -701,9 +637,17 @@ Il fondamento dell'infrastruttura è la containerizzazione. L'intera applicazion
     \label{fig:ci_cd_diagram}
 \end{figure}
 
-%----------------------------------------------------------------------------------------
-% BIBLIOGRAPHY
-%----------------------------------------------------------------------------------------
+
+
+\chapter{Conclusioni e Sviluppi Futuri}
+\label{chap:conclusioni}
+
+Dal punto di vista pratico, l'obiettivo è stato pienamente raggiunto. È stata sviluppata e rilasciata un'applicazione web full-stack, basata su un'architettura moderna che gode dell'implementazione di un robusto flusso di autenticazione. Il successo e la stabilità della soluzione sono testimoniati dalla sua adozione in ambiente di piena produzione da parte di clienti di calibro internazionale come Telefónica e T-Mobile USA.
+
+Dal punto di vista accademico e formativo, il progetto ha rappresentato un'opportunità unica di lavoro indipendente, fornendo piena libertà per quanto riguarda la metodologia di sviluppo e gran parte della progettazione.
+
+In virtù della sua natura di "soluzione ponte", progettata per colmare un vuoto funzionale fino al rilascio della nuova piattaforma aziendale, e del pieno raggiungimento degli obiettivi prefissati, non sono previste evoluzioni sostanziali del software. Il suo ciclo di vita si conclude con successo con l'attuale versione in produzione, avendo adempiuto al suo scopo strategico.
+
 
 \backmatter
 
@@ -711,7 +655,7 @@ Il fondamento dell'infrastruttura è la containerizzazione. L'intera applicazion
 \bibliographystyle{alpha}
 \bibliography{bibliography}
 
-\begin{acknowledgements} % this is optional
+\begin{acknowledgements}
     Optional. Max 1 page.
 \end{acknowledgements}
 

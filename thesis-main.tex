@@ -582,7 +582,7 @@ Questo approccio astrae completamente la complessità della gestione delle sessi
 \chapter{Metodologia e Infrastruttura di Sviluppo}
 \label{chap:metodologia}
 
-Oltre alla progettazione e all'implementazione del software, un progetto di successo si basa su una solida metodologia di sviluppo e su un'infrastruttura di supporto affidabile. Questo capitolo descrive il processo operativo adottato per la realizzazione del progetto, dalla gestione agile alla strategia di testing, fino all'architettura della pipeline di Continuous Integration e Continuous Deployment (CI/CD) che automatizza il rilascio dell'applicazione.
+Oltre alla progettazione e all'implementazione del software, un progetto di successo si basa su una solida metodologia di sviluppo e su un'infrastruttura di supporto affidabile. Questo capitolo descrive il processo operativo adottato per la realizzazione del progetto, dalla gestione agile alla strategia di testing, fino all'architettura della pipeline CI/CD che automatizza il rilascio dell'applicazione.
 
 \section{Metodologia di Sviluppo Agile}
 \label{sec:metodologia_agile}
@@ -618,7 +618,7 @@ Per il frontend è stata utilizzata la libreria Jest. L'approccio si è concentr
 
 \section{Deployment e Pipeline di CI/CD}
 \label{sec:ci_cd}
-Per automatizzare il processo di rilascio e garantire la coerenza degli ambienti, come richiesto da \ref{req:comformity}, è stata progettata e implementata una pipeline di Continuous Integration e Continuous Deployment (CI/CD).
+Per automatizzare il processo di rilascio e garantire la coerenza degli ambienti, come richiesto da \ref{req:comformity}, è stata progettata e implementata una pipeline CI/CD.
 
 \paragraph{Containerizzazione con Docker}
 Il fondamento dell'infrastruttura è la containerizzazione. L'intera applicazione (frontend, backend, database) è definita come un insieme di servizi in un file \texttt{docker-compose.yaml}. Questo garantisce che ogni sviluppatore e ogni ambiente di deployment esegua il software con le stesse dipendenze e configurazioni. Sono state utilizzate build multi-stage nei Dockerfile per creare immagini finali ottimizzate e leggere, separando le dipendenze di build da quelle di runtime.

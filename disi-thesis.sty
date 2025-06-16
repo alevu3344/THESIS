@@ -45,6 +45,22 @@
 \newenvironment{dedication}{\chapter*{}\begin{flushright}\itshape}{\normalfont\end{flushright}}
 \newenvironment{inlinelist}{\begin{enumerate*}[label=\emph{(\roman{*})}]}{\end{enumerate*}}
 
+% Crea un nuovo tipo di lista per i Requisiti Funzionali (RF)
+\newlist{reqfunz}{enumerate}{1}
+\setlist[reqfunz,1]{
+    label = \textbf{RF\arabic*},  % Formato dell'etichetta (es. RF1)
+    ref   = RF\arabic*,         % Formato del riferimento con \ref
+    leftmargin = * % Allineamento con il margine sinistro
+}
+
+% Crea un nuovo tipo di lista per i Requisiti Non Funzionali (RNF)
+\newlist{reqnonfunz}{enumerate}{1}
+\setlist[reqnonfunz,1]{
+    label = \textbf{RNF\arabic*}, % Formato dell'etichetta (es. RNF1)
+    ref   = RNF\arabic*,        % Formato del riferimento con \ref
+    leftmargin = * % Allineamento con il margine sinistro
+}
+
 \newcommand{\chapterWithoutNumber}[1]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
 
 \let\oldbibliography\bibliography

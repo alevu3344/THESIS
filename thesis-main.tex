@@ -10,6 +10,7 @@
 \usepackage{shortcuts}
 \usepackage{acronym}
 \usepackage{float}
+\usepackage{rotating}
 
 \school{\unibo}
 \programme{Corso di Laurea in Ingegneria e Scienze Informatiche}
@@ -51,48 +52,57 @@
 \mainmatter
 
 
-\chapterWithoutNumber{Introduzione}
+\chapter{Introduzione}
 \label{chap:introduzione}
 
-\section*{Contesto Aziendale e Motivazione del Progetto}
+\section{Contesto Aziendale e Motivazione del Progetto}
 \label{sec:contesto_e_motivazione}
 
 Il presente lavoro di tesi si inserisce in un contesto industriale specifico, frutto della collaborazione con FlashStart SRL, un'azienda italiana con sede a Cesena, specializzata nello sviluppo e nella fornitura di soluzioni di filtraggio dei contenuti e protezione da minacce informatiche basate su tecnologia DNS (Domain Name System). I servizi offerti da FlashStart si rivolgono a una clientela diversificata, che include aziende, istituzioni educative e pubbliche amministrazioni, fornendo loro strumenti per garantire una navigazione sicura e controllata.
 
-Al momento dell'inizio del percorso di tirocinio, nel mese di giugno 2025, l'azienda si trovava in una fase di significativa evoluzione tecnologica e strategica. Era infatti in corso un processo di completa reingegnerizzazione della propria piattaforma di gestione, la dashboard utilizzata dai clienti per configurare e monitorare il servizio di filtraggio. Questo processo, unito a un'operazione di rebranding aziendale, mira a modernizzare l'infrastruttura e l'esperienza utente, con un rilascio previsto per novembre 2025.
+Al momento dell'inizio del percorso di tirocinio, nel mese di marzo 2025, l'azienda si trovava in una fase di significativa evoluzione tecnologica e strategica. Era infatti in corso un processo di completa reingegnerizzazione della propria piattaforma di gestione, la dashboard utilizzata dai clienti per configurare e monitorare il servizio di filtraggio. Questo processo, unito a un'operazione di rebranding aziendale, mira a modernizzare l'infrastruttura e l'esperienza utente, con un rilascio previsto per novembre 2025.
 
 In questo scenario di transizione, è emersa una criticità tanto specifica quanto urgente. La piattaforma allora in uso, pur essendo efficace per la gestione delle policy di protezione, presentava una notevole lacuna funzionale: l'assenza di una modalità di consultazione dei dati in sola lettura (readonly). Gli utenti, in particolare gli amministratori di rete e i responsabili IT, manifestavano la crescente necessità di poter analizzare i report e le statistiche di navigazione senza avere i permessi di modifica, per evitare alterazioni accidentali delle configurazioni di sicurezza.
 
 Il progetto di tesi nasce per rispondere a questa precisa esigenza. Data l'impossibilità di attendere il rilascio della nuova piattaforma, si è optato per lo sviluppo di una soluzione tattica e mirata: un'applicazione web temporanea, concepita come "ponte" (bridge) tecnologico. Lo scopo primario di questa applicazione è fornire ai clienti un pannello di controllo readonly per le funzionalità standard di analisi dei dati, garantendo continuità operativa e soddisfacendo le richieste del mercato fino alla migrazione sulla nuova infrastruttura. Questo lavoro di tesi documenta pertanto non solo la realizzazione di un prodotto software, ma anche l'approccio ingegneristico adottato per sviluppare una soluzione efficace e affidabile in un contesto agile e con vincoli temporali definiti.
 
-\section*{Obiettivi della Tesi}
+\section{Obiettivi della Tesi}
 \label{sec:obiettivi_tesi}
 
-A partire dal contesto delineato, questo elaborato si pone obiettivi che trascendono la semplice descrizione di un prodotto software, per configurarsi come un'analisi approfondita delle metodologie di ingegneria del software applicate a un caso di studio reale. Il fine principale della tesi è, pertanto, analizzare e documentare come i paradigmi della Programmazione Orientata agli Oggetti (OOP) e le relative pratiche di progettazione, quali i design pattern, vengano impiegati per realizzare un'applicazione web complessa in un contesto industriale. Si intende dimostrare come tali principi, spesso affrontati in ambito teorico, rappresentino strumenti pratici e fondamentali per guidare le scelte architetturali e per garantire qualità essenziali come la manutenibilità, la scalabilità e la robustezza del software.
+A partire dal contesto delineato, questo elaborato si pone obiettivi che trascendono la semplice descrizione di un prodotto software, per configurarsi come un'analisi approfondita delle metodologie di ingegneria del software applicate a un caso di studio reale. Per raggiungere tale scopo, la tesi segue un percorso strutturato che guida il lettore dalle fondamenta teoriche fino ai dettagli implementativi e processuali.
 
-Per supportare tale analisi, un primo passo fondamentale sarà la documentazione completa e dettagliata dell'architettura full-stack dell'applicazione. Verrà illustrato il flusso di dati e le interazioni tra il frontend, sviluppato in React con TypeScript, e il backend, basato su un modello di programmazione reattiva in Java. Questo esame non si limiterà a una descrizione statica, ma includerà un'analisi critica delle decisioni tecniche prese durante lo sviluppo, giustificando la scelta dello stack tecnologico illustrando l'integrazione con le API esistenti di FlashStart.
+Inizialmente, il capitolo Background stabilirà il contesto tecnologico necessario, introducendo i paradigmi chiave su cui si fonda il progetto: dalle architetture per interfacce utente moderne come React, alla programmazione reattiva, fino ai protocolli di sicurezza e alle metodologie DevOps che abilitano l'automazione. Successivamente, il capitolo Analisi definirà formalmente il perimetro del progetto attraverso la specifica dei requisiti funzionali e non funzionali, derivati dalle esigenze aziendali.
 
-Il cuore analitico della tesi si concentrerà sull'applicazione pratica dei Design Pattern. Verranno identificati e discussi esempi concreti di pattern implementati nel codice sorgente, spiegando per ciascuno il problema che risolve e i benefici apportati in termini di flessibilità e organizzazione del codice. In questo modo, si intende creare un collegamento esplicito tra i concetti teorici dell'ingegneria del software e la loro implementazione pratica. Particolare attenzione sarà data a come le scelte di design abbiano promosso un'architettura dinamica e facilmente manutenibile; un requisito fondamentale dato che l'applicazione doveva interfacciarsi con servizi interni di FlashStart a loro volta in piena fase di reingegnerizzazione. Verrà quindi evidenziato come le decisioni di design non siano state casuali, ma guidate da principi consolidati volti a massimizzare l'efficienza e la qualità, nel pieno rispetto della natura strategica ma temporanea del progetto.
+Il cuore analitico della tesi è rappresentato dal capitolo Design, dove verrà documentata l'architettura e si entrerà nel merito dell'applicazione pratica dei Design Pattern. Verranno identificati e discussi esempi concreti implementati nel codice sorgente, spiegando per ciascuno il problema che risolve e i benefici apportati in termini di flessibilità e manutenibilità.
+
+Infine, i capitoli Implementazione e Metodologia e Infrastruttura di Sviluppo collegheranno il design astratto alle scelte tecnologiche concrete, descrivendo al contempo il processo di sviluppo agile, le strategie di testing e la pipeline di CI/CD utilizzata per il deployment.
 
 \chapter{Background}
 \label{chap:background}
 
+Questo capitolo ha lo scopo di fornire le coordinate teoriche e tecnologiche necessarie per comprendere appieno le scelte architetturali e implementative che verranno discusse nel resto della tesi. Poiché il progetto, come illustrato nell'Introduzione, consiste nella realizzazione di un'applicazione web full-stack complessa con requisiti specifici di interattività, gestione dei dati e sicurezza, è fondamentale introdurre i paradigmi, i framework e le metodologie che ne costituiscono le fondamenta. Si procederà con un'analisi stratificata, partendo dai modelli per le interfacce utente moderne, per poi approfondire le architetture di backend, i protocolli di sicurezza e, infine, le pratiche di automazione che hanno garantito l'efficienza e l'affidabilità del ciclo di vita dello sviluppo.
+
 \section{Paradigmi per lo Sviluppo di Interfacce Utente Moderne}
 
-\subsection{L'Architettura Single Page Application (SPA)}
+La realizzazione di una dashboard per l'analisi di dati, come quella oggetto di questa tesi, richiede un'esperienza utente (UX) estremamente fluida e reattiva. Per raggiungere tale obiettivo, l'architettura frontend si è basata sui moderni paradigmi a componenti, che vengono qui analizzati.
+
+\paragraph{L'Architettura Single Page Application (SPA)}
+
 Una Single Page Application (SPA) è un'applicazione web che interagisce con l'utente riscrivendo dinamicamente la pagina corrente, invece di ricaricare intere pagine nuove dal server. Questo approccio si realizza caricando le risorse necessarie in un'unica richiesta iniziale o dinamicamente secondo necessità. La scelta tra un'architettura SPA e una tradizionale Multi-Page Application (MPA) rappresenta un compromesso fondamentale nell'ingegneria del software web. Le MPA seguono un modello classico in cui ogni interazione scatena una richiesta completa al server, che risponde con una nuova pagina HTML. Le SPA presentano un tempo di caricamento iniziale più elevato, ma le interazioni successive sono estremamente rapide, poiché vengono scambiati solo dati tramite API. In termini di esperienza utente (UX), le SPA offrono un'esperienza percepita come più fluida e interattiva, motivo della loro adozione in contesti applicativi complessi come le dashboard. Una delle principali debolezze delle SPA risiede nell'ottimizzazione per i motori di ricerca (SEO), poiché il contenuto viene renderizzato lato client e richiede tecniche aggiuntive come il Server-Side Rendering (SSR) per una corretta indicizzazione. La selezione di un'architettura SPA per una dashboard di monitoraggio, come quella oggetto di questa tesi, è giustificata dal fatto che l'obiettivo primario è un'esperienza utente reattiva per un utente autenticato, rendendo la SEO del tutto irrilevante.
 
-\subsection{Il Modello a Componenti e il Framework React}
+\paragraph{Il Modello a Componenti e il Framework React}
 L'approccio architetturale basato su componenti (Component-Based Software Engineering, CBSE) ha lo scopo di sviluppare sistemi assemblando parti riutilizzabili e autonome. Il framework React fornisce un'implementazione pratica di questi principi, scomponendo le interfacce utente in una gerarchia di componenti modulari. Ogni componente incapsula la propria logica, il proprio stato e la propria presentazione, promuovendo una forte separazione delle responsabilità e un elevato grado di riusabilità. Una delle innovazioni paradigmatiche di React è stata la messa in discussione della "separazione delle tecnologie" (file HTML, CSS, JS separati) a favore di una "separazione delle responsabilità" a livello di componente, resa possibile da JSX, un'estensione sintattica di JavaScript che permette di scrivere un markup simile a HTML direttamente nel codice. In questo modo, la logica di rendering e la struttura di presentazione sono gestite come un'unica unità coesa.
 
-\subsection{Analisi delle Prestazioni del Virtual DOM}
+\paragraph{Analisi delle Prestazioni del Virtual DOM}
 Un'innovazione chiave di React è il Virtual DOM (VDOM), una rappresentazione in memoria del Document Object Model (DOM) reale del browser. La manipolazione diretta del DOM è un'operazione computazionalmente costosa. React affronta questo problema aggiornando prima il VDOM, che è un oggetto leggero, e successivamente, tramite un processo di "riconciliazione", calcola il set minimo di modifiche da applicare al DOM reale in un unico processo batch \cite{chen2019performance}. Questo approccio offre benefici significativi per applicazioni con aggiornamenti frequenti della UI, poiché minimizza le operazioni sul DOM e fornisce un'utile astrazione per lo sviluppatore \cite{chen2019performance}.
 
 \subsection{Tipizzazione Statica con TypeScript}
+Per garantire la robustezza di un'applicazione destinata a un contesto aziendale, l'adozione della tipizzazione statica è stata una scelta strategica.
 Nei linguaggi a tipizzazione dinamica come JavaScript, i controlli sui tipi di dato avvengono a runtime, mentre nei linguaggi a tipizzazione statica questi controlli avvengono a compile-time, intercettando errori nelle fasi iniziali dello sviluppo \cite{mayerTyping}. TypeScript è un superset di JavaScript a tipizzazione statica che viene compilato in JavaScript puro \cite{bierman2014understanding}, con l'obiettivo di introdurne i benefici in applicazioni su larga scala. Studi empirici hanno fornito prove concrete a sostegno del suo utilizzo. Una ricerca ha dimostrato che i sistemi di tipi statici offrono un vantaggio significativo per la manutenibilità del software, fungendo da documentazione efficace e aiutando gli sviluppatori a comprendere più rapidamente codice non familiare \cite{hanenberg2014empirical}. Un'analisi su larga scala di progetti su GitHub ha ulteriormente corroborato questi risultati, rilevando che le applicazioni TypeScript mostrano una qualità e una comprensibilità del codice significativamente migliore rispetto a quelle in JavaScript puro \cite{Bogner_2022}. È importante notare che il sistema di tipi di TypeScript è intenzionalmente non "sound" (insicuro) per progettazione, una scelta di compromesso per garantire la massima compatibilità con l'ecosistema JavaScript \cite{bierman2014understanding}. L'adozione di TypeScript in questo progetto è quindi motivata dalla necessità di migliorare la qualità e la manutenibilità a lungo termine della codebase.
 
 \section{Architetture reattive e programmazione asincrona}
 
+La capacità di gestire in modo efficiente e scalabile le richieste di dati statistici, spesso recuperati da fonti diverse, è un requisito cardine del progetto. Le architetture server tradizionali presentano limiti noti in questi scenari. Per questo motivo, è essenziale analizzare il paradigma reattivo e l'I/O non bloccante, che rappresentano la spina dorsale del backend dell'applicazione.
 Le architetture server tradizionali, come quelle basate su Java Servlet, si fondano sul modello di concorrenza thread-per-request. In questo paradigma, il server application assegna a ogni richiesta HTTP in ingresso un thread dedicato da un pool limitato. Questo thread gestisce l'intera logica della richiesta e, aspetto cruciale, rimane in stato di attesa bloccante durante le operazioni di I/O, come una query su un database o una chiamata a un servizio esterno. Sebbene questo modello sia concettualmente semplice, la sua efficienza si degrada rapidamente in scenari con alta concorrenza o alta latenza. Un numero elevato di richieste simultanee può portare alla saturazione del pool di thread, consumando ingenti quantità di memoria (ogni thread ha un proprio stack) e aumentando il carico sulla CPU a causa del continuo "context switching". Le nuove richieste vengono messe in coda o respinte, e la latenza complessiva del sistema aumenta drasticamente \cite{vrincean2021optimizing}.
 
 Per superare questi limiti, è stato introdotto il modello di I/O non bloccante, che costituisce il fondamento delle architetture reattive. In questo paradigma, un numero ridotto e fisso di thread, noto come Event Loop, gestisce un numero molto più elevato di connessioni concorrenti. Quando un'operazione di I/O viene avviata, il thread dell'Event Loop non attende il suo completamento; delega l'operazione al sistema operativo e registra una \textit{callback} da eseguire quando il risultato sarà disponibile. Nel frattempo, il thread è libero di elaborare altri eventi per altre richieste. Questo approccio, ispirato a sistemi come Node.js e Nginx, permette di ottenere un'elevata efficienza nell'uso delle risorse e una scalabilità superiore, specialmente per cariche di lavoro I/O-bound, come dimostrato da numerosi studi comparativi \cite{bth2015performance, derezinska2020performance}.
@@ -105,6 +115,8 @@ I vantaggi di un'architettura reattiva correttamente implementata sono molteplic
 
 
 \section{Sicurezza nelle Applicazioni Web Distribuite}
+
+In un'architettura distribuita e stateless come quella adottata, il meccanismo di autenticazione e autorizzazione deve essere altrettanto scalabile e disaccoppiato. Questa sezione esplora i principi dell'autenticazione basata su token, con un focus sullo standard JSON Web Token (JWT), scelto per la gestione della sicurezza del sistema.
 
 \subsection{Autenticazione Stateless vs. Stateful}
 L'autenticazione stateful (basata su sessione) memorizza lo stato dell'utente sul server, rappresentando un collo di bottiglia per la scalabilità. L'autenticazione stateless (basata su token) supera questi limiti: il server non mantiene stato, ma emette un token auto-contenuto, come un JWT, che il client include in ogni richiesta. Il server si limita a validare crittograficamente il token. Questo approccio è altamente scalabile, ma introduce la sfida della revoca dei token, poiché un token rimane valido fino alla sua scadenza naturale.
@@ -128,15 +140,10 @@ Per mitigare il rischio della difficile revoca dei token, la best practice consi
 
 \section{Metodologie DevOps per l'Automazione del Ciclo di Vita del Software}
 
+Lo sviluppo di una soluzione in un contesto agile e con vincoli temporali definiti, come descritto nell'Introduzione, ha reso imprescindibile l'adozione di metodologie che automatizzano e rendono affidabile il processo di rilascio, le quali rientrano nelle pratiche DevOps.
+
 \subsection{Principi e Pratiche DevOps}
 DevOps è un movimento culturale e professionale che promuove la collaborazione tra sviluppatori (Dev) e operazioni IT (Ops) per accorciare il ciclo di vita dello sviluppo e fornire una distribuzione continua di alta qualità. Revisioni sistematiche della letteratura hanno identificato un insieme di pratiche tecniche chiave che abilitano la cultura DevOps: Continuous Integration (CI), Continuous Delivery/Deployment (CD), Infrastructure as Code (IaC), Automated Testing e Continuous Monitoring \cite{teixeira2020systematic}.
-
-\subsection{Containerizzazione}
-La containerizzazione è un paradigma di virtualizzazione a livello di sistema operativo che consente di isolare le applicazioni in ambienti leggeri e portabili, noti come container. A differenza delle macchine virtuali (VM), che richiedono un intero sistema operativo guest e la virtualizzazione dell'hardware, i container condividono il kernel del sistema operativo host. Questa architettura produce un'efficienza notevolmente superiore: i container hanno un footprint di memoria e disco molto più ridotto, tempi di avvio nell'ordine dei secondi e un overhead prestazionale quasi nullo rispetto all'esecuzione nativa, specialmente per carichi di lavoro legati alla CPU e alla memoria \cite{moravcik2024experimental}. Il principio fondamentale è l'incapsulamento di un'applicazione con tutte le sue dipendenze (come librerie, binari e file di configurazione) in un'unità atomica. Ciò garantisce la portabilità e la consistenza del comportamento dell'applicazione attraverso l'intero ciclo di vita dello sviluppo, eliminando la comune discrepanza tra ambienti di sviluppo, test e produzione, spesso riassunta nel problema "funziona sulla mia macchina" \cite{syrjamaki2023exploring}.
-
-Docker si è affermato come lo standard de facto per l'implementazione della tecnologia di containerizzazione, grazie a un ecosistema di strumenti che ne ha reso l'utilizzo accessibile e potente. Il processo di creazione di un container si basa su un'immagine, un template read-only che ne definisce lo stato. Le immagini sono costruite a partire da un \texttt{Dockerfile}, un file di testo che funge da manifesto dichiarativo, specificando una serie di istruzioni sequenziali. Una delle innovazioni chiave di Docker è il suo filesystem basato su immagini stratificate (layered images). Ogni istruzione in un Dockerfile crea un nuovo strato (layer) read-only che si sovrappone ai precedenti. Docker utilizza un meccanismo di copy-on-write (CoW): quando un container viene avviato, viene aggiunto uno strato scrivibile sopra la pila di strati read-only dell'immagine. Qualsiasi modifica apportata dal container viene registrata in questo strato superiore. Questa architettura offre due vantaggi cruciali: efficienza nello storage, poiché gli strati comuni a più immagini vengono memorizzati una sola volta, e velocità nella distribuzione, dato che durante un aggiornamento è necessario trasferire solo gli strati che sono stati modificati \cite{coha2019evaluating}. Le immagini vengono poi distribuite tramite un Container Registry, un repository centralizzato che funge da catalogo per la loro condivisione e il loro versionamento.
-
-L'adozione della containerizzazione con Docker è diventata una pratica fondante delle metodologie DevOps e delle pipeline di Integrazione e Distribuzione Continua (CI/CD). L'immagine containerizzata diventa l'artefatto immutabile che viene costruito una sola volta e promosso attraverso i vari stadi della pipeline (build, test, staging, produzione). Questo garantisce che l'unità software testata sia esattamente la stessa che viene eseguita in produzione, aumentando drasticamente l'affidabilità dei rilasci \cite{shafique2024containerization}.
 
 \subsection{Integrazione e Distribuzione Continua (CI/CD)}
 La Continuous Integration (CI) è una pratica di sviluppo software che prevede l'integrazione frequente delle modifiche del codice in un repository centrale condiviso, seguita dall'esecuzione automatizzata di build e test. Questo approccio si contrappone al tradizionale modello di sviluppo "feature branch" a lunga durata, dove le modifiche vengono integrate raramente, spesso causando conflitti complessi e difficili da risolvere. La CI promuove invece commit piccoli e frequenti, tipicamente multiple volte al giorno, con l'obiettivo di identificare e risolvere rapidamente i problemi di integrazione \cite{Rahman_2018}.
@@ -144,6 +151,16 @@ Il processo di CI si articola in diverse fasi automatizzate. Quando uno sviluppa
 La Continuous Delivery (CD) estende il concetto di CI automatizzando anche il processo di rilascio, preparando ogni build che supera i test per il deployment in produzione. Tuttavia, il rilascio effettivo rimane un'azione manuale, solitamente innescata da un'approvazione umana. Il Continuous Deployment rappresenta il livello più avanzato di automazione, dove ogni modifica che supera con successo l'intera pipeline viene automaticamente rilasciata in produzione senza intervento umano. Questo approccio richiede un'estrema fiducia nella suite di test e nei meccanisms di monitoraggio, ma permette di ottenere un feedback loop estremamente rapido dal mercato \cite{teixeira2020systematic}.
 Una delle sfide tecniche più significative nell'implementazione di pipeline CI/CD efficaci è la gestione dei tempi di build. Build lente (superiori ai 10-15 minuti) compromettono il valore del feedback rapido, scoraggiando gli sviluppatori dall'effettuare commit frequenti e riducendo l'efficacia dell'intero processo. Strategie di ottimizzazione includono la parallelizzazione dei test, l'utilizzo di cache intelligenti per evitare la ricompilazione di componenti non modificati, e l'implementazione di test pyramids che privilegiano test unitari veloci rispetto a test di integrazione più lenti \cite{ghaleb2019empirical}.
 L'integrazione con la containerizzazione rappresenta un'evoluzione naturale delle pipeline CI/CD. Gli artefatti prodotti non sono più semplici file binari o archivi, ma immagini Docker immutabili che incapsulano l'applicazione e tutte le sue dipendenze. Questo approccio elimina le discrepanze ambientali e garantisce che l'esatto software testato nella pipeline sia quello che viene eseguito in produzione. Inoltre, le immagini Docker possono essere taggate con metadati di versioning automatici (come commit hash, build number, timestamp), facilitando la tracciabilità e il rollback in caso di problemi.
+
+\subsection{Containerizzazione}
+La containerizzazione è un paradigma di virtualizzazione a livello di sistema operativo che consente di isolare le applicazioni in ambienti leggeri e portabili, noti come container. A differenza delle macchine virtuali (VM), che richiedono un intero sistema operativo guest e la virtualizzazione dell'hardware, i container condividono il kernel del sistema operativo host. Questa architettura produce un'efficienza notevolmente superiore: i container hanno un footprint di memoria e disco molto più ridotto, tempi di avvio nell'ordine dei secondi e un overhead prestazionale quasi nullo rispetto all'esecuzione nativa, specialmente per carichi di lavoro legati alla CPU e alla memoria \cite{moravcik2024experimental}. Il principio fondamentale è l'incapsulamento di un'applicazione con tutte le sue dipendenze (come librerie, binari e file di configurazione) in un'unità atomica. Ciò garantisce la portabilità e la consistenza del comportamento dell'applicazione attraverso l'intero ciclo di vita dello sviluppo, eliminando la comune discrepanza tra ambienti di sviluppo, test e produzione, spesso riassunta nel problema "funziona sulla mia macchina" \cite{syrjamaki2023exploring}.
+
+Docker si è affermato come lo standard de facto per l'implementazione della tecnologia di containerizzazione, grazie a un ecosistema di strumenti che ne ha reso l'utilizzo accessibile e potente. Il processo di creazione di un container si basa su un'immagine, un template read-only che ne definisce lo stato. Le immagini sono costruite a partire da un \texttt{Dockerfile}, un file di testo che funge da manifesto dichiarativo, specificando una serie di istruzioni sequenziali. Una delle innovazioni chiave di Docker è il suo filesystem basato su immagini stratificate (layered images). Ogni istruzione in un Dockerfile crea un nuovo strato (layer) read-only che si sovrappone ai precedenti. Docker utilizza un meccanismo di copy-on-write (CoW): quando un container viene avviato, viene aggiunto uno strato scrivibile sopra la pila di strati read-only dell'immagine. Qualsiasi modifica apportata dal container viene registrata in questo strato superiore. Questa architettura offre due vantaggi cruciali: efficienza nello storage, poiché gli strati comuni a più immagini vengono memorizzati una sola volta, e velocità nella distribuzione, dato che durante un aggiornamento è necessario trasferire solo gli strati che sono stati modificati \cite{coha2019evaluating}. Le immagini vengono poi distribuite tramite un Container Registry, un repository centralizzato che funge da catalogo per la loro condivisione e il loro versionamento.
+
+L'adozione della containerizzazione con Docker è diventata una pratica fondante delle metodologie DevOps e delle pipeline CI/CD. L'immagine containerizzata diventa l'artefatto immutabile che viene costruito una sola volta e promosso attraverso i vari stadi della pipeline (build, test, staging, produzione). Questo garantisce che l'unità software testata sia esattamente la stessa che viene eseguita in produzione, aumentando drasticamente l'affidabilità dei rilasci \cite{shafique2024containerization}.
+
+
+
 
 \subsection{Infrastructure as Code (IaC)}
 L'Infrastructure as Code (IaC) rappresenta un paradigma fondamentale nell'ingegneria delle infrastrutture moderne, che tratta l'infrastruttura IT come un artefatto software gestibile tramite codice sorgente. Invece di configurare manualmente server, reti, database e altri componenti infrastrutturali attraverso interfacce grafiche o comandi imperativi, l'IaC utilizza file di definizione dichiarativi (tipicamente in formato YAML, JSON, o linguaggi specifici come HCL per Terraform) per specificare lo stato desiderato dell'infrastruttura \cite{teixeira2020systematic}.
@@ -153,6 +170,8 @@ I vantaggi dell'IaC sono molteplici e sostanziali. La versionabilità permette d
 Nel contesto delle applicazioni containerizzate, l'IaC assume forme specifiche e complementari. I Dockerfile rappresentano l'IaC a livello di runtime environment, definendo in modo dichiarativo come costruire l'immagine di un container. I file docker-compose.yml estendono questo concetto a livello di applicazione multi-container, specificando le relazioni, le reti e i volumi necessari. Per deployment su larga scala, i manifesti Kubernetes (scritti in YAML) definiscono l'orchestrazione di container attraverso concetti come Deployments, Services, ConfigMaps e Secrets.
 Un aspetto critico nell'implementazione di IaC è la gestione degli stati (state management). Strumenti come Terraform mantengono un state file che rappresenta la mappatura tra la dichiarazione logica dell'infrastruttura e le risorse fisiche create nei provider cloud. Questo state file deve essere condiviso tra team members e mantenuto in modo sicuro, tipicamente attraverso remote state backends che supportano locking distribuito per evitare conflitti durante modifiche concorrenti.
 La sinergia tra IaC e pipeline CI/CD crea un ecosistema completamente automatizzato per la gestione dell'intero stack applicativo. Le modifiche ai file di definizione infrastrutturale vengono processate attraverso pipeline dedicate che includono validazione sintattica, testing dell'infrastruttura (attraverso strumenti come Terratest), e deployment graduale utilizzando strategie come blue-green deployment o canary releases. Questo approccio trasforma l'infrastruttura da un elemento statico e difficile da modificare a un componente agile e continuamente evolutivo, perfettamente allineato con i principi DevOps di integrazione e deployment continui.
+
+
 
 \chapter{Analisi}
 \label{chap:analisi}
@@ -167,23 +186,23 @@ La definizione dei requisiti costituisce il primo passo del processo ingegnerist
 \label{subsec:req_funzionali}
 I requisiti funzionali descrivono le capacità che l'applicazione dovrà offrire ai suoi utenti per risolvere il problema di business identificato.
 
-\begin{itemize}
-    \item \textbf{RF1: Autenticazione e Gestione della Sessione Utente.} Il sistema deve garantire un accesso sicuro e controllato.
+\begin{reqfunz}
+    \item \label{req:auth} \textbf{Autenticazione e Gestione della Sessione Utente.} Il sistema deve garantire un accesso sicuro e controllato.
           \begin{itemize}
               \item Permettere l'autenticazione tramite e-mail e password.
               \item Gestire una sessione utente sicura dopo il login e consentire il logout.
               \item Rinnovare automaticamente la sessione fino alla sua scadenza definitiva, senza richiedere un nuovo login manuale.
           \end{itemize}
 
-    \item \textbf{RF2: Gestione del Contesto Operativo.} L'interfaccia deve permettere all'utente di definire e persistere il proprio contesto di analisi.
+    \item \label{req:context} \textbf{Gestione del Contesto Operativo.} L'interfaccia deve permettere all'utente di definire e persistere il proprio contesto di analisi.
           \begin{itemize}
               \item Consentire la selezione di un "Customer" attivo da una lista.
               \item Consentire la selezione di un "Profile" di protezione associato al customer, inclusa un'opzione per aggregare i dati di tutti i profili ("All Profiles").
-              \item Mantenere la selezione di Customer e Profile tra le diverse sessioni di utilizzo (es. tramite \texttt{localStorage}).
+              \item Mantenere la selezione di Customer e Profile tra le diverse sessioni di utilizzo.
               \item Aggiornare dinamicamente i dati visualizzati al cambio del Customer o del Profile selezionato.
           \end{itemize}
 
-    \item \textbf{RF3: Presentazione della Dashboard di Riepilogo.} La pagina principale deve fornire una sintesi visiva immediata dei dati di traffico.
+    \item \label{req:dashboard} \textbf{Presentazione della Dashboard di Riepilogo.} La pagina principale deve fornire una sintesi visiva immediata dei dati di traffico.
           \begin{itemize}
               \item Mostrare statistiche aggregate (Total Queries, Blocked, Allowed, Threats Detected) con contatori animati per un feedback visivo immediato.
               \item Visualizzare una serie di grafici, ciascuno con la possibilità di selezionare un intervallo temporale indipendente (24h, 48h, 7d, etc.):
@@ -195,7 +214,7 @@ I requisiti funzionali descrivono le capacità che l'applicazione dovrà offrire
                     \end{itemize}
           \end{itemize}
 
-    \item \textbf{RF4: Consultazione e Analisi delle Configurazioni di Protezione.} L'applicazione deve permettere un'ispezione dettagliata delle policy di sicurezza attive.
+    \item \label{req:protection} \textbf{Consultazione e Analisi delle Configurazioni di Protezione.} L'applicazione deve permettere un'ispezione dettagliata delle policy di sicurezza attive.
           \begin{itemize}
               \item Mostrare la configurazione della protezione in una struttura gerarchica espandibile (Moduli, Macro Categorie, Categorie).
               \item Visualizzare lo stato ("Allowed" / "Blocked") per ogni categoria e per ogni paese nelle regole di Geo-blocking.
@@ -203,28 +222,27 @@ I requisiti funzionali descrivono le capacità che l'applicazione dovrà offrire
               \item Fornire uno strumento di "Domain Check" che permetta di interrogare un dominio specifico e visualizzare il suo stato su tutti i profili del customer, indicando la ragione di un eventuale blocco (es. "Categoria Social Network bloccata", "Dominio in blacklist").
           \end{itemize}
 
-    \item \textbf{RF5: Visualizzazione delle Configurazioni di Rete.} Deve essere presente una sezione per l'analisi delle reti associate al cliente.
+    \item \label{req:network} \textbf{Visualizzazione delle Configurazioni di Rete.} Deve essere presente una sezione per l'analisi delle reti associate al cliente.
           \begin{itemize}
               \item Listare le configurazioni di rete (IP Statico, Dinamico, DoH/DoT) in formato tabellare.
               \item Visualizzare il profilo di protezione, i server DNS associati, lo stato di attività ("Up"/"Down") e l'ultimo "signin" per ogni rete.
           \end{itemize}
-\end{itemize}
+\end{reqfunz}
 
 \subsection{Requisiti Non Funzionali}
 \label{subsec:req_non_funzionali}
 I requisiti non funzionali impongono vincoli sulla qualità e sulle modalità operative del sistema, influenzando profondamente le scelte architetturali.
 
-\begin{itemize}
-    \item \textbf{RNF1: Modalità di Sola Lettura.} Requisito primario del progetto. L'applicazione deve operare esclusivamente in modalità di consultazione. Nessuna funzionalità di modifica, creazione o cancellazione dei dati e delle configurazioni deve essere implementata.
+\begin{reqnonfunz}
+    \item \label{req:readonly} \textbf{Modalità di Sola Lettura.} Requisito primario del progetto. L'applicazione deve operare esclusivamente in modalità di consultazione. Nessuna funzionalità di modifica, creazione o cancellazione dei dati e delle configurazioni deve essere implementata.
 
-    \item \textbf{RNF2: Sicurezza.} Il sistema deve proteggere la confidenzialità e l'integrità dei dati.
+    \item \label{req:security} \textbf{Sicurezza.} Il sistema deve proteggere la confidenzialità e l'integrità dei dati.
           \begin{itemize}
               \item La comunicazione tra client e server deve avvenire esclusivamente tramite protocollo HTTPS.
               \item Le password degli utenti devono essere archiviate nel database in modo sicuro (utilizzando funzioni di hash).
-              \item Il meccanismo di autenticazione deve essere stateless e implementare una strategia di rotazione dei refresh token per mitigare i rischi legati a sessioni di lunga durata.
           \end{itemize}
 
-    \item \textbf{RNF3: Usabilità e Esperienza Utente (UX).} L'interfaccia deve essere intuitiva e comunicare chiaramente il suo stato.
+    \item \label{req:ux} \textbf{Usabilità e Esperienza Utente (UX).} L'interfaccia deve essere intuitiva e comunicare chiaramente il suo stato.
           \begin{itemize}
               \item Fornire indicazioni visive dello stato di caricamento dei dati (es. spinners/loaders).
               \item Gestire gli errori di comunicazione con le API mostrando messaggi informativi all'utente.
@@ -232,7 +250,7 @@ I requisiti non funzionali impongono vincoli sulla qualità e sulle modalità op
           \end{itemize}
 
 
-    \item \textbf{RNF4: Conformità con le prassi aziendali.} Il sistema deve aderire a uno stack tecnologico e a un modello di deployment predefiniti.
+    \item \label{req:comformity} \textbf{Conformità con le prassi aziendali.} Il sistema deve aderire a uno stack tecnologico e a un modello di deployment predefiniti.
           \begin{itemize}
               \item L'intera applicazione deve essere containerizzata con Docker e orchestrata tramite Docker Compose.
               \item Il database deve essere PostgreSQL.
@@ -240,7 +258,7 @@ I requisiti non funzionali impongono vincoli sulla qualità e sulle modalità op
               \item Il deployment deve avvenire su un server AlmaLinux interno all'infrastruttura aziendale, utilizzando immagini Docker ospitate su un container registry.
           \end{itemize}
 
-\end{itemize}
+\end{reqnonfunz}
 
 \section{Analisi del Contesto e delle Integrazioni}
 \label{sec:analisi_contesto}
@@ -267,7 +285,7 @@ Per rispondere ai requisiti di portabilità e riproducibilità degli ambienti (R
 La struttura logica del sistema è decomposta in tre componenti principali:
 
 
-\paragraph{Componente di Presentazione (Frontend)} Questo componente ha la responsabilità di gestire l'interfaccia utente. È disegnato come una Single Page Application (SPA) servita da un web server. Il suo unico scopo è renderizzare le viste, gestire le interazioni con l'utente e comunicare con il componente applicativo per il recupero e la visualizzazione dei dati.
+\paragraph{Componente di Presentazione (Frontend)} Questo componente ha la responsabilità di gestire l'interfaccia utente. Il suo unico scopo è renderizzare le viste, gestire le interazioni con l'utente e comunicare con il componente applicativo per il recupero e la visualizzazione dei dati.
 
 \paragraph{Componente Applicativo (Backend)} Rappresenta il nucleo logico del sistema e agisce come unico punto di contatto per il componente di presentazione. Il suo design prevede una duplice responsabilità:
 \begin{enumerate}
@@ -289,12 +307,11 @@ Il flusso di interazione tra questi componenti è lineare e disaccoppiato. Il cl
 \end{figure}
 
 
-Questa architettura a tre livelli logici permette di isolare le diverse responsabilità, migliorando la coesione di ciascun componente e riducendo l'accoppiamento tra di essi, a totale beneficio della manutenibilità e della testabilità del sistema.
 
 \section{Design del Backend}
 \label{sec:design_backend_oop}
 
-Il componente backend rappresenta il nucleo logico dell'intera applicazione. La sua progettazione è stata affrontata con un approccio orientato agli oggetti, con l'obiettivo di creare un sistema modulare, poco accoppiato e facilmente estensibile. Per raggiungere tale scopo, sono state effettuate scelte di design mirate, partendo dalla definizione di un'architettura di alto livello fino all'applicazione di pattern specifici per risolvere le problematiche emerse durante la fase di analisi.
+Il componente backend rappresenta il nucleo logico dell'intera applicazione. La sua progettazione è stata affrontata con un approccio orientato agli oggetti, con l'obiettivo di creare un sistema modulare e facilmente estensibile. Per raggiungere tale scopo, sono state effettuate scelte di design mirate, partendo dalla definizione di un'architettura di alto livello fino all'applicazione di pattern specifici per risolvere le problematiche emerse durante la fase di analisi.
 
 \subsection{Architettura a Strati per la Separazione delle Responsabilità}
 \label{subsec:design_layered}
@@ -479,7 +496,7 @@ Questo design a strati astrae completamente la complessità della comunicazione 
 \chapter{Implementazione}
 \label{chap:implementazione}
 
-Questo capitolo illustra come i principi e le architetture definiti nel capitolo di \ref{chap:design} siano stati tradotti in scelte tecnologiche concrete e codice sorgente. L'obiettivo non è replicare la descrizione dei pattern, ma dimostrare come le decisioni di progettazione abbiano guidato la selezione e l'utilizzo dello stack tecnologico per realizzare gli obiettivi del progetto.
+Questo capitolo illustra come i principi e le architetture definiti nel capitolo \ref{chap:design} siano stati tradotti in scelte tecnologiche concrete e codice sorgente. L'obiettivo è dimostrare come le decisioni di progettazione abbiano guidato la selezione e l'utilizzo dello stack tecnologico per realizzare gli obiettivi del progetto.
 
 \section{Traduzione del Design in Scelte Tecnologiche}
 \label{sec:impl_tech_choices}
@@ -489,24 +506,22 @@ La fase implementativa ha richiesto di selezionare gli strumenti più adatti a r
 \subsection{Backend: la Scelta di un Ecosistema Reattivo con Spring WebFlux}
 Il design del backend (Sezione \ref{sec:design_backend_oop}) richiedeva un'architettura a strati robusta, la gestione di servizi stateless (Singleton) e, soprattutto, la capacità di gestire in modo efficiente un alto numero di operazioni di I/O concorrenti (RNF2), data la necessità di interfacciarsi con API esterne.
 
-Per tradurre questi requisiti in una soluzione concreta, la scelta è ricaduta sull'ecosistema \textbf{Java} e sul framework \textbf{Spring Boot}. Java offre robustezza e un ecosistema maturo, mentre Spring Boot fornisce un potente meccanismo di \textit{Inversion of Control (IoC)} e \textit{Dependency Injection}, che rappresenta l'implementazione pratica perfetta per il design basato sul pattern Singleton per la gestione dei servizi, astraendo completamente lo sviluppatore dalla loro creazione e dal loro ciclo di vita.
+Per tradurre questi requisiti in una soluzione concreta, la scelta è ricaduta sull'ecosistema \textit{Java} e sul framework \textit{Spring Boot}. Java offre robustezza e un ecosistema maturo, mentre Spring Boot fornisce un potente meccanismo di \textit{Inversion of Control (IoC)} e \textit{Dependency Injection}, che rappresenta l'implementazione pratica perfetta per il design basato sul pattern Singleton per la gestione dei servizi, astraendo completamente lo sviluppatore dalla loro creazione e dal loro ciclo di vita.
 
-Tuttavia, per soddisfare il requisito critico della gestione dell'I/O concorrente, si è fatta una scelta implementativa fondamentale: adottare il \textbf{paradigma di programmazione reattiva}. All'interno dell'ecosistema Spring, questo ha significato scegliere \textbf{Spring WebFlux} al posto del tradizionale Spring MVC. Questa scelta permette di realizzare un backend non bloccante, che è la soluzione tecnica ideale per un'applicazione il cui carico di lavoro è dominato da attese di rete. Per mantenere la coerenza del modello reattivo end-to-end, anche per l'accesso ai dati è stata fatta una scelta conseguente: utilizzare \textbf{Spring Data R2DBC} invece del classico JDBC, garantendo che nessuna operazione, neanche sul database, potesse bloccare i thread principali dell'applicazione.
+Tuttavia, per soddisfare il requisito critico della gestione dell'I/O concorrente, si è fatta una scelta implementativa fondamentale: adottare il paradigma di programmazione reattiva. All'interno dell'ecosistema Spring, questo ha significato scegliere Spring WebFlux al posto del tradizionale Spring MVC. Questa scelta permette di realizzare un backend non bloccante, che è la soluzione tecnica ideale per un'applicazione il cui carico di lavoro è dominato da attese di rete. Per mantenere la coerenza del modello reattivo end-to-end, anche per l'accesso ai dati è stata fatta una scelta conseguente: utilizzare Spring Data R2DBC invece del classico JDBC, garantendo che nessuna operazione, neanche sul database, potesse bloccare i thread principali dell'applicazione.
 
 \subsection{Frontend: Realizzazione dei Pattern di Design con React e Axios}
 Il design del frontend (Sezione \ref{sec:design_frontend}) prevedeva un'architettura a componenti, una gestione centralizzata dello stato (pattern Observer) e un meccanismo robusto e centralizzato per la comunicazione con le API (pattern Singleton e Decorator).
 
 \paragraph{Componenti e Stato}
-Il design basato sulla composizione di oggetti è stato implementato utilizzando la libreria \textbf{React}. La sua architettura nativamente basata su componenti ha permesso di tradurre direttamente il design di componenti "Container" e "Presentazionali". Per realizzare il pattern \textbf{Observer} per la gestione dello stato globale, si è scelto di utilizzare la \textbf{React Context API}. Questa soluzione, interna a React, è stata preferita a librerie esterne più complesse (come Redux) perché offriva il livello di funzionalità necessario per il progetto (sottoscrizione e notifica dei cambiamenti di stato) in modo più semplice e integrato.
+Il design basato sulla composizione di oggetti è stato implementato utilizzando la libreria React, come dettato dal requisito non funzionale \ref{req:comformity}. La sua architettura nativamente basata su componenti ha permesso di tradurre direttamente il design di componenti "Container" e "Presentazionali". Per realizzare il pattern Observer per la gestione dello stato globale, si è scelto di utilizzare la React Context API. Questa soluzione, interna a React, è stata preferita a librerie esterne più complesse (come Redux) perché offriva il livello di funzionalità necessario per il progetto (sottoscrizione e notifica dei cambiamenti di stato) in modo più semplice e integrato.
 
 \paragraph{Comunicazione API Centralizzata}
-Il design di un punto di accesso unico e decorato per le chiamate API ha guidato la scelta e l'utilizzo della libreria \textbf{Axios}. Per implementare il pattern \textbf{Singleton}, è stata creata un'unica istanza configurata di Axios (\texttt{axiosInstance.ts}), esportata e utilizzata in tutta l'applicazione. Il pattern \textbf{Decorator} è stato realizzato sfruttando la funzionalità nativa degli \textbf{intercettori} di Axios. Sono stati configurati due intercettori:
+Il design di un punto di accesso unico e decorato per le chiamate API ha guidato la scelta e l'utilizzo della libreria Axios. Per implementare il pattern Singleton, è stata creata un'unica istanza configurata di Axios (\texttt{axiosInstance.ts}), esportata e utilizzata in tutta l'applicazione. Il pattern Decorator è stato realizzato sfruttando la funzionalità nativa degli intercettori di Axios. Sono stati configurati due intercettori:
 \begin{itemize}
     \item Un \textit{intercettore di richiesta}, che "decora" ogni chiamata in uscita aggiungendo dinamicamente l'header di autenticazione \texttt{Authorization}.
     \item Un \textit{intercettore di risposta}, che "decora" la gestione degli errori intercettando le risposte \texttt{401 Unauthorized} per avviare in modo trasparente il flusso di rinnovo del token.
 \end{itemize}
-Questa scelta ha permesso di implementare il design in modo elegante, mantenendo i componenti della UI completamente agnostici rispetto alla logica di autenticazione.
-
 
 \paragraph{Struttura dell'Interfaccia Utente e Navigazione}
 L'applicazione segue il modello di una Single Page Application (SPA), dove la navigazione tra le diverse aree funzionali avviene senza ricaricare la pagina, garantendo un'esperienza utente fluida. La logica di navigazione è gestita dalla libreria React Router, che mappa i percorsi dell'URL ai componenti React corrispondenti.
@@ -530,7 +545,7 @@ Ogni schermata è a sua volta composta da componenti più piccoli e riutilizzabi
 \section{Implementazione del Flusso di Sicurezza End-to-End}
 \label{sec:impl_security}
 
-Questa sezione descrive la realizzazione pratica del flusso di sicurezza, traducendo il design concettuale in componenti software specifici sia nel backend che nel frontend. Il sistema implementa un'autenticazione stateless basata su JSON Web Tokens (JWT) con un meccanismo di rotazione per i refresh token, in accordo con il requisito RNF3.
+Questa sezione descrive la realizzazione pratica del flusso di sicurezza, traducendo il design concettuale in componenti software specifici sia nel backend che nel frontend. Il sistema implementa un'autenticazione stateless basata su JSON Web Tokens (JWT) con un meccanismo di rotazione per i refresh token, come conseguenza del requisito \ref{req:security}.
 e.
 
 \paragraph{Generazione dei Token e Gestione dei Cookie}
@@ -573,39 +588,38 @@ Oltre alla progettazione e all'implementazione del software, un progetto di succ
 \section{Metodologia di Sviluppo Agile}
 \label{sec:metodologia_agile}
 
-Data la natura del progetto come "ponte tecnologico" e i vincoli temporali definiti (RNF5), si è scelto di non adottare un modello a cascata rigido, ma un approccio iterativo e incrementale, ispirato ai principi delle metodologie agili.
+Data la natura del progetto come "ponte tecnologico" e i vincoli temporali, si è scelto di non adottare un modello a cascata rigido, ma un approccio iterativo e incrementale, ispirato ai principi delle metodologie agili.
 
 \paragraph{Collaborazione con gli Stakeholder} Lo sviluppo è avvenuto in stretta collaborazione con il \textit{product owner} e gli stakeholder aziendali di FlashStart. Questo ha garantito un allineamento costante con le esigenze del business e ha permesso di ricevere feedback tempestivi.
 
-\paragraph{Iterazioni e Demo} Il lavoro è stato organizzato in cicli di sviluppo brevi, assimilabili a degli \textit{sprint}, della durata di circa due settimane. Al termine di ogni ciclo, veniva presentata una demo dello stato di avanzamento del prodotto. Questo approccio ha permesso di:
+\paragraph{Iterazioni e Demo} Il lavoro è stato organizzato in cicli di sviluppo brevi, assimilabili a degli \textit{sprint}, della durata di circa una settimana (misurata in termini di ore di lavoro). Al termine di ogni ciclo, veniva presentata una demo dello stato di avanzamento del prodotto. Questo approccio ha permesso di:
 \begin{itemize}
     \item Validare i requisiti in modo incrementale.
     \item Identificare e correggere eventuali incomprensioni o problemi in una fase precoce.
     \item Mantenere alta la visibilità del progetto all'interno dell'azienda, rafforzando la fiducia degli stakeholder.
 \end{itemize}
-Questa metodologia si è rivelata vincente per un progetto con requisiti chiari ma che richiedeva flessibilità e velocità di esecuzione.
 
 \section{Strategia di Testing e Validazione}
 \label{sec:testing}
 Per garantire la qualità, la robustezza e la non regressione del software, è stata implementata una strategia di testing a più livelli, coprendo sia il backend che il frontend.
 
 \subsection{Testing del Backend}
-Per il backend Java, sono state implementate due tipologie principali di test, sfruttando il framework di testing JUnit 5 e la libreria Mockito per la creazione di mock.
+Per il backend sono state implementate due tipologie principali di test, sfruttando il framework di testing JUnit 5 e la libreria Mockito per la creazione di mock.
 
 \paragraph{Unit Test} I test unitari si concentrano sulla verifica del comportamento di singole classi o metodi in isolamento. Un esempio tipico è la verifica dei servizi di autenticazione, dove le dipendenze esterne (come repository di dati e servizi di validazione) vengono sostituite con oggetti mock. Questo approccio permette di testare in modo isolato la logica di business critica, come la rotazione dei token, la validazione delle credenziali e la gestione degli errori, senza dipendere da risorse esterne come database o servizi di rete.
 
 \paragraph{Integration Test} Per verificare l'interazione tra più componenti, come la logica di servizio e il layer di persistenza, sono stati scritti test di integrazione. Questi test utilizzano un database in-memory H2, configurato per emulare PostgreSQL, come specificato nel file di properties dei test. Ciò permette di testare il flusso completo di salvataggio e recupero dati (es. la creazione di un utente e del suo refresh token) in un ambiente controllato ma realistico.
 
 \subsection{Testing del Frontend}
-Per il frontend React, è stata utilizzata la libreria React Testing Library in combinazione con Jest. L'approccio si è concentrato sul testare i componenti dal punto di vista dell'utente.
+Per il frontend è stata utilizzata la libreria Jest. L'approccio si è concentrato sul testare i componenti dal punto di vista dell'utente.
 
 \paragraph{Component Test} I test verificano che i componenti si renderizzino correttamente e rispondano alle interazioni dell'utente. Un esempio è il test per la pagina di Login, \texttt{Login.test.tsx}, che simula l'inserimento di testo da parte dell'utente, il click sul pulsante di submit e verifica che vengano mostrati i messaggi di errore o di successo appropriati.
 
-\paragraph{Mocking delle Chiamate API} Per isolare i componenti frontend dal backend durante i test, le chiamate API effettuate tramite Axios sono state intercettate e simulate (mocking). Come visibile nei test, l'istanza di \texttt{axiosInstance} viene "mockata" per restituire risposte predefinite, permettendo di testare il comportamento del componente in caso di successo, fallimento o altri scenari di rete.
+\paragraph{Mocking delle Chiamate API} Per isolare i componenti frontend dal backend durante i test, le chiamate API effettuate sono state intercettate e simulate (mocking). 
 
 \section{Deployment e Pipeline di CI/CD}
 \label{sec:ci_cd}
-Per automatizzare il processo di rilascio e garantire la coerenza degli ambienti, come richiesto da RNF4, è stata progettata e implementata una pipeline di Continuous Integration e Continuous Deployment (CI/CD).
+Per automatizzare il processo di rilascio e garantire la coerenza degli ambienti, come richiesto da \ref{req:comformity}, è stata progettata e implementata una pipeline di Continuous Integration e Continuous Deployment (CI/CD).
 
 \paragraph{Containerizzazione con Docker}
 Il fondamento dell'infrastruttura è la containerizzazione. L'intera applicazione (frontend, backend, database) è definita come un insieme di servizi in un file \texttt{docker-compose.yaml}. Questo garantisce che ogni sviluppatore e ogni ambiente di deployment esegua il software con le stesse dipendenze e configurazioni. Sono state utilizzate build multi-stage nei Dockerfile per creare immagini finali ottimizzate e leggere, separando le dipendenze di build da quelle di runtime.
@@ -620,7 +634,7 @@ Il fondamento dell'infrastruttura è la containerizzazione. L'intera applicazion
 \paragraph{Flusso di Deployment a Fasi} Il flusso di lavoro è stato progettato per essere sicuro e controllato, suddividendolo in quattro fasi principali che dipendono l'una dall'altra:
 
 \begin{enumerate}
-    \item \textbf{Build e Push delle Immagini:} Al push sul branch \texttt{main}, il self-hosted runner avvia il primo job. Vengono costruite le immagini Docker per il frontend e per il backend. Una scelta di design importante è la strategia di tagging: ogni immagine viene taggata sia con \texttt{latest}, per indicare la versione più recente, sia con l'hash del commit Git. Quest'ultimo tag garantisce un riferimento immutabile e tracciabile alla versione esatta del codice, fondamentale per la diagnostica e per eventuali rollback. Le immagini vengono quindi caricate su un container registry (Docker Hub).
+    \item \textbf{Build e Push delle Immagini:} Al push sul branch \texttt{main}, il self-hosted runner avvia il primo job. Vengono costruite le immagini Docker per il frontend e per il backend. Una scelta importante è la strategia di tagging: ogni immagine viene taggata sia con \texttt{latest}, per indicare la versione più recente, sia con l'hash del commit Git. Quest'ultimo tag garantisce un riferimento immutabile e tracciabile alla versione esatta del codice, fondamentale per la diagnostica e per eventuali rollback. Le immagini vengono quindi caricate su un container registry (Docker Hub).
 
     \item \textbf{Deployment nell'Ambiente di Staging:} Una volta che le immagini sono state costruite con successo, la pipeline procede automaticamente al deployment in un ambiente di \textit{staging}. Questo ambiente è una replica fedele di quello di produzione e serve come area di validazione. La scelta di utilizzare uno stage intermedio è cruciale per la riduzione del rischio: permette al team e agli stakeholder di testare manualmente la nuova versione in un contesto realistico e isolato, prima che questa raggiunga gli utenti finali.
 
@@ -632,7 +646,7 @@ Il fondamento dell'infrastruttura è la containerizzazione. L'intera applicazion
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{figures/workflow.pdf}
+    \includegraphics[width=\textwidth]{figures/pipeline_sequence.pdf}
     \caption{Diagramma che illustra il flusso di Continuous Integration e Continuous Deployment, dal push su Git al deployment sul server.}
     \label{fig:ci_cd_diagram}
 \end{figure}

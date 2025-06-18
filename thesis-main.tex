@@ -11,6 +11,7 @@
 \usepackage{acronym}
 \usepackage{float}
 \usepackage{rotating}
+\usepackage{placeins}
 
 \school{\unibo}
 \programme{Corso di Laurea in Ingegneria e Scienze Informatiche}
@@ -187,45 +188,45 @@ I requisiti funzionali descrivono le capacità che l'applicazione dovrà offrire
 
 \begin{reqfunz}
     \item \label{req:auth} \textbf{Autenticazione e Gestione della Sessione Utente.} Il sistema deve garantire un accesso sicuro e controllato.
-          \begin{itemize}
-              \item Permettere l'autenticazione tramite e-mail e password.
-              \item Gestire una sessione utente sicura dopo il login e consentire il logout.
-              \item Rinnovare automaticamente la sessione fino alla sua scadenza definitiva, senza richiedere un nuovo login manuale.
-          \end{itemize}
+    \begin{itemize}
+        \item Permettere l'autenticazione tramite e-mail e password.
+        \item Gestire una sessione utente sicura dopo il login e consentire il logout.
+        \item Rinnovare automaticamente la sessione fino alla sua scadenza definitiva, senza richiedere un nuovo login manuale.
+    \end{itemize}
 
     \item \label{req:context} \textbf{Gestione del Contesto Operativo.} L'interfaccia deve permettere all'utente di definire e persistere il proprio contesto di analisi.
-          \begin{itemize}
-              \item Consentire la selezione di un "Customer" attivo da una lista.
-              \item Consentire la selezione di un "Profile" di protezione associato al customer, inclusa un'opzione per aggregare i dati di tutti i profili ("All Profiles").
-              \item Mantenere la selezione di Customer e Profile tra le diverse sessioni di utilizzo.
-              \item Aggiornare dinamicamente i dati visualizzati al cambio del Customer o del Profile selezionato.
-          \end{itemize}
+    \begin{itemize}
+        \item Consentire la selezione di un "Customer" attivo da una lista.
+        \item Consentire la selezione di un "Profile" di protezione associato al customer, inclusa un'opzione per aggregare i dati di tutti i profili ("All Profiles").
+        \item Mantenere la selezione di Customer e Profile tra le diverse sessioni di utilizzo.
+        \item Aggiornare dinamicamente i dati visualizzati al cambio del Customer o del Profile selezionato.
+    \end{itemize}
 
     \item \label{req:dashboard} \textbf{Presentazione della Dashboard di Riepilogo.} La pagina principale deve fornire una sintesi visiva immediata dei dati di traffico.
-          \begin{itemize}
-              \item Mostrare statistiche aggregate (Total Queries, Blocked, Allowed, Threats Detected) con contatori animati per un feedback visivo immediato.
-              \item Visualizzare una serie di grafici, ciascuno con la possibilità di selezionare un intervallo temporale indipendente (24h, 48h, 7d, etc.):
-                    \begin{itemize}
-                        \item Un grafico a barre orizzontali per le "Categorie Bloccate" (Top N).
-                        \item Un grafico a barre orizzontali per le "Categorie Più Richieste" (Top N).
-                        \item Un grafico a ciambella (Donut) per la distribuzione delle minacce, con il totale delle query al centro.
-                        \item Un istogramma (barre verticali) per i "Domini Più Richiesti" (Top N).
-                    \end{itemize}
-          \end{itemize}
+    \begin{itemize}
+        \item Mostrare statistiche aggregate (Total Queries, Blocked, Allowed, Threats Detected) con contatori animati per un feedback visivo immediato.
+        \item Visualizzare una serie di grafici, ciascuno con la possibilità di selezionare un intervallo temporale indipendente (24h, 48h, 7d, etc.):
+              \begin{itemize}
+                  \item Un grafico a barre orizzontali per le "Categorie Bloccate" (Top N).
+                  \item Un grafico a barre orizzontali per le "Categorie Più Richieste" (Top N).
+                  \item Un grafico a ciambella (Donut) per la distribuzione delle minacce, con il totale delle query al centro.
+                  \item Un istogramma (barre verticali) per i "Domini Più Richiesti" (Top N).
+              \end{itemize}
+    \end{itemize}
 
     \item \label{req:protection} \textbf{Consultazione e Analisi delle Configurazioni di Protezione.} L'applicazione deve permettere un'ispezione dettagliata delle policy di sicurezza attive.
-          \begin{itemize}
-              \item Mostrare la configurazione della protezione in una struttura gerarchica espandibile (Moduli, Macro Categorie, Categorie).
-              \item Visualizzare lo stato ("Allowed" / "Blocked") per ogni categoria e per ogni paese nelle regole di Geo-blocking.
-              \item Mostrare il contenuto delle liste Blacklist e Whitelist.
-              \item Fornire uno strumento di "Domain Check" che permetta di interrogare un dominio specifico e visualizzare il suo stato su tutti i profili del customer, indicando la ragione di un eventuale blocco (es. "Categoria Social Network bloccata", "Dominio in blacklist").
-          \end{itemize}
+    \begin{itemize}
+        \item Mostrare la configurazione della protezione in una struttura gerarchica espandibile (Moduli, Macro Categorie, Categorie).
+        \item Visualizzare lo stato ("Allowed" / "Blocked") per ogni categoria e per ogni paese nelle regole di Geo-blocking.
+        \item Mostrare il contenuto delle liste Blacklist e Whitelist.
+        \item Fornire uno strumento di "Domain Check" che permetta di interrogare un dominio specifico e visualizzare il suo stato su tutti i profili del customer, indicando la ragione di un eventuale blocco (es. "Categoria Social Network bloccata", "Dominio in blacklist").
+    \end{itemize}
 
     \item \label{req:network} \textbf{Visualizzazione delle Configurazioni di Rete.} Deve essere presente una sezione per l'analisi delle reti associate al cliente.
-          \begin{itemize}
-              \item Listare le configurazioni di rete (IP Statico, Dinamico, DoH/DoT) in formato tabellare.
-              \item Visualizzare il profilo di protezione, i server DNS associati, lo stato di attività ("Up"/"Down") e l'ultimo "signin" per ogni rete.
-          \end{itemize}
+    \begin{itemize}
+        \item Listare le configurazioni di rete (IP Statico, Dinamico, DoH/DoT) in formato tabellare.
+        \item Visualizzare il profilo di protezione, i server DNS associati, lo stato di attività ("Up"/"Down") e l'ultimo "signin" per ogni rete.
+    \end{itemize}
 \end{reqfunz}
 
 \subsection{Requisiti Non Funzionali}
@@ -236,26 +237,26 @@ I requisiti non funzionali impongono vincoli sulla qualità e sulle modalità op
     \item \label{req:readonly} \textbf{Modalità di Sola Lettura.} Requisito primario del progetto. L'applicazione deve operare esclusivamente in modalità di consultazione. Nessuna funzionalità di modifica, creazione o cancellazione dei dati e delle configurazioni deve essere implementata.
 
     \item \label{req:security} \textbf{Sicurezza.} Il sistema deve proteggere la confidenzialità e l'integrità dei dati.
-          \begin{itemize}
-              \item La comunicazione tra client e server deve avvenire esclusivamente tramite protocollo HTTPS.
-              \item Le password degli utenti devono essere archiviate nel database in modo sicuro (utilizzando funzioni di hash).
-          \end{itemize}
+    \begin{itemize}
+        \item La comunicazione tra client e server deve avvenire esclusivamente tramite protocollo HTTPS.
+        \item Le password degli utenti devono essere archiviate nel database in modo sicuro (utilizzando funzioni di hash).
+    \end{itemize}
 
     \item \label{req:ux} \textbf{Usabilità e Esperienza Utente (UX).} L'interfaccia deve essere intuitiva e comunicare chiaramente il suo stato.
-          \begin{itemize}
-              \item Fornire indicazioni visive dello stato di caricamento dei dati (es. spinners/loaders).
-              \item Gestire gli errori di comunicazione con le API mostrando messaggi informativi all'utente.
-              \item Le sessioni utente devono essere persistenti per evitare la necessità di login frequenti.
-          \end{itemize}
+    \begin{itemize}
+        \item Fornire indicazioni visive dello stato di caricamento dei dati (es. spinners/loaders).
+        \item Gestire gli errori di comunicazione con le API mostrando messaggi informativi all'utente.
+        \item Le sessioni utente devono essere persistenti per evitare la necessità di login frequenti.
+    \end{itemize}
 
 
     \item \label{req:comformity} \textbf{Conformità con le prassi aziendali.} Il sistema deve aderire a uno stack tecnologico e a un modello di deployment predefiniti.
-          \begin{itemize}
-              \item L'intera applicazione deve essere containerizzata con Docker e orchestrata tramite Docker Compose.
-              \item Il database deve essere PostgreSQL.
-              \item Il frontend deve utilizzare React, TypeScript e pnpm come package manager.
-              \item Il deployment deve avvenire su un server AlmaLinux interno all'infrastruttura aziendale, utilizzando immagini Docker ospitate su un container registry.
-          \end{itemize}
+    \begin{itemize}
+        \item L'intera applicazione deve essere containerizzata con Docker e orchestrata tramite Docker Compose.
+        \item Il database deve essere PostgreSQL.
+        \item Il frontend deve utilizzare React, TypeScript e pnpm come package manager.
+        \item Il deployment deve avvenire su un server AlmaLinux interno all'infrastruttura aziendale, utilizzando immagini Docker ospitate su un container registry.
+    \end{itemize}
 
 \end{reqnonfunz}
 
@@ -271,10 +272,27 @@ Un'analisi dell'infrastruttura esistente ha identificato due distinti endpoint d
 \end{itemize}
 La necessità di interagire con questi due sistemi eterogenei, ciascuno con un proprio meccanismo di autenticazione, rappresenta un vincolo tecnico significativo. La soluzione software dovrà essere in grado di gestire questa complessità, orchestrando le chiamate verso entrambi gli endpoint per aggregare e presentare i dati all'utente in modo trasparente.
 
+\chapter{Metodologia di Sviluppo}
+\label{chap:methodology}
+
+Data la natura del progetto, caratterizzato come una soluzione ponte strategica con vincoli temporali ben definiti, l'adozione di un approccio di sviluppo tradizionale a cascata si sarebbe rivelata inadeguata alle specifiche esigenze del contesto aziendale. Per questo motivo, si è optato per un modello di lavoro iterativo e incrementale, fondato sui principi delle metodologie agili, che ha posto al centro della strategia di sviluppo la collaborazione continua e il feedback costante da parte degli stakeholder.
+
+La pianificazione del lavoro è stata strutturata attraverso cicli di sviluppo brevi e regolari, della durata approssimativa di una settimana ciascuno, concettualmente assimilabili agli \textit{sprint} tipici del framework Scrum. Al termine di ogni ciclo di lavoro, veniva organizzata una sessione dimostrativa nella quale veniva presentata una versione funzionante del prodotto direttamente al \textit{product owner} e agli stakeholder.
+
+Queste sessioni dimostrative non costituivano una mera formalità procedurale, bensì rappresentavano un meccanismo strategico di controllo qualità e allineamento agli obiettivi. Tale approccio ha generato benefici significativi su tre livelli principali.
+
+In primo luogo, ha consentito la validazione incrementale dei requisiti: anziché attendere la conclusione del progetto per verificare la corrispondenza tra sviluppato e richiesto, ogni singola funzionalità veniva discussa, testata e approvata progressivamente durante il suo sviluppo. Questo processo ha garantito un allineamento costante e preciso con le esigenze specifiche del business, minimizzando il rischio di deviazioni dagli obiettivi prestabiliti.
+
+In secondo luogo, il ciclo di feedback accelerato ha permesso l'identificazione e correzione tempestiva di incomprensioni o criticità tecniche. La possibilità di individuare problematiche nelle fasi iniziali dello sviluppo ha drasticamente ridotto il rischio di dover intraprendere costose attività di rilavorazione in fasi avanzate del progetto, ottimizzando così l'utilizzo delle risorse disponibili e mantenendo il rispetto dei tempi di consegna.
+
+Infine, la trasparenza garantita dalle \textit{demo} periodiche ha assicurato un'elevata visibilità del progetto all'interno dell'organizzazione aziendale, contribuendo a consolidare la fiducia del product owner nella soluzione in fase di realizzazione e nella capacità di rispettare le scadenze concordate. La condivisione regolare dei progressi ha inoltre facilitato la comunicazione interdisciplinare e ha permesso di raccogliere input preziosi da diverse prospettive aziendali.
+
+L'adozione di questo approccio metodologico agile e collaborativo si è quindi dimostrata la strategia più efficace per gestire la complessità intrinseca del progetto, garantendo al contempo la flessibilità necessaria per adattarsi alle mutevoli esigenze del contesto operativo e il mantenimento di una rigorosa aderenza agli obiettivi strategici definiti in fase di pianificazione.
+
 \chapter{Design}
 \label{chap:design}
 
-Questo capitolo illustra la progettazione architetturale e di dettaglio dell'applicazione web, rispondendo ai requisiti funzionali e non funzionali definiti nel capitolo di Analisi. Verranno descritte le scelte strategiche relative alla struttura del software, le interazioni tra i componenti e i design pattern della programmazione orientata agli oggetti impiegati per garantire un'architettura robusta, manutenibile e scalabile.
+Questo capitolo illustra la progettazione architetturale e di dettaglio dell'applicazione, rispondendo ai requisiti funzionali e non funzionali definiti nel capitolo \ref{chap:analisi}. Verranno descritte le scelte strategiche relative alla struttura del software, le interazioni tra i componenti e i design pattern della programmazione orientata agli oggetti impiegati per garantire un'architettura robusta, manutenibile e scalabile.
 
 \section{Progettazione dell'Architettura di Alto Livello}
 \label{sec:design_architettura}
@@ -295,15 +313,19 @@ La struttura logica del sistema è decomposta in tre componenti principali:
 \paragraph{Componente di Persistenza Dati (Database)} Questo componente è dedicato alla memorizzazione e al recupero dei dati necessari al funzionamento intrinseco dell'applicazione. In accordo con il requisito di sola lettura \ref{req:readonly} per i dati di business, il suo perimetro è strettamente limitato alla persistenza dei dati di sessione e delle anagrafiche utente.
 
 
-Il flusso di interazione tra questi componenti è lineare e disaccoppiato. Il client utente interagisce esclusivamente con il Componente di Presentazione. Le richieste di dati vengono inoltrate da quest'ultimo al Componente Applicativo, che si occupa di elaborarle, interagendo a sua volta con il Componente di Persistenza per le operazioni relative all'autenticazione, o con i sistemi esterni (come descritto in Sezione \ref{sec:analisi_contesto}) per i dati di business.
-
-
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/components.pdf}
     \caption{Diagramma dell'architettura logica di sistema, che illustra i componenti principali e i loro flussi di interazione.}
     \label{fig:logical_architecture_diagram}
 \end{figure}
+
+\FloatBarrier
+
+
+
+Il flusso di interazione tra questi componenti è lineare e disaccoppiato. Il client utente interagisce esclusivamente con il Componente di Presentazione. Le richieste di dati vengono inoltrate da quest'ultimo al Componente Applicativo, che si occupa di elaborarle, interagendo a sua volta con il Componente di Persistenza per le operazioni relative all'autenticazione, o con i sistemi esterni (come descritto in Sezione \ref{sec:analisi_contesto}) per i dati di business.
+
 
 
 
@@ -339,14 +361,18 @@ Gli strati che contengono la logica applicativa sono tre e comunicano in modo ri
     \item \textbf{Data Access Layer (Strato di Accesso ai Dati):} La sua unica responsabilità è la comunicazione con il database. Incapsula tutta la logica per mappare le \textit{Entità} del dominio da e verso le tabelle del database. In questo progetto, tale strato è implementato tramite il \textbf{Repository Pattern}.
 \end{itemize}
 
-Questa struttura garantisce un basso accoppiamento e un'alta coesione, rendendo il sistema più testabile (ogni strato può essere testato in isolamento, mockando le sue dipendenze) e più facile da manutenere ed estendere.
-
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/layer_design.pdf}
     \caption{Diagramma che illustra l'architettura a tre strati del backend e il flusso di comunicazione unidirezionale.}
     \label{fig:layered_architecture_uml}
 \end{figure}
+
+Questa struttura garantisce un basso accoppiamento e un'alta coesione, rendendo il sistema più testabile (ogni strato può essere testato in isolamento, mockando le sue dipendenze) e più facile da manutenere ed estendere.
+
+
+
+\FloatBarrier
 
 \subsection{Pattern Factory Method per la Creazione di Filtri Gateway}
 \label{subsec:design_factory}
@@ -364,16 +390,19 @@ Il design si completa con la creazione di due classi "fabbrica" concrete:
     \item \texttt{FsfltApiKeyGatewayFilterFactory}: Un'altra fabbrica concreta il cui factory method produce un'istanza di \texttt{GatewayFilter} che si occupa di recuperare la chiave API dell'utente autenticato e di inserirla in un header specifico per le chiamate verso l'API Principale.
 \end{itemize}
 
-
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/gwfactory.pdf}
     \caption{Diagramma delle classi che illustra l'applicazione del pattern Factory Method per la creazione dei filtri del gateway.}
     \label{fig:factory_method_uml}
 \end{figure}
 
+
+
 Questo approccio delega la responsabilità dell'istanziazione dei filtri alle sottoclassi, permettendo al sistema principale di configurazione delle rotte di operare a un alto livello di astrazione, senza conoscere i dettagli concreti di ciascun filtro. Ciò aumenta la modularità e semplifica l'eventuale aggiunta di nuovi filtri in futuro.
 
+
+\FloatBarrier
 
 
 \subsection{Pattern Singleton per la Gestione dei Servizi}
@@ -398,12 +427,14 @@ Per nascondere questa complessità e fornire un punto di accesso unificato e sem
 
 Questa classe espone un set di metodi ad alto livello, come \texttt{autentica\allowbreak Utente\allowbreak (...)} o \texttt{ruota\allowbreak Refresh\allowbreak Token\allowbreak (...)}. Al suo interno, la facciata orchestra le chiamate ai vari componenti del sottosistema (il repository degli utenti, il gestore dei token, il validatore delle password, etc.), ma nasconde completamente questi dettagli di interazione al chiamante. In questo modo, il client (il \texttt{Auth\allowbreak Controller}) dipende unicamente dall'interfaccia semplificata della Facade, risultando completamente disaccoppiato dalla logica interna del sottosistema. Questo non solo semplifica il codice del client, ma permette anche di modificare e far evolvere il sottosistema di autenticazione in modo indipendente, senza impattare il resto dell'applicazione.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/facade.pdf}
     \caption{Diagramma delle classi che mostra come \texttt{AuthenticationService} agisca da Facade, semplificando l'accesso al sottosistema di autenticazione.}
     \label{fig:facade_uml}
 \end{figure}
+
+\FloatBarrier
 
 \subsection{Pattern Data Transfer Object (DTO) per lo Scambio di Dati}
 \label{subsec:design_dto}
@@ -456,12 +487,14 @@ Per risolvere questo problema in modo elegante, è stato applicato un design che
 
 Questo oggetto di configurazione definisce la "strategia" completa per un particolare grafico: l'endpoint da chiamare, i parametri della query, la funzione per trasformare la risposta dell'API in un formato compatibile con la libreria di grafici, e le opzioni di rendering. Le diverse strategie sono definite centralmente nel file \texttt{chartConfigs.ts}. In questo modo, per renderizzare un nuovo tipo di grafico è sufficiente definire una nuova strategia, senza modificare il componente \texttt{GenericChart}, promuovendo i principi di Open/Closed e di riuso del software.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/strategy.pdf}
     \caption{Diagramma che illustra come il componente \texttt{GenericChart} utilizzi diversi oggetti \texttt{ChartConfig} (strategie) per renderizzare grafici differenti.}
     \label{fig:strategy_frontend_uml}
 \end{figure}
+
+\FloatBarrier
 
 
 
@@ -522,25 +555,6 @@ Il design di un punto di accesso unico e decorato per le chiamate API ha guidato
     \item Un \textit{intercettore di risposta}, che "decora" la gestione degli errori intercettando le risposte \texttt{401 Unauthorized} per avviare in modo trasparente il flusso di rinnovo del token.
 \end{itemize}
 
-\paragraph{Struttura dell'Interfaccia Utente e Navigazione}
-L'applicazione segue il modello di una Single Page Application (SPA), dove la navigazione tra le diverse aree funzionali avviene senza ricaricare la pagina, garantendo un'esperienza utente fluida. La logica di navigazione è gestita dalla libreria React Router, che mappa i percorsi dell'URL ai componenti React corrispondenti.
-
-L'interfaccia è stata scomposta in quattro schermate principali, ognuna rappresentata da un componente "vista" di alto livello:
-\begin{itemize}
-    \item \textbf{Pagina di Login:} Il punto di accesso all'applicazione, responsabile della raccolta delle credenziali e della gestione del processo di autenticazione.
-    \item \textbf{Dashboard Principale:} La schermata di atterraggio dopo il login. Presenta una panoramica dei dati più importanti tramite una serie di grafici e widget informativi, offrendo una visione d'insieme immediata.
-    \item \textbf{Vista delle Policy di Protezione:} Una sezione dedicata alla consultazione in sola lettura delle policy di filtraggio attive, delle liste di domini (blacklist/whitelist) e delle altre configurazioni di sicurezza.
-    \item \textbf{Pagina di Ricerca Dominio (Lookup):} Uno strumento che permette all'utente di interrogare un dominio specifico per verificare come viene classificato e gestito dal sistema di filtraggio.
-\end{itemize}
-Ogni schermata è a sua volta composta da componenti più piccoli e riutilizzabili, seguendo una chiara gerarchia che separa la logica di recupero dati (nei componenti "container") dalla logica di pura presentazione.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/slideshow.png}
-    \caption{Panoramica delle schermate principali dell'applicazione frontend: la pagina di Login, la Dashboard principale con i grafici, la vista delle Policy di protezione e la funzionalità di analisi dei domini.}
-    \label{fig:ui_screens}
-\end{figure}
-
 \section{Implementazione del Flusso di Sicurezza End-to-End}
 \label{sec:impl_security}
 
@@ -571,32 +585,67 @@ La logica di rinnovo è centralizzata in un intercettore configurato sull'istanz
 \end{itemize}
 Questo approccio astrae completamente la complessità della gestione delle sessioni dai componenti della UI, che possono effettuare chiamate API senza doversi preoccupare della scadenza dei token.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/expired_ac.pdf}
     \caption{Diagramma di sequenza che illustra il flusso di gestione di un Access Token scaduto e la rotazione del Refresh Token, evidenziando le interazioni tra client, backend e database.}
     \label{fig:token_rotation_sequence_uml}
 \end{figure}
 
+\FloatBarrier
 
-\chapter{Metodologia e Infrastruttura di Sviluppo}
-\label{chap:metodologia}
+\subsection{Struttura dell'Interfaccia Utente e Navigazione}
+L'intera interfaccia è sovrastata da un'intestazione (\textit{header}) persistente che ospita gli elementi di controllo del contesto globale: due menu a tendina permettono all'utente di selezionare il \texttt{Customer} e il \texttt{Profile} attivi, i cui valori vengono mantenuti tra le sessioni. Accanto a questi, è presente il pulsante di logout per terminare la sessione.
 
-Oltre alla progettazione e all'implementazione del software, un progetto di successo si basa su una solida metodologia di sviluppo e su un'infrastruttura di supporto affidabile. Questo capitolo descrive il processo operativo adottato per la realizzazione del progetto, dalla gestione agile alla strategia di testing, fino all'architettura della pipeline CI/CD che automatizza il rilascio dell'applicazione.
+\paragraph{Pagina di Login}
+Costituisce il punto di accesso sicuro al sistema, in risposta al requisito \ref{req:auth}. L'interfaccia è volutamente minimale per ridurre le distrazioni e si compone di due campi di input per e-mail e password, un pulsante di submit e un meccanismo per la visualizzazione di messaggi di errore. Qualsiasi tentativo di accesso non autenticato ad altre pagine scatena il \texttt{redirect} a questa pagina.
 
-\section{Metodologia di Sviluppo Agile}
-\label{sec:metodologia_agile}
+\paragraph{Dashboard Principale}
+È la landing page dopo l'autenticazione (Figura \ref{fig:dashboard_page}) e risponde al requisito \ref{req:dashboard}. Offre una sintesi visiva immediata dello stato del servizio tramite quattro riquadri principali che mostrano le statistiche aggregate: \textit{Threats Detected}, \textit{Blocked Requests}, \textit{Not Existing Domains} e \textit{Total DNS Requests}. La parte inferiore della pagina è dedicata a quattro grafici di analisi, ciascuno dotato di un selettore di intervallo temporale indipendente (24h, 7d, etc.) per consentire analisi granulari. 
 
-Data la natura del progetto come "ponte tecnologico" e i vincoli temporali, si è scelto di non adottare un modello a cascata rigido, ma un approccio iterativo e incrementale, ispirato ai principi delle metodologie agili.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/HOME.pdf}
+    \caption{La Dashboard Principale, con i riquadri delle statistiche e i quattro grafici di analisi.}
+    \label{fig:dashboard_page}
+\end{figure}
 
-\paragraph{Collaborazione con gli Stakeholder} Lo sviluppo è avvenuto in stretta collaborazione con il \textit{product owner} e gli stakeholder aziendali di FlashStart. Questo ha garantito un allineamento costante con le esigenze del business e ha permesso di ricevere feedback tempestivi.
+\FloatBarrier 
+\paragraph{Pagina delle Policy di Protezione}
+Questa sezione è dedicata alla consultazione delle policy di sicurezza (requisito \ref{req:protection}). La sua funzionalità principale è il \textbf{Domain Check Tool} (Figura \ref{fig:protection_domain_check}), uno strumento interattivo che si interfaccia direttamente con l'endpoint \textbf{\texttt{http://apihq.flashstart.com}} per fornire un'analisi in tempo reale dello stato di un dominio su tutti i profili del cliente. 
 
-\paragraph{Iterazioni e Demo} Il lavoro è stato organizzato in cicli di sviluppo brevi, assimilabili a degli \textit{sprint}, della durata di circa una settimana (misurata in termini di ore di lavoro). Al termine di ogni ciclo, veniva presentata una demo dello stato di avanzamento del prodotto. Questo approccio ha permesso di:
-\begin{itemize}
-    \item Validare i requisiti in modo incrementale.
-    \item Identificare e correggere eventuali incomprensioni o problemi in una fase precoce.
-    \item Mantenere alta la visibilità del progetto all'interno dell'azienda, rafforzando la fiducia degli stakeholder.
-\end{itemize}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/PROTECTION_DOMAIN.pdf}
+    \caption{Dettaglio dello strumento "Domain Check Tool" all'interno della pagina di protezione.}
+    \label{fig:protection_domain_check}
+\end{figure}
+
+\FloatBarrier
+
+Inoltre, la pagina (Figura \ref{fig:protection_policies}) utilizza una serie di tabelle espandibili (accordion) per presentare in modo ordinato le complesse configurazioni di blocco, incluse le categorie di contenuti e le regole di geo-blocking, permettendo all'utente di ispezionare facilmente le policy attive.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/PROTECTION.pdf}
+    \caption{La pagina di consultazione delle policy, con le tabelle espandibili per le categorie.}
+    \label{fig:protection_policies}
+\end{figure}
+
+\FloatBarrier
+
+
+\paragraph{Pagina di Gestione della Rete}
+La pagina Network (Figura \ref{fig:network_page}) risponde al requisito \ref{req:network}, fornendo un elenco completo delle configurazioni di rete associate al cliente. L'interfaccia utilizza lo stesso componente \textit{accordion} utilizzato dalla pagina Protection per raggruppare logicamente le diverse tipologie di rete, come indirizzi IPv4, IPv6, e connessioni crittografate DoH (DNS Over HTTPS) e DoT (DNS Over TLS). Una caratteristica di questa schermata è la sua natura dinamica: il numero e il tipo di opzioni visualizzate possono variare in base al piano di sottoscrizione del cliente, mostrando solo le configurazioni a cui ha effettivamente diritto.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/NETWORK.pdf}
+    \caption{La pagina Network, che mostra le diverse configurazioni di rete raggruppate in sezioni.}
+    \label{fig:network_page}
+\end{figure}
+
+\FloatBarrier
 
 \section{Strategia di Testing e Validazione}
 \label{sec:testing}
@@ -614,42 +663,38 @@ Per il frontend è stata utilizzata la libreria Jest. L'approccio si è concentr
 
 \paragraph{Component Test} I test verificano che i componenti si renderizzino correttamente e rispondano alle interazioni dell'utente. Un esempio è il test per la pagina di Login, \texttt{Login.test.tsx}, che simula l'inserimento di testo da parte dell'utente, il click sul pulsante di submit e verifica che vengano mostrati i messaggi di errore o di successo appropriati.
 
-\paragraph{Mocking delle Chiamate API} Per isolare i componenti frontend dal backend durante i test, le chiamate API effettuate sono state intercettate e simulate (mocking). 
+\paragraph{Mocking delle Chiamate API} Per isolare i componenti frontend dal backend durante i test, le chiamate API effettuate sono state intercettate e simulate (mocking).
 
-\section{Deployment e Pipeline di CI/CD}
-\label{sec:ci_cd}
-Per automatizzare il processo di rilascio e garantire la coerenza degli ambienti, come richiesto da \ref{req:comformity}, è stata progettata e implementata una pipeline CI/CD.
+
+\section{Infrastruttura di Build e Deployment}
+\label{sec:impl_cicd}
+Per automatizzare il processo di rilascio e garantire la coerenza degli ambienti, come richiesto da \ref{req:comformity}, è stata progettata e implementata una pipeline di Continuous Integration e Continuous Deployment (CI/CD).
 
 \paragraph{Containerizzazione con Docker}
-Il fondamento dell'infrastruttura è la containerizzazione. L'intera applicazione (frontend, backend, database) è definita come un insieme di servizi in un file \texttt{docker-compose.yaml}. Questo garantisce che ogni sviluppatore e ogni ambiente di deployment esegua il software con le stesse dipendenze e configurazioni. Sono state utilizzate build multi-stage nei Dockerfile per creare immagini finali ottimizzate e leggere, separando le dipendenze di build da quelle di runtime.
+Il fondamento dell'infrastruttura è l'implementazione della containerizzazione tramite \textbf{Docker}. L'intera applicazione (frontend, backend, database) è definita come un insieme di servizi in un file \texttt{docker-\allowbreak compose \allowbreak.yaml}. Per ottimizzare le immagini, sono state utilizzate build multi-stage nei \texttt{Dockerfile}, separando le dipendenze di build da quelle di runtime per produrre artefatti finali leggeri.
 
-\paragraph{Pipeline Ibrida}
-È stata scelta un'architettura di CI/CD ibrida, sfruttando i punti di forza di diverse tecnologie:
-\begin{itemize}
-    \item \textbf{GitHub Actions} viene utilizzato come orchestratore del flusso di lavoro. La pipeline si attiva automaticamente a ogni push sul branch \texttt{main} o può essere avviata manualmente.
-    \item \textbf{Self-Hosted Runner}\footnote{L'utilizzo di un runner self-hosted permette di eseguire i job della pipeline CI/CD su macchine controllate direttamente dall'azienda. Questa scelta è cruciale in contesti con requisiti di sicurezza elevati o quando i processi di build e deployment devono accedere a risorse interne (es. database, server) non esposte su Internet.}, un agente installato direttamente sul server di deployment aziendale, esegue i job di build e deployment. Questa scelta strategica garantisce un maggiore controllo e sicurezza, mantenendo le operazioni critiche all'interno dell'infrastruttura aziendale.
-\end{itemize}
+\paragraph{Pipeline Ibrida con GitHub Actions}
+È stata implementata un'architettura di CI/CD ibrida. \textbf{GitHub Actions} è stato utilizzato come orchestratore per definire il flusso di lavoro, che si attiva automaticamente al push sul branch \texttt{main}. I job di build e deployment vengono eseguiti su un \textbf{Self-Hosted Runner} installato direttamente sul server aziendale, garantendo sicurezza e accesso controllato alle risorse interne.
 
-\paragraph{Flusso di Deployment a Fasi} Il flusso di lavoro è stato progettato per essere sicuro e controllato, suddividendolo in quattro fasi principali che dipendono l'una dall'altra:
-
+\paragraph{Flusso di Deployment a Fasi}
+Il flusso di lavoro implementato è suddiviso in quattro fasi sequenziali per garantire un rilascio sicuro e controllato:
 \begin{enumerate}
-    \item \textbf{Build e Push delle Immagini:} Al push sul branch \texttt{main}, il self-hosted runner avvia il primo job. Vengono costruite le immagini Docker per il frontend e per il backend. Una scelta importante è la strategia di tagging: ogni immagine viene taggata sia con \texttt{latest}, per indicare la versione più recente, sia con l'hash del commit Git. Quest'ultimo tag garantisce un riferimento immutabile e tracciabile alla versione esatta del codice, fondamentale per la diagnostica e per eventuali rollback. Le immagini vengono quindi caricate su un container registry (Docker Hub).
+    \item \textbf{Build e Push delle Immagini:} Il primo job costruisce le immagini Docker per frontend e backend. Ogni immagine viene taggata sia con \texttt{latest} sia con l'hash del commit Git, per garantire un riferimento immutabile e tracciabile. Le immagini vengono quindi caricate su Docker Hub.
 
-    \item \textbf{Deployment nell'Ambiente di Staging:} Una volta che le immagini sono state costruite con successo, la pipeline procede automaticamente al deployment in un ambiente di \textit{staging}. Questo ambiente è una replica fedele di quello di produzione e serve come area di validazione. La scelta di utilizzare uno stage intermedio è cruciale per la riduzione del rischio: permette al team e agli stakeholder di testare manualmente la nuova versione in un contesto realistico e isolato, prima che questa raggiunga gli utenti finali.
+    \item \textbf{Deployment in Staging:} La pipeline procede al deployment automatico in un ambiente di \textit{staging}, una replica di quello di produzione, per permettere la validazione manuale e i test esplorativi in un contesto realistico.
 
-    \item \textbf{Gate di Approvazione Manuale:} Questa fase rappresenta un punto di controllo umano fondamentale. Dopo il successo del deployment in staging, la pipeline si mette in pausa e, tramite un'azione automatizzata, crea una "Issue" su GitHub richiedendo un'approvazione manuale per il rilascio in produzione. Questa scelta garantisce che nessuna modifica arrivi agli utenti senza una revisione e un'approvazione esplicita, creando una cronologia tracciabile e documentata di ogni decisione di rilascio.
+    \item \textbf{Gate di Approvazione Manuale:} Un punto di controllo umano cruciale. La pipeline si mette in pausa e crea una "Issue" su GitHub, richiedendo un'approvazione esplicita. Questo previene rilasci non autorizzati e crea una cronologia documentata delle decisioni di deployment.
 
-    \item \textbf{Deployment nell'Ambiente di Produzione:} Solo dopo aver ricevuto l'approvazione tramite un commento sulla Issue di GitHub, la pipeline procede all'ultimo passo. Il self-hosted runner esegue il pull delle immagini (le stesse identiche verificate in staging) e aggiorna i servizi nell'ambiente di produzione utilizzando la configurazione definita nel file \texttt{docker-compose.prod.yaml}. Questo garantisce la massima coerenza tra ciò che è stato testato e ciò che viene rilasciato, completando il ciclo di deployment in modo sicuro e affidabile.
+    \item \textbf{Deployment in Produzione:} Solo dopo l'approvazione, il flusso procede all'ultimo passo. Il runner esegue il pull delle medesime immagini verificate in staging e aggiorna i servizi nell'ambiente di produzione, garantendo la massima coerenza.
 \end{enumerate}
 
-
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/pipeline_sequence.pdf}
     \caption{Diagramma che illustra il flusso di Continuous Integration e Continuous Deployment, dal push su Git al deployment sul server.}
     \label{fig:ci_cd_diagram}
 \end{figure}
-
+\FloatBarrier
 
 
 \chapter{Conclusioni e Sviluppi Futuri}

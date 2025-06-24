@@ -71,11 +71,13 @@ Il progetto di tesi nasce per rispondere a questa precisa esigenza. Data l'impos
 
 A partire dal contesto delineato, questo elaborato si pone obiettivi che trascendono la semplice descrizione di un prodotto software, per configurarsi come un'analisi approfondita delle metodologie di ingegneria del software applicate a un caso di studio reale. Per raggiungere tale scopo, la tesi segue un percorso strutturato che guida il lettore dalle fondamenta teoriche fino ai dettagli implementativi e processuali.
 
-Inizialmente, il capitolo Background stabilirà il contesto tecnologico necessario, introducendo i paradigmi chiave su cui si fonda il progetto: dalle architetture per interfacce utente moderne come React, alla programmazione reattiva, fino ai protocolli di sicurezza e alle metodologie DevOps che abilitano l'automazione. Successivamente, il capitolo Analisi definirà formalmente il perimetro del progetto attraverso la specifica dei requisiti funzionali e non funzionali, derivati dalle esigenze aziendali.
+Inizialmente, il capitolo \textbf{Background} stabilirà il contesto tecnologico necessario, introducendo i paradigmi chiave su cui si fonda il progetto: dalle architetture per interfacce utente moderne come React, alla programmazione reattiva, fino ai protocolli di sicurezza e alle metodologie DevOps che abilitano l'automazione. Successivamente, il capitolo \textbf{Analisi} definirà formalmente il perimetro del progetto attraverso la specifica dei requisiti funzionali e non funzionali, derivati dalle esigenze aziendali.
 
-Il cuore analitico della tesi è rappresentato dal capitolo Design, dove verrà documentata l'architettura e si entrerà nel merito dell'applicazione pratica dei Design Pattern. Verranno identificati e discussi esempi concreti implementati nel codice sorgente, spiegando per ciascuno il problema che risolve e i benefici apportati in termini di flessibilità e manutenibilità.
+Il capitolo successivo, \textbf{Metodologia di Sviluppo}, descriverà l'approccio adottato per la gestione del progetto. Verrà spiegato come l'analisi dei requisiti e del dominio applicativo si traduca in scelte strategiche per garantire un processo di sviluppo conforme e standardizzato.
 
-Infine, i capitoli Implementazione e Metodologia e Infrastruttura di Sviluppo collegheranno il design astratto alle scelte tecnologiche concrete, descrivendo al contempo il processo di sviluppo agile, le strategie di testing e la pipeline di CI/CD utilizzata per il deployment.
+Una volta definito il processo, il cuore analitico della tesi è rappresentato dal capitolo \textbf{Design}, dove verrà documentata l'architettura e si entrerà nel merito dell'applicazione pratica dei Design Pattern. Verranno identificati e discussi esempi concreti implementati nel codice sorgente, spiegando per ciascuno il problema che risolve e i benefici apportati in termini di flessibilità e manutenibilità.
+
+Infine, il capitolo \textbf{Implementazione} collegherà il design astratto alle scelte tecnologiche concrete. In questa sezione verranno presentati frammenti di codice significativi e verranno analizzate le strategie di testing multilivello e la pipeline di CI/CD, documentando il processo che ha portato dal codice sorgente al deployment automatizzato dell'applicazione.
 
 \chapter{Background}
 \label{chap:background}
@@ -652,19 +654,65 @@ La pagina Network (Figura \ref{fig:network_page}) risponde al requisito \ref{req
 Per garantire la qualità, la robustezza e la non regressione del software, è stata implementata una strategia di testing a più livelli, coprendo sia il backend che il frontend.
 
 \subsection{Testing del Backend}
-Per il backend sono state implementate due tipologie principali di test, sfruttando il framework di testing JUnit 5 e la libreria Mockito per la creazione di mock.
 
-\paragraph{Unit Test} I test unitari si concentrano sulla verifica del comportamento di singole classi o metodi in isolamento. Un esempio tipico è la verifica dei servizi di autenticazione, dove le dipendenze esterne (come repository di dati e servizi di validazione) vengono sostituite con oggetti mock. Questo approccio permette di testare in modo isolato la logica di business critica, come la rotazione dei token, la validazione delle credenziali e la gestione degli errori, senza dipendere da risorse esterne come database o servizi di rete.
+La strategia di testing per il backend è stata strutturata su livelli multipli per validare non solo la logica di business, ma anche l'infrastruttura di routing e sicurezza. Come framework di riferimento è stato scelto JUnit 5\footnote{\url{https://junit.org/junit5/}}, supportato dalla libreria Mockito\footnote{\url{https://site.mockito.org/}} per la gestione delle dipendenze simulate.
 
-\paragraph{Integration Test} Per verificare l'interazione tra più componenti, come la logica di servizio e il layer di persistenza, sono stati scritti test di integrazione. Questi test utilizzano un database in-memory H2, configurato per emulare PostgreSQL, come specificato nel file di properties dei test. Ciò permette di testare il flusso completo di salvataggio e recupero dati (es. la creazione di un utente e del suo refresh token) in un ambiente controllato ma realistico.
+\paragraph{Test Unitari}
+I test unitari si sono concentrati sulla verifica della correttezza della logica implementata nei servizi, isolando completamente le dipendenze esterne. L'esempio principale è il testing del servizio \texttt{AuthenticationService}. Per validare il comportamento del metodo \texttt{validateAndRotateRefreshToken}, che restituisce un oggetto \texttt{Mono}, è stata utilizzata la libreria \texttt{reactor-test} con il suo \texttt{StepVerifier}. Le dipendenze sono state mockate con Mockito e la suite ha coperto scenari di successo (token valido) e di errore (token scaduto o non trovato), verificando la corretta emissione di eventi \texttt{onNext} o \texttt{onError}.
+
+\paragraph{Test della Configurazione del Gateway e dei Filtri}
+Una parte fondamentale della strategia di testing ha riguardato la validazione del componente Spring Cloud Gateway, che agisce come unico punto di accesso (Single Point of Entry) e orchestra le chiamate verso i servizi esterni di FlashStart. Questi test, a differenza dei classici test unitari, verificano la corretta configurazione e il comportamento dell'infrastruttura.
+\begin{itemize}
+    \item \textbf{Test dei Filtri Personalizzati:} Sono stati creati test specifici per i filtri custom. Utilizzando \texttt{WebTestClient}, fornito da Spring Boot, questi test avviano un server embedded con una rotta di prova che applica il filtro in esame. Viene quindi inviata una richiesta HTTP a questo endpoint e si asserisce che il filtro abbia modificato la richiesta come atteso, ad esempio aggiungendo correttamente l'header \texttt{X-API-KEY} o \texttt{Authorization}. Questo garantisce che la logica di manipolazione delle chiamate, cruciale per l'integrazione con le API esterne, sia corretta e non soggetta a regressioni.
+    \item \textbf{Test della Configurazione delle Rotte:} Il file \texttt{GatewayConfigTest.java} verifica la corretta costruzione delle rotte a partire dal file di configurazione. Questo test assicura che i predicati (es. path) e i filtri definiti in \texttt{application.properties} vengano caricati e applicati correttamente, garantendo che le richieste in arrivo siano instradate verso gli upstream corretti.
+\end{itemize}
+
+\paragraph{Test di Integrazione}
+I test di integrazione hanno validato il funzionamento congiunto dei diversi strati applicativi. La base di questi test è la classe \texttt{BackendApplicationTests.java}, che con il suo test \texttt{contextLoads()} funge da "smoke test" per assicurare che l'intero contesto di Spring possa essere caricato senza errori. Per le interazioni con il database, è stato impiegato un database H2 in-memory con il driver R2DBC, garantendo un ambiente isolato ma fedele. Il test di integrazione dell'autenticazione in \texttt{AuthControllerTest.java} esemplifica l'approccio: dopo aver inserito un utente nel database H2, si invoca l'endpoint di login e si verifica che il \texttt{RefreshToken} sia stato correttamente persistito.
 
 \subsection{Testing del Frontend}
-Per il frontend è stata utilizzata la libreria Jest. L'approccio si è concentrato sul testare i componenti dal punto di vista dell'utente.
 
-\paragraph{Component Test} I test verificano che i componenti si renderizzino correttamente e rispondano alle interazioni dell'utente. Un esempio è il test per la pagina di Login, \texttt{Login.test.tsx}, che simula l'inserimento di testo da parte dell'utente, il click sul pulsante di submit e verifica che vengano mostrati i messaggi di errore o di successo appropriati.
+La strategia di testing adottata per il frontend si basa sull'utilizzo del framework \textbf{Jest}\footnote{\url{https://jestjs.io/}}, una piattaforma completa che integra le funzionalità di test runner, libreria di asserzioni e sistema di gestione dei mock. L'approccio metodologico seguito privilegia la verifica del comportamento dell'applicazione dal punto di vista dell'esperienza utente, anziché concentrarsi sui dettagli implementativi interni dei componenti.
 
-\paragraph{Mocking delle Chiamate API} Per isolare i componenti frontend dal backend durante i test, le chiamate API effettuate sono state intercettate e simulate (mocking).
+Per facilitare l'interazione con i componenti React all'interno dell'ambiente di test, è stata integrata la libreria React Testing Library (RTL), che adotta come principio fondamentale: \textit{"Più i tuoi test assomigliano al modo in cui il tuo software viene usato, più fiducia ti possono dare"} \cite{react_testing_library}.
 
+\paragraph{Definizione dei Criteri di Successo}
+
+La valutazione della correttezza dei componenti è stata standardizzata attraverso la verifica della percezione e dell'interattività degli elementi dell'interfaccia utente. Questo approccio utilizza le utility di RTL per eseguire query di selezione basate sui principi di accessibilità web.
+
+A titolo esemplificativo, per la pagina di Login, un test di rendering corretto deve verificare che:
+\begin{itemize}
+    \item Sia presente un campo di input per l'email, identificabile attraverso la sua etichetta semantica utilizzando \texttt{screen.getByLabelText('Email')};
+    \item Esista un campo di input per la password, anch'esso accessibile tramite la corrispondente etichetta;
+    \item Sia disponibile un pulsante di autenticazione, localizzabile mediante \texttt{screen\allowbreak .getByRole(\allowbreak 'button',\allowbreak \{ name: /login/i \})}.
+\end{itemize}
+
+Il successo di queste asserzioni costituisce il criterio di accettazione per un rendering corretto, garantendo che tutti gli elementi necessari all'interazione siano presenti e accessibili secondo gli standard di usabilità.
+
+\paragraph{Simulazione delle Interazioni Utente}
+
+La validazione della reattività dei componenti viene effettuata attraverso la simulazione delle interazioni che un utente reale eseguirebbe, impiegando la libreria \textbf{\texttt{@testing-library/user-event}}. Questa libreria fornisce un'API ad alto livello che replica fedelmente il comportamento degli eventi del browser.
+
+Continuando con l'esempio della pagina di Login, la sequenza di test delle interazioni comprende:
+\begin{enumerate}
+    \item \textbf{Simulazione dell'inserimento dati:} Utilizzo di \texttt{userEvent.type()} per emulare l'immissione dell'indirizzo email e della password nei rispettivi campi di input;
+    \item \textbf{Simulazione dell'azione di submit:} Impiego di \texttt{userEvent.click()} per replicare la pressione del pulsante di autenticazione.
+\end{enumerate}
+
+Successivamente a questa sequenza di interazioni, il test procede con la verifica della risposta dell'applicazione, che tipicamente prevede l'esecuzione di una chiamata API per la validazione delle credenziali.
+
+\paragraph{Isolamento delle Dipendenze Esterne e Verifica degli Effetti}
+
+Per garantire l'isolamento della logica di interfaccia utente dalle dipendenze del backend e assicurare test deterministici, è stata implementata una strategia di mocking utilizzando le funzionalità native di Jest. Le chiamate API, gestite tramite la libreria Axios, vengono intercettate e simulate per controllare i diversi scenari di risposta.
+
+La metodologia di testing prevede:
+\begin{itemize}
+    \item \textbf{Verifica delle chiamate API:} Dopo l'esecuzione dell'azione simulata, il test utilizza \texttt{expect(\allowbreak axios.post)\allowbreak .toHaveBeenCalledWith(...)} per validare che la chiamata API sia stata effettuata con l'endpoint corretto e il payload appropriato;
+    \item \textbf{Testing degli scenari di successo:} Configurando il mock di Axios per restituire una risposta positiva, il test verifica che l'applicazione esegua correttamente la navigazione verso la dashboard;
+    \item \textbf{Gestione degli scenari di errore:} Simulando risposte di errore (ad esempio, stato HTTP 401), il test impiega le query asincrone di RTL per attendere e verificare la corretta visualizzazione dei messaggi di errore, come "Credenziali non valide".
+\end{itemize}
+
+Questa metodologia integrata, orchestrata dal framework Jest, consente una validazione completa del flusso di interazione di ciascun componente, dalla fase di rendering iniziale fino alla gestione delle risposte asincrone del backend.
 
 \section{Infrastruttura di Build e Deployment}
 \label{sec:impl_cicd}

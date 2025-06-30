@@ -15,7 +15,7 @@
 
 \school{\unibo}
 \programme{Corso di Laurea in Ingegneria e Scienze Informatiche}
-\title{Sviluppo di un pannello Web a supporto di un filtro DNS}
+\title{Sviluppo di un pannello Web a supporto di un filtro DNS per malware e contenuti}
 \author{Alessandro Valmori}
 \date{\today}
 \subject{Programmazione ad Oggetti}
@@ -32,11 +32,11 @@
 
 \begin{abstract}
 
-    Questa tesi descrive lo sviluppo di una dashboard web in modalità readonly per la visualizzazione e l'analisi dei dati di filtraggio DNS, realizzata per conto di FlashStart SRL, azienda leader nel settore del filtraggio dei contenuti web. Il progetto nasce come soluzione temporanea per colmare una lacuna funzionale della piattaforma esistente, fornendo ai clienti dell'azienda uno strumento dedicato all'analisi dei dati fino al rilascio della nuova infrastruttura aziendale.
+    Questa tesi descrive lo sviluppo di una dashboard web in modalità readonly per la visualizzazione e l'analisi dei dati di filtraggio DNS, realizzata per conto di FlashStart Group S.r.l., azienda leader nel settore del filtraggio dei contenuti web. Il progetto nasce come soluzione temporanea per colmare una lacuna funzionale della piattaforma esistente, fornendo ai clienti dell'azienda uno strumento dedicato all'analisi dei dati fino al rilascio della nuova infrastruttura aziendale.
 
     L'obiettivo del lavoro è duplice: sviluppare un'applicazione web funzionale e sicura che implementi meccanismi di autenticazione avanzati per proteggere l'accesso ai dati sensibili, e analizzare criticamente come i principi della programmazione orientata agli oggetti guidino le scelte architetturali in un contesto industriale reale. Il sistema implementa un'architettura full-stack moderna, utilizzando tecnologie reattive per garantire scalabilità ed efficienza, con particolare attenzione alla sicurezza attraverso sistemi di autenticazione stateless e gestione sicura delle sessioni utente.
 
-    A testimonianza della sua stabilità ed efficacia in un contesto operativo reale, al momento della stesura di questa tesi, il software sviluppato è impiegato in ambiente di piena produzione da aziende di calibro internazionale come Telefónica e T-Mobile USA.
+    A testimonianza della sua stabilità ed efficacia in un contesto operativo reale, al momento della stesura di questa tesi, il software sviluppato è impiegato in ambiente di piena produzione da aziende di calibro internazionale come Telefónica e uno dei più grandi Carrier Tier-1 degli USA.
 
 \end{abstract}
 
@@ -58,7 +58,7 @@
 \section{Contesto Aziendale e Motivazione del Progetto}
 \label{sec:contesto_e_motivazione}
 
-Il presente lavoro di tesi si inserisce in un contesto industriale specifico, frutto della collaborazione con FlashStart SRL, un'azienda italiana con sede a Cesena, specializzata nello sviluppo e nella fornitura di soluzioni di filtraggio dei contenuti e protezione da minacce informatiche basate su tecnologia DNS (Domain Name System). I servizi offerti da FlashStart si rivolgono a una clientela diversificata, che include aziende, istituzioni educative e pubbliche amministrazioni, fornendo loro strumenti per garantire una navigazione sicura e controllata.
+Il presente lavoro di tesi si inserisce in un contesto industriale specifico, frutto della collaborazione con FlashStart Group S.r.l., un'azienda italiana con sede a Cesena, specializzata nello sviluppo e nella fornitura di soluzioni di filtraggio dei contenuti e protezione da minacce informatiche basate su tecnologia DNS (Domain Name System). I servizi offerti da FlashStart si rivolgono a una clientela diversificata, che include aziende, istituzioni educative e pubbliche amministrazioni, fornendo loro strumenti per garantire una navigazione sicura e controllata.
 
 Al momento dell'inizio del percorso di tirocinio, nel mese di marzo 2025, l'azienda si trovava in una fase di significativa evoluzione tecnologica e strategica. Era infatti in corso un processo di completa reingegnerizzazione della propria piattaforma di gestione, la dashboard utilizzata dai clienti per configurare e monitorare il servizio di filtraggio. Questo processo, unito a un'operazione di rebranding aziendale, mira a modernizzare l'infrastruttura e l'esperienza utente, con un rilascio previsto per novembre 2025.
 
@@ -77,7 +77,7 @@ Il capitolo successivo, \textbf{Metodologia di Sviluppo}, descriverà l'approcci
 
 Una volta definito il processo, il cuore analitico della tesi è rappresentato dal capitolo \textbf{Design}, dove verrà documentata l'architettura e si entrerà nel merito dell'applicazione pratica dei Design Pattern. Verranno identificati e discussi esempi concreti implementati nel codice sorgente, spiegando per ciascuno il problema che risolve e i benefici apportati in termini di flessibilità e manutenibilità.
 
-Infine, il capitolo \textbf{Implementazione} collegherà il design astratto alle scelte tecnologiche concrete. In questa sezione verranno presentati frammenti di codice significativi e verranno analizzate le strategie di testing multilivello e la pipeline di CI/CD, documentando il processo che ha portato dal codice sorgente al deployment automatizzato dell'applicazione.
+Infine, il capitolo \textbf{Implementazione e Testing} collegherà il design astratto alle scelte tecnologiche concrete. In questa sezione verranno presentati frammenti di codice significativi e verranno analizzate le strategie di testing multilivello e la pipeline di CI/CD, documentando il processo che ha portato dal codice sorgente al deployment automatizzato dell'applicazione.
 
 \chapter{Background}
 \label{chap:background}
@@ -527,7 +527,7 @@ Su questa istanza unica, viene applicato un pattern riconducibile al Decorator, 
 \end{itemize}
 Questo design a strati astrae completamente la complessità della comunicazione autenticata, lasciando ai componenti della UI la sola responsabilità di richiedere i dati di cui hanno bisogno.
 
-\chapter{Implementazione}
+\chapter{Implementazione e Testing}
 \label{chap:implementazione}
 
 Questo capitolo illustra come i principi e le architetture definiti nel capitolo \ref{chap:design} siano stati tradotti in scelte tecnologiche concrete e codice sorgente. L'obiettivo è dimostrare come le decisioni di progettazione abbiano guidato la selezione e l'utilizzo dello stack tecnologico per realizzare gli obiettivi del progetto.
@@ -607,7 +607,7 @@ Costituisce il punto di accesso sicuro al sistema, in risposta al requisito \ref
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/HOME.pdf}
+    \includegraphics[width=\textwidth]{figures/home.png}
     \caption{La Dashboard Principale, con i riquadri delle statistiche e i quattro grafici di analisi.}
     \label{fig:dashboard_page}
 \end{figure}
@@ -618,7 +618,7 @@ Questa sezione è dedicata alla consultazione delle policy di sicurezza (requisi
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/PROTECTION_DOMAIN.pdf}
+    \includegraphics[width=\textwidth]{figures/domain.png}
     \caption{Dettaglio dello strumento "Domain Check Tool" all'interno della pagina di protezione.}
     \label{fig:protection_domain_check}
 \end{figure}
@@ -629,7 +629,7 @@ Inoltre, la pagina (Figura \ref{fig:protection_policies}) utilizza una serie di 
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/PROTECTION.pdf}
+    \includegraphics[width=\textwidth]{figures/protection.png}
     \caption{La pagina di consultazione delle policy, con le tabelle espandibili per le categorie.}
     \label{fig:protection_policies}
 \end{figure}
@@ -642,7 +642,7 @@ La pagina Network (Figura \ref{fig:network_page}) risponde al requisito \ref{req
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/NETWORK.pdf}
+    \includegraphics[width=\textwidth]{figures/network.png}
     \caption{La pagina Network, che mostra le diverse configurazioni di rete raggruppate in sezioni.}
     \label{fig:network_page}
 \end{figure}
@@ -748,7 +748,7 @@ Il flusso di lavoro implementato è suddiviso in quattro fasi sequenziali per ga
 \chapter{Conclusioni e Sviluppi Futuri}
 \label{chap:conclusioni}
 
-Dal punto di vista pratico, l'obiettivo è stato pienamente raggiunto. È stata sviluppata e rilasciata un'applicazione web full-stack, basata su un'architettura moderna che gode dell'implementazione di un robusto flusso di autenticazione. Il successo e la stabilità della soluzione sono testimoniati dalla sua adozione in ambiente di piena produzione da parte di clienti di calibro internazionale come Telefónica e T-Mobile USA.
+Dal punto di vista pratico, l'obiettivo è stato pienamente raggiunto. È stata sviluppata e rilasciata un'applicazione web full-stack, basata su un'architettura moderna che gode dell'implementazione di un robusto flusso di autenticazione. Il successo e la stabilità della soluzione sono testimoniati dalla sua adozione in ambiente di piena produzione da parte di clienti di calibro internazionale come Telefónica e uno dei più grandi Carrier Tier-1 degli USA.
 
 Dal punto di vista accademico e formativo, il progetto ha rappresentato un'opportunità unica di lavoro indipendente, fornendo piena libertà per quanto riguarda la metodologia di sviluppo e gran parte della progettazione.
 

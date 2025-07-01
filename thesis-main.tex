@@ -155,7 +155,7 @@ Una delle sfide tecniche più significative nell'implementazione di pipeline CI/
 L'integrazione con la containerizzazione rappresenta un'evoluzione naturale delle pipeline CI/CD. Gli artefatti prodotti non sono più semplici file binari o archivi, ma immagini Docker immutabili che incapsulano l'applicazione e tutte le sue dipendenze. Questo approccio elimina le discrepanze ambientali e garantisce che l'esatto software testato nella pipeline sia quello che viene eseguito in produzione. Inoltre, le immagini Docker possono essere taggate con metadati di versioning automatici (come commit hash, build number, timestamp), facilitando la tracciabilità e il rollback in caso di problemi.
 
 \subsection{Containerizzazione}
-La containerizzazione è un paradigma di virtualizzazione a livello di sistema operativo che consente di isolare le applicazioni in ambienti leggeri e portabili, noti come container. A differenza delle macchine virtuali (VM), che richiedono un intero sistema operativo guest e la virtualizzazione dell'hardware, i container condividono il kernel del sistema operativo host. Questa architettura produce un'efficienza notevolmente superiore: i container hanno un footprint di memoria e disco molto più ridotto, tempi di avvio nell'ordine dei secondi e un overhead prestazionale quasi nullo rispetto all'esecuzione nativa, specialmente per carichi di lavoro legati alla CPU e alla memoria \cite{moravcik2024experimental}. Il principio fondamentale è l'incapsulamento di un'applicazione con tutte le sue dipendenze (come librerie, binari e file di configurazione) in un'unità atomica. Ciò garantisce la portabilità e la consistenza del comportamento dell'applicazione attraverso l'intero ciclo di vita dello sviluppo, eliminando la comune discrepanza tra ambienti di sviluppo, test e produzione, spesso riassunta nel problema "funziona sulla mia macchina" \cite{syrjamaki2023exploring}.
+La containerizzazione è un paradigma di virtualizzazione a livello di sistema operativo che consente di isolare le applicazioni in ambienti leggeri e portabili, noti come container. A differenza delle macchine virtuali (VM), che richiedono un intero sistema operativo guest e la virtualizzazione dell'hardware, i container condividono il kernel del sistema operativo host. Questa architettura produce un'efficienza notevolmente superiore: i container hanno un footprint di memoria e disco molto più ridotto, tempi di avvio nell'ordine dei secondi e un overhead prestazionale quasi nullo rispetto all'esecuzione nativa, specialmente per carichi di lavoro legati alla CPU e alla memoria \cite{moravcik2024experimental}. Il principio fondamentale è l'incapsulamento di un'applicazione con tutte le sue dipendenze (come librerie, binari e file di configurazione) in un'unità atomica. Ciò garantisce la portabilità e la consistenza del comportamento dell'applicazione attraverso l'intero ciclo di vita dello sviluppo, eliminando la comune discrepanza tra ambienti di sviluppo, test e produzione.
 
 Docker si è affermato come lo standard de facto per l'implementazione della tecnologia di containerizzazione, grazie a un ecosistema di strumenti che ne ha reso l'utilizzo accessibile e potente. Il processo di creazione di un container si basa su un'immagine, un template read-only che ne definisce lo stato. Le immagini sono costruite a partire da un \texttt{Dockerfile}, un file di testo che funge da manifesto dichiarativo, specificando una serie di istruzioni sequenziali. Una delle innovazioni chiave di Docker è il suo filesystem basato su immagini stratificate (layered images). Ogni istruzione in un Dockerfile crea un nuovo strato (layer) read-only che si sovrappone ai precedenti. Docker utilizza un meccanismo di copy-on-write (CoW): quando un container viene avviato, viene aggiunto uno strato scrivibile sopra la pila di strati read-only dell'immagine. Qualsiasi modifica apportata dal container viene registrata in questo strato superiore. Questa architettura offre due vantaggi cruciali: efficienza nello storage, poiché gli strati comuni a più immagini vengono memorizzati una sola volta, e velocità nella distribuzione, dato che durante un aggiornamento è necessario trasferire solo gli strati che sono stati modificati \cite{coha2019evaluating}. Le immagini vengono poi distribuite tramite un Container Registry, un repository centralizzato che funge da catalogo per la loro condivisione e il loro versionamento.
 
@@ -318,7 +318,7 @@ La struttura logica del sistema è decomposta in tre componenti principali:
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/components.pdf}
-    \caption{Diagramma dell'architettura logica di sistema, che illustra i componenti principali e i loro flussi di interazione.}
+    \caption{Diagramma dell'architettura logica di sistema, che ne illustra i componenti principali.}
     \label{fig:logical_architecture_diagram}
 \end{figure}
 
@@ -761,8 +761,5 @@ In virtù della sua natura di "soluzione ponte", progettata per colmare un vuoto
 \bibliographystyle{alpha}
 \bibliography{bibliography}
 
-\begin{acknowledgements}
-    Optional. Max 1 page.
-\end{acknowledgements}
 
 \end{document}

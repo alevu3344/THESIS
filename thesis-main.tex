@@ -77,7 +77,7 @@ Il capitolo successivo, \textbf{Metodologia di Sviluppo}, descriverà l'approcci
 
 Una volta definito il processo, il cuore analitico della tesi è rappresentato dal capitolo \textbf{Design}, dove verrà documentata l'architettura e si entrerà nel merito dell'applicazione pratica dei Design Pattern. Verranno identificati e discussi esempi concreti implementati nel codice sorgente, spiegando per ciascuno il problema che risolve e i benefici apportati in termini di flessibilità e manutenibilità.
 
-Infine, il capitolo \textbf{Implementazione e Testing} collegherà il design astratto alle scelte tecnologiche concrete. In questa sezione verranno presentati frammenti di codice significativi e verranno analizzate le strategie di testing multilivello e la pipeline di CI/CD, documentando il processo che ha portato dal codice sorgente al deployment automatizzato dell'applicazione.
+Infine, il capitolo \textbf{Implementazione e Testing} collegherà il design astratto alle scelte tecnologiche concrete. In questa sezione verranno illustrate le scelte implementative salienti, le strategie di testing multilivello e il flusso automatizzato di test, build e deploy degli artefatti prodotti a partire dal codice sorgente.
 
 \chapter{Background}
 \label{chap:background}
@@ -88,7 +88,7 @@ Questo capitolo ha lo scopo di fornire le coordinate teoriche e tecnologiche nec
 
 La realizzazione di una dashboard per l'analisi di dati, come quella oggetto di questa tesi, richiede un'esperienza utente (UX) estremamente fluida e reattiva. Per raggiungere tale obiettivo, l'architettura frontend si è basata sui moderni paradigmi a componenti, che vengono qui analizzati.
 
-\paragraph{L'Architettura Single Page Application (SPA)}
+\paragraph{L'Architettura Single Page Application}
 
 Una Single Page Application (SPA) è un'applicazione web che interagisce con l'utente riscrivendo dinamicamente la pagina corrente, invece di ricaricare intere pagine nuove dal server. Questo approccio si realizza caricando le risorse necessarie in un'unica richiesta iniziale o dinamicamente secondo necessità. La scelta tra un'architettura SPA e una tradizionale Multi-Page Application (MPA) rappresenta un compromesso fondamentale nell'ingegneria del software web. Le MPA seguono un modello classico in cui ogni interazione scatena una richiesta completa al server, che risponde con una nuova pagina HTML. Le SPA presentano un tempo di caricamento iniziale più elevato, ma le interazioni successive sono estremamente rapide, poiché vengono scambiati solo dati tramite API. In termini di esperienza utente (UX), le SPA offrono un'esperienza percepita come più fluida e interattiva, motivo della loro adozione in contesti applicativi complessi come le dashboard. Una delle principali debolezze delle SPA risiede nell'ottimizzazione per i motori di ricerca (SEO), poiché il contenuto viene renderizzato lato client e richiede tecniche aggiuntive come il Server-Side Rendering (SSR)\footnote{Con l'SSR, la pagina richiesta viene renderizzata inizialmente sul server e inviata al client come HTML completo. Questo approccio risolve i problemi di indicizzazione dei motori di ricerca e può migliorare la percezione della velocità di caricamento iniziale (First Contentful Paint).} per una corretta indicizzazione. La selezione di un'architettura SPA per una dashboard di monitoraggio, come quella oggetto di questa tesi, è giustificata dal fatto che l'obiettivo primario è un'esperienza utente reattiva per un utente autenticato, rendendo la SEO del tutto irrilevante.
 
@@ -111,7 +111,7 @@ Per superare questi limiti, è stato introdotto il modello di I/O non bloccante,
 
 Nel contesto dell'ecosistema Spring, questo paradigma è implementato dal modulo Spring WebFlux, che si fonda su Project Reactor per fornire un'API ricca e componibile per la gestione di flussi asincroni. Reactor introduce due tipi fondamentali: \texttt{Mono}, un \textit{publisher} che rappresenta un flusso asincrono di 0 o 1 elemento (es. il risultato di una query che restituisce un singolo utente), e \texttt{Flux}, che rappresenta un flusso di 0 o N elementi (es. una lista di risultati). Attraverso questi tipi, è possibile costruire pipeline di elaborazione dati in modo dichiarativo e funzionale. Anziché scrivere codice imperativo (con cicli e costrutti condizionali), lo sviluppatore definisce una catena di operatori (es. .map() per trasformare, .filter() per selezionare, .flatMap() per operazioni asincrone nidificate) che descrivono la logica di business. Questa "ricetta" viene eseguita dal framework solo quando un client "sottoscrive" il flusso, promuovendo un codice più espressivo e disaccoppiato dalla gestione della concorrenza \cite{spring_reactive}.
 
-Un principio fondamentale dei sistemi reattivi è che il paradigma non bloccante deve essere preservato end-to-end, dall'interfaccia di rete fino alla fonte dei dati. Utilizzare un web layer reattivo sarebbe inutile se il thread dell'Event Loop dovesse poi bloccarsi in attesa di una risposta dal database. La tradizionale API JDBC (Java Database Connectivity) è, per sua natura, bloccante. Per risolvere questa incompatibilità, è stata sviluppata la specifica R2DBC (Reactive Relational Database Connectivity), che definisce un Service Provider Interface (SPI) per driver di database che supportano operazioni non bloccanti e basate su flussi. Per semplificare l'utilizzo di R2DBC,Spring Data R2DBC offre un'astrazione di alto livello, coerente con il resto dell'ecosistema Spring Data. Fornisce un modello di programmazione familiare, basato sul pattern Repository (es. \texttt{ReactiveCrudRepository}), la cui differenza cruciale è che i metodi non restituiscono entità o collezioni, ma \textit{publishers} reattivi (Mono o Flux), integrando così l'accesso ai dati in modo trasparente all'interno della catena reattiva \cite{spring_reactive}.
+Un principio fondamentale dei sistemi reattivi è che il paradigma non bloccante deve essere preservato end-to-end, dall'interfaccia di rete fino alla fonte dei dati. Utilizzare un web layer reattivo sarebbe inutile se il thread dell'Event Loop dovesse poi bloccarsi in attesa di una risposta dal database. La tradizionale API JDBC (Java Database Connectivity) è, per sua natura, bloccante. Per risolvere questa incompatibilità, è stata sviluppata la specifica R2DBC (Reactive Relational Database Connectivity), che definisce un Service Provider Interface (SPI) per driver di database che supportano operazioni non bloccanti e basate su flussi. Per semplificare l'utilizzo di R2DBC, Spring Data R2DBC offre un'astrazione di alto livello, coerente con il resto dell'ecosistema Spring Data. Fornisce un modello di programmazione familiare, basato sul pattern Repository (es. \texttt{ReactiveCrudRepository}), la cui differenza cruciale è che i metodi non restituiscono entità o collezioni, ma \textit{publishers} reattivi (Mono o Flux), integrando così l'accesso ai dati in modo trasparente all'interno della catena reattiva \cite{spring_reactive}.
 
 I vantaggi di un'architettura reattiva correttamente implementata sono molteplici e significativi. Il più evidente è la scalabilità verticale e l'efficienza delle risorse: un'applicazione reattiva può gestire un numero molto più elevato di richieste concorrenti con un numero inferiore di thread, riducendo drasticamente il consumo di memoria e l'overhead della CPU. Questo si traduce in una maggiore responsività del sistema, che rimane reattivo e con bassa latenza anche sotto carichi pesanti, poiché i thread non vengono mai monopolizzati da operazioni lente. Un altro vantaggio cruciale è la resilienza. Gli errori in un flusso reattivo sono eventi di prima classe, gestiti all'interno della pipeline tramite operatori dedicati (es. .onErrorResume, .retry), permettendo di implementare logiche di fallback e di recupero dagli errori in modo più robusto e isolato. Infine, il protocollo Reactive Streams incorpora nativamente il concetto di contropressione (backpressure), un meccanismo di controllo del flusso con cui il consumatore di dati (Subscriber) segnala al produttore (Publisher) quanti elementi è in grado di processare. Questo previene che un produttore veloce possa sopraffare un consumatore più lento, garantendo la stabilità del sistema ed evitando errori di OutOfMemoryError.
 
@@ -150,7 +150,7 @@ DevOps è un movimento culturale e professionale che promuove la collaborazione 
 \subsection{Integrazione e Distribuzione Continua (CI/CD)}
 La Continuous Integration (CI) è una pratica di sviluppo software che prevede l'integrazione frequente delle modifiche del codice in un repository centrale condiviso, seguita dall'esecuzione automatizzata di build e test. Questo approccio si contrappone al tradizionale modello di sviluppo "feature branch" a lunga durata, dove le modifiche vengono integrate raramente, spesso causando conflitti complessi e difficili da risolvere. La CI promuove invece commit piccoli e frequenti, tipicamente multiple volte al giorno, con l'obiettivo di identificare e risolvere rapidamente i problemi di integrazione \cite{Rahman_2018}.
 Il processo di CI si articola in diverse fasi automatizzate. Quando uno sviluppatore effettua un commit, un CI server (come Jenkins, GitLab CI, o GitHub Actions) rileva automaticamente la modifica e avvia una build pipeline. Questa pipeline comprende tipicamente: il checkout del codice sorgente, la risoluzione delle dipendenze, la compilazione dell'applicazione, l'esecuzione di test unitari e di integrazione, l'analisi statica del codice per rilevare vulnerabilità di sicurezza o violazioni di standard di coding, e infine la generazione di artefatti deployabili (come immagini Docker). Se una qualsiasi di queste fasi fallisce, la pipeline si interrompe e gli sviluppatori ricevono un feedback immediato, permettendo una correzione rapida prima che il problema si propaghi \cite{ghaleb2019empirical}.
-La Continuous Delivery (CD) estende il concetto di CI automatizzando anche il processo di rilascio, preparando ogni build che supera i test per il deployment in produzione. Tuttavia, il rilascio effettivo rimane un'azione manuale, solitamente innescata da un'approvazione umana. Il Continuous Deployment rappresenta il livello più avanzato di automazione, dove ogni modifica che supera con successo l'intera pipeline viene automaticamente rilasciata in produzione senza intervento umano. Questo approccio richiede un'estrema fiducia nella suite di test e nei meccanisms di monitoraggio, ma permette di ottenere un feedback loop estremamente rapido dal mercato \cite{teixeira2020systematic}.
+La Continuous Delivery (CD) estende il concetto di CI automatizzando anche il processo di rilascio, preparando ogni build che supera i test per il deployment in produzione. Tuttavia, il rilascio effettivo rimane un'azione manuale, solitamente innescata da un'approvazione umana. Il Continuous Deployment rappresenta il livello più avanzato di automazione, dove ogni modifica che supera con successo l'intera pipeline viene automaticamente rilasciata in produzione senza intervento umano. Questo approccio richiede un'estrema fiducia nella suite di test e nei meccanismi di monitoraggio, ma permette di ottenere un feedback loop estremamente rapido dal mercato \cite{teixeira2020systematic}.
 Una delle sfide tecniche più significative nell'implementazione di pipeline CI/CD efficaci è la gestione dei tempi di build. Build lente (superiori ai 10-15 minuti) compromettono il valore del feedback rapido, scoraggiando gli sviluppatori dall'effettuare commit frequenti e riducendo l'efficacia dell'intero processo. Strategie di ottimizzazione includono la parallelizzazione dei test, l'utilizzo di cache intelligenti per evitare la ricompilazione di componenti non modificati, e l'implementazione di test pyramids che privilegiano test unitari veloci rispetto a test di integrazione più lenti \cite{ghaleb2019empirical}.
 L'integrazione con la containerizzazione rappresenta un'evoluzione naturale delle pipeline CI/CD. Gli artefatti prodotti non sono più semplici file binari o archivi, ma immagini Docker immutabili che incapsulano l'applicazione e tutte le sue dipendenze. Questo approccio elimina le discrepanze ambientali e garantisce che l'esatto software testato nella pipeline sia quello che viene eseguito in produzione. Inoltre, le immagini Docker possono essere taggate con metadati di versioning automatici (come commit hash, build number, timestamp), facilitando la tracciabilità e il rollback in caso di problemi.
 
@@ -170,8 +170,8 @@ Il principio fondamentale dell'IaC è la separazione tra dichiarazione e impleme
 Un concetto chiave nell'IaC è l'idempotenza: l'esecuzione ripetuta della stessa definizione infrastrutturale deve produrre sempre lo stesso risultato, indipendentemente dal numero di esecuzioni. Questo è possibile grazie alla capacità degli strumenti IaC di calcolare il delta tra lo stato corrente dell'infrastruttura e quello desiderato, applicando solo le modifiche necessarie. Ad esempio, se una definizione specifica 5 istanze di un servizio ma ne esistono già 3, lo strumento creerà automaticamente solo le 2 istanze mancanti, senza toccare quelle esistenti.
 I vantaggi dell'IaC sono molteplici e sostanziali. La versionabilità permette di tracciare ogni modifica all'infrastruttura attraverso sistemi di version control come Git, abilitando pratiche come code review, branching strategies, e rollback sicuri. La riproducibilità garantisce che ambienti identici possano essere creati on-demand, eliminando le discrepanze tra sviluppo, testing e produzione che spesso causano il famigerato problema "funziona sulla mia macchina". La scalabilità consente di replicare facilmente configurazioni complesse su scala globale, mentre la disaster recovery diventa un processo automatizzato e testabile, poiché l'intera infrastruttura può essere ricreata da zero a partire dai file di definizione.
 Nel contesto delle applicazioni containerizzate, l'IaC assume forme specifiche e complementari. I Dockerfile rappresentano l'IaC a livello di runtime environment, definendo in modo dichiarativo come costruire l'immagine di un container. I file docker-compose.yml estendono questo concetto a livello di applicazione multi-container, specificando le relazioni, le reti e i volumi necessari. Per deployment su larga scala, i manifesti Kubernetes (scritti in YAML) definiscono l'orchestrazione di container attraverso concetti come Deployments, Services, ConfigMaps e Secrets.
-Un aspetto critico nell'implementazione di IaC è la gestione degli stati (state management). Strumenti come Terraform mantengono un state file che rappresenta la mappatura tra la dichiarazione logica dell'infrastruttura e le risorse fisiche create nei provider cloud. Questo state file deve essere condiviso tra team members e mantenuto in modo sicuro, tipicamente attraverso remote state backends che supportano locking distribuito per evitare conflitti durante modifiche concorrenti.
-La sinergia tra IaC e pipeline CI/CD crea un ecosistema completamente automatizzato per la gestione dell'intero stack applicativo. Le modifiche ai file di definizione infrastrutturale vengono processate attraverso pipeline dedicate che includono validazione sintattica, testing dell'infrastruttura (attraverso strumenti come Terratest), e deployment graduale utilizzando strategie come blue-green deployment o canary releases. Questo approccio trasforma l'infrastruttura da un elemento statico e difficile da modificare a un componente agile e continuamente evolutivo, perfettamente allineato con i principi DevOps di integrazione e deployment continui.
+Un aspetto critico nell'implementazione di IaC è la gestione degli stati (state management). Strumenti come Terraform mantengono un state file che rappresenta la mappatura tra la dichiarazione logica dell'infrastruttura e le risorse fisiche create nei provider cloud. Questo state file deve essere condiviso tra i membri del team e mantenuto in modo sicuro, tipicamente attraverso remote state backends\footnote{I \textit{remote state backends} sono sistemi di storage remoti (come Amazon S3, Azure Blob Storage, o Google Cloud Storage) utilizzati per archiviare lo state file di Terraform. Il loro utilizzo è cruciale in ambienti collaborativi per garantire che tutti i membri del team accedano a una versione unica e aggiornata dello stato dell'infrastruttura, prevenendo inconsistenze e perdite di dati.} che supportano locking distribuito\footnote{Il \textit{locking distribuito} (o state locking) è un meccanismo che impedisce l'esecuzione contemporanea di operazioni di modifica dello stato da parte di più utenti. Quando un utente avvia un'operazione, acquisisce un "lock" sullo state file, che viene rilasciato solo al termine dell'operazione. Questo previene \textit{race conditions} e la corruzione dello stato, garantendo l'integrità delle operazioni concorrenti.} per evitare conflitti durante modifiche concorrenti.
+La sinergia tra IaC e pipeline CI/CD crea un ecosistema completamente automatizzato per la gestione dell'intero stack applicativo. Le modifiche ai file di definizione infrastrutturale vengono processate attraverso pipeline dedicate che includono validazione sintattica, testing dell'infrastruttura, e deployment graduale.
 
 
 
@@ -363,18 +363,20 @@ Gli strati che contengono la logica applicativa sono tre e comunicano in modo ri
     \item \textbf{Data Access Layer (Strato di Accesso ai Dati):} La sua unica responsabilità è la comunicazione con il database. Incapsula tutta la logica per mappare le \textit{Entità} del dominio da e verso le tabelle del database. In questo progetto, tale strato è implementato tramite il \textbf{Repository Pattern}.
 \end{itemize}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/layer_design.pdf}
     \caption{Diagramma che illustra l'architettura a tre strati del backend e il flusso di comunicazione unidirezionale.}
     \label{fig:layered_architecture_uml}
 \end{figure}
 
+\FloatBarrier
+
 Questa struttura garantisce un basso accoppiamento e un'alta coesione, rendendo il sistema più testabile (ogni strato può essere testato in isolamento, mockando le sue dipendenze) e più facile da manutenere ed estendere.
 
 
 
-\FloatBarrier
+
 
 \subsection{Pattern Factory Method per la Creazione di Filtri Gateway}
 \label{subsec:design_factory}
@@ -392,7 +394,7 @@ Il design si completa con la creazione di due classi "fabbrica" concrete:
     \item \texttt{FsfltApiKeyGatewayFilterFactory}: Un'altra fabbrica concreta il cui factory method produce un'istanza di \texttt{GatewayFilter} che si occupa di recuperare la chiave API dell'utente autenticato e di inserirla in un header specifico per le chiamate verso l'API Principale.
 \end{itemize}
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/gwfactory.pdf}
     \caption{Diagramma delle classi che illustra l'applicazione del pattern Factory Method per la creazione dei filtri del gateway.}
@@ -400,11 +402,11 @@ Il design si completa con la creazione di due classi "fabbrica" concrete:
 \end{figure}
 
 
+\FloatBarrier
 
 Questo approccio delega la responsabilità dell'istanziazione dei filtri alle sottoclassi, permettendo al sistema principale di configurazione delle rotte di operare a un alto livello di astrazione, senza conoscere i dettagli concreti di ciascun filtro. Ciò aumenta la modularità e semplifica l'eventuale aggiunta di nuovi filtri in futuro.
 
 
-\FloatBarrier
 
 
 \subsection{Pattern Singleton per la Gestione dei Servizi}
@@ -461,7 +463,7 @@ L'uso dei DTO definisce un "contratto" chiaro e stabile per le API, fondamentale
 \section{Design del Frontend}
 \label{sec:design_frontend}
 
-Sebbene il paradigma dominante nello sviluppo con React sia funzionale/dichiarativo, i principi fondamentali della programmazione orientata agli oggetti -- come l'incapsulamento, la composizione e la separazione delle responsabilità -- sono stati la guida per la progettazione del frontend. L'obiettivo era creare un'architettura a componenti che fosse non solo reattiva e performante, ma anche logicamente strutturata e scalabile.
+Sebbene il paradigma dominante nello sviluppo con React sia funzionale/dichiarativo, i principi fondamentali della programmazione orientata agli oggetti, come l'incapsulamento, la composizione e la separazione delle responsabilità, sono stati la guida per la progettazione del frontend. L'obiettivo era creare un'architettura a componenti che fosse non solo reattiva e performante, ma anche logicamente strutturata e scalabile.
 
 \subsection{Architettura a Componenti come Composizione di Oggetti}
 \label{subsec:design_component_composition}
@@ -491,7 +493,7 @@ Questo oggetto di configurazione definisce la "strategia" completa per un partic
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\textwidth]{figures/strategy.pdf}
+    \includegraphics[width=0.7\textwidth]{figures/strategy.pdf}
     \caption{Diagramma che illustra come il componente \texttt{GenericChart} utilizzi diversi oggetti \texttt{ChartConfig} (strategie) per renderizzare grafici differenti.}
     \label{fig:strategy_frontend_uml}
 \end{figure}
@@ -561,7 +563,6 @@ Il design di un punto di accesso unico e decorato per le chiamate API ha guidato
 \label{sec:impl_security}
 
 Questa sezione descrive la realizzazione pratica del flusso di sicurezza, traducendo il design concettuale in componenti software specifici sia nel backend che nel frontend. Il sistema implementa un'autenticazione stateless basata su JSON Web Tokens (JWT) con un meccanismo di rotazione per i refresh token, come conseguenza del requisito \ref{req:security}.
-e.
 
 \paragraph{Generazione dei Token e Gestione dei Cookie}
 Al momento del login, l' \texttt{Auth\allowbreak Controller} riceve le credenziali e le delega all' \texttt{Authentication\allowbreak Service}. Questo servizio, agendo come Facade, orchestra la validazione e, in caso di successo, invoca un \texttt{Jwt\allowbreak Service} dedicato. Questa classe utilizza la libreria \texttt{io.\allowbreak jsonwebtoken.\allowbreak jjwt} per creare e firmare i token.
@@ -603,7 +604,7 @@ L'intera interfaccia è sovrastata da un'intestazione (\textit{header}) persiste
 Costituisce il punto di accesso sicuro al sistema, in risposta al requisito \ref{req:auth}. L'interfaccia è volutamente minimale per ridurre le distrazioni e si compone di due campi di input per e-mail e password, un pulsante di submit e un meccanismo per la visualizzazione di messaggi di errore. Qualsiasi tentativo di accesso non autenticato ad altre pagine scatena il \texttt{redirect} a questa pagina.
 
 \paragraph{Dashboard Principale}
-È la landing page dopo l'autenticazione (Figura \ref{fig:dashboard_page}) e risponde al requisito \ref{req:dashboard}. Offre una sintesi visiva immediata dello stato del servizio tramite quattro riquadri principali che mostrano le statistiche aggregate: \textit{Threats Detected}, \textit{Blocked Requests}, \textit{Not Existing Domains} e \textit{Total DNS Requests}. La parte inferiore della pagina è dedicata a quattro grafici di analisi, ciascuno dotato di un selettore di intervallo temporale indipendente (24h, 7d, etc.) per consentire analisi granulari. 
+È la landing page dopo l'autenticazione (Figura \ref{fig:dashboard_page}) e risponde al requisito \ref{req:dashboard}. Offre una sintesi visiva immediata dello stato del servizio tramite quattro riquadri principali che mostrano le statistiche aggregate: \textit{Threats Detected}, \textit{Blocked Requests}, \textit{Not Existing Domains} e \textit{Total DNS Requests}. La parte inferiore della pagina è dedicata a quattro grafici di analisi, ciascuno dotato di un selettore di intervallo temporale indipendente (24h, 7d, etc.) per consentire analisi granulari.
 
 \begin{figure}[htbp]
     \centering
@@ -612,9 +613,9 @@ Costituisce il punto di accesso sicuro al sistema, in risposta al requisito \ref
     \label{fig:dashboard_page}
 \end{figure}
 
-\FloatBarrier 
+\FloatBarrier
 \paragraph{Pagina delle Policy di Protezione}
-Questa sezione è dedicata alla consultazione delle policy di sicurezza (requisito \ref{req:protection}). La sua funzionalità principale è il \textbf{Domain Check Tool} (Figura \ref{fig:protection_domain_check}), uno strumento interattivo che si interfaccia direttamente con l'endpoint \textbf{\texttt{http://apihq.flashstart.com}} per fornire un'analisi in tempo reale dello stato di un dominio su tutti i profili del cliente. 
+Questa sezione è dedicata alla consultazione delle policy di sicurezza (requisito \ref{req:protection}). La sua funzionalità principale è il \textbf{Domain Check Tool} (Figura \ref{fig:protection_domain_check}), uno strumento interattivo che si interfaccia direttamente con l'endpoint \textbf{\texttt{http://apihq.flashstart.com}} per fornire un'analisi in tempo reale dello stato di un dominio su tutti i profili del cliente.
 
 \begin{figure}[htbp]
     \centering
@@ -727,7 +728,8 @@ Il fondamento dell'infrastruttura è l'implementazione della containerizzazione 
 \paragraph{Flusso di Deployment a Fasi}
 Il flusso di lavoro implementato è suddiviso in quattro fasi sequenziali per garantire un rilascio sicuro e controllato:
 \begin{enumerate}
-    \item \textbf{Build e Push delle Immagini:} Il primo job costruisce le immagini Docker per frontend e backend. Ogni immagine viene taggata sia con \texttt{latest} sia con l'hash del commit Git, per garantire un riferimento immutabile e tracciabile. Le immagini vengono quindi caricate su Docker Hub.
+    \item \textbf{Test del Codice Sorgente:} In primo luogo la pipeline esegue il checkout del codice sorgente ed esegue i test, sia per quanto riguarda il frontend che il backend. In caso di qualsiasi fallimento la pipeline si ferma e il developer viene notificato, annullando l'intero processo.
+    \item \textbf{Build e Push delle Immagini:} Il secondo job costruisce le immagini Docker per frontend e backend. Ogni immagine viene taggata sia con \texttt{latest} sia con l'hash del commit Git, per garantire un riferimento immutabile e tracciabile. Le immagini vengono quindi caricate su Docker Hub.
 
     \item \textbf{Deployment in Staging:} La pipeline procede al deployment automatico in un ambiente di \textit{staging}, una replica di quello di produzione, per permettere la validazione manuale e i test esplorativi in un contesto realistico.
 

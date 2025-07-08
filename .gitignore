@@ -12,6 +12,7 @@
 *.cb2
 .*.lb
 thesis-main.pdf
+demo.pdf
 
 ## Intermediate documents:
 *.dvi

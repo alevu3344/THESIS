@@ -1,6 +1,12 @@
 \documentclass[8pt]{beamer}
 
 \usetheme{metropolis}
+\metroset{sectionpage=none}
+\setbeamertemplate{headline}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.25ex,dp=1ex]{palette primary}
+    \hfill\insertsection\hspace*{2em}
+  \end{beamercolorbox}
+}
 \usepackage{graphicx} % Per includere immagini
 \usepackage{listings} % Per il codice sorgente
 \usepackage{textcomp} % Per simboli come il carattere di virgoletta singola diritta
@@ -47,11 +53,6 @@
 % --- SLIDE 1: TITOLO ---
 \maketitle
 
-% --- SLIDE 2: INDICE ---
-\begin{frame}{Indice della presentazione}
-  \setbeamertemplate{section in toc}[sections numbered]
-  \tableofcontents[hideallsubsections]
-\end{frame}
 
 % --- INIZIO SEZIONI ---
 
@@ -83,46 +84,54 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Design del Backend: Factory Method}
-  \frametitle{Design del Backend: Pattern per Flessibilità e Manutenibilità}
-  \begin{alertblock}{Problema }
-    Gestire l'autenticazione verso due API esterne con meccanismi diversi (Basic Auth vs API Key) in modo disaccoppiato.
-  \end{alertblock}
-  \begin{block}{Soluzione: Factory Method }
-    Il pattern \textbf{Factory Method} è stato usato per creare dinamicamente il filtro \texttt{GatewayFilter} corretto, astraendo la logica di autenticazione dalla configurazione delle rotte.
-  \end{block}
+\begin{frame}{Design del Backend: Struttura e Reattività}
+  \frametitle{Design del Backend: Struttura e Reattività}
   \begin{columns}[T]
     \column{0.5\textwidth}
-    \begin{figure}
-      \includegraphics[width=\textwidth]{figures/gwfactory.pdf}
-    \end{figure}
-    \column{0.5\textwidth}
-    \tiny \textbf{Esempio di Factory Concreta:}
+    \begin{block}{Architettura a Strati}
+      Adottata un'architettura a 3 strati per una netta \textbf{separazione delle responsabilità}:
 
+    \end{block}
+    \begin{figure}
+      \includegraphics[width=\textwidth]{figures/layer_design.pdf}
+    \end{figure}
+
+    \column{0.5\textwidth}
+    \begin{alertblock}{Programmazione Reattiva}
+      \textbf{Problema}: Il backend funge da gateway e deve gestire numerose chiamate di I/O (API esterne, DB) senza bloccarsi.
+      \vspace{0.5cm}
+
+      \textbf{Soluzione}: L'uso di \textbf{Spring WebFlux} con un event loop non bloccante.
+      \begin{itemize}
+        \item Permette di gestire un alto numero di connessioni concorrenti con poche risorse.
+        \item Ideale per carichi di lavoro I/O-bound, garantendo scalabilità e resilienza.
+      \end{itemize}
+    \end{alertblock}
   \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Design del Frontend: Strategy}
-  \frametitle{Design del Frontend: Pattern per Riutilizzabilità e Configurazione}
-  \begin{alertblock}{Problema }
-    Evitare la duplicazione di codice per i 4 grafici della dashboard, che hanno logiche simili ma strategie di fetching e rendering diverse.
-  \end{alertblock}
-  \begin{block}{Soluzione: Strategy }
-    Un componente \texttt{GenericChart} riceve un oggetto di configurazione (la "strategia") che definisce l'endpoint, la trasformazione dei dati e le opzioni di rendering.
-  \end{block}
+\begin{frame}[fragile]{Comunicazione Robusta: Decorator con Intercettori}
+  \frametitle{Comunicazione Robusta: Decorator con Intercettori Axios}
   \begin{columns}[T]
     \column{0.5\textwidth}
-    \begin{figure}
-      \includegraphics[width=\textwidth]{figures/strategy.pdf}
-    \end{figure}
+    \begin{alertblock}{Problema}
+      Come centralizzare la logica trasversale delle chiamate API (aggiungere token, gestire errori) senza duplicare codice nel frontend?
+    \end{alertblock}
+
+    \begin{block}{Soluzione: Pattern Decorator}
+      Sfruttando gli \textbf{intercettori} di Axios, ogni chiamata API viene "decorata" dinamicamente con funzionalità aggiuntive:
+      \begin{itemize}
+        \item \textbf{Intercettore di Richiesta}: Aggiunge l'header \texttt{Authorization} a ogni chiamata in uscita.
+        \item \textbf{Intercettore di Risposta}: Cattura gli errori \texttt{401 Unauthorized} e gestisce in modo trasparente il flusso di rinnovo del token.
+      \end{itemize}
+    \end{block}
+
     \column{0.5\textwidth}
     \begin{figure}
-      \includegraphics[width=\textwidth]{figures/home.png}
+      \includegraphics[width=\textwidth]{figures/axios_flow.png}
     \end{figure}
-
   \end{columns}
 \end{frame}
-
 
 \section{Implementazione e Risultati}
 
@@ -185,7 +194,7 @@
 
   % --- PARTE INFERIORE: FLUSSO ORIZZONTALE ---
   \begin{center}
-   \begin{figure}
+    \begin{figure}
       \includegraphics[width=\textwidth]{figures/workflow.pdf}
     \end{figure}
   \end{center}

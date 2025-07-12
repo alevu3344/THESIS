@@ -10,6 +10,7 @@
 \usepackage{graphicx} % Per includere immagini
 \usepackage{listings} % Per il codice sorgente
 \usepackage{textcomp} % Per simboli come il carattere di virgoletta singola diritta
+\usepackage{multimedia}
 
 % --- Informazioni Tesi ---
 \title{Sviluppo di un pannello Web a supporto di un filtro DNS per malware e contenuti}
@@ -72,16 +73,24 @@
 
 \section{Architettura e Design}
 
-\begin{frame}{Architettura di Alto Livello}
-  \begin{figure}
-    \includegraphics[width=0.5\textwidth]{figures/components.pdf}
-  \end{figure}
-  \begin{itemize}
-    \item \textbf{Frontend (React)}: Unico punto di contatto per l'utente.
-    \item \textbf{Backend (Java + Spring WebFlux)}: Nucleo logico, API Gateway e gestore dell'autenticazione.
-    \item \textbf{Database (PostgreSQL)}: Persistenza dei soli dati applicativi (utenti, sessioni).
-    \item \textbf{API Esterne}: Integrazione con due servizi legacy di FlashStart.
-  \end{itemize}
+\begin{frame}{Architettura di Alto Livello e Deployment}
+    \frametitle{Architettura di Alto Livello e Deployment}
+
+    % --- FIGURA IN ALTO ---
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.6\textwidth]{figures/components.pdf}
+    \end{figure}
+
+    % --- DESCRIZIONE IN BASSO ---
+    \begin{itemize}
+        \item \textbf{Frontend (React)}: Unico punto di contatto per l'utente.
+        \item \textbf{Backend (Java + Spring WebFlux)}: Nucleo logico, API Gateway e gestore dell'autenticazione.
+        \item \textbf{Database (PostgreSQL)}: Persistenza dei dati applicativi.
+        \item \textbf{API Esterne}: Integrazione con i servizi legacy di FlashStart.
+        \item \alert{\textbf{Deployment}}: L'intero stack è \textbf{containerizzato con Docker}. I servizi comunicano su una rete privata, il tutto ospitato su un unico server aziendale.
+    \end{itemize}
+    
 \end{frame}
 
 \begin{frame}{Design del Backend: Struttura e Reattività}
@@ -133,6 +142,32 @@
   \end{columns}
 \end{frame}
 
+\begin{frame}{Gestione dello Stato Frontend: Pattern Observer}
+    \frametitle{Gestione dello Stato Frontend: Pattern Observer con React Context}
+    
+    % --- PARTE SUPERIORE: TESTO ESPLICATIVO ---
+    \begin{alertblock}{Problema}
+        Come gestire dati globali (utente loggato, cliente selezionato) in modo efficiente, senza passare props attraverso innumerevoli componenti (prop drilling)?
+    \end{alertblock}
+
+    \begin{block}{Soluzione: Pattern Observer}
+        Utilizzo della \textbf{React Context API} come implementazione del pattern Observer:
+        \begin{itemize}
+            \item \texttt{AuthProvider} e \texttt{CustomerProvider} agiscono da "soggetti" (subjects) che mantengono lo stato.
+            \item I componenti che necessitano dei dati si "sottoscrivono" (observers) al contesto e si ri-renderizzano automaticamente quando lo stato cambia.
+        \end{itemize}
+    \end{block}
+
+    \vfill % Questo comando spinge il contenuto seguente verso il basso
+
+    % --- PARTE INFERIORE: DIAGRAMMA ---
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth]{figures/observer.png}
+        \caption{Diagramma del pattern Observer implementato con React Context.}
+    \end{figure}
+    
+\end{frame}
 \section{Implementazione e Risultati}
 
 \begin{frame}{Flusso di Sicurezza: Autenticazione Stateless Robusta}
@@ -157,7 +192,7 @@
       \begin{itemize}
         \item \textbf{Cookie HttpOnly}:\\Il Refresh Token non è accessibile via JavaScript, proteggendolo da attacchi XSS.
 
-        \item \textbf{Token Rotation}:\\Il Refresh Token è \alert{monouso}. Ad ogni utilizzo, viene invalidato e sostituito, una misura fondamentale contro gli attacchi di tipo *replay*.
+        \item \textbf{Token Rotation}:\\Il Refresh Token è \alert{monouso}. Ad ogni utilizzo, viene invalidato e sostituito, una misura fondamentale contro gli attacchi di tipo replay.
 
         \item \textbf{Rinnovo Trasparente}:\\Un intercettore (pattern \textit{Decorator}) gestisce il rinnovo dei token in modo automatico e invisibile all'utente.
       \end{itemize}
@@ -199,6 +234,36 @@
     \end{figure}
   \end{center}
 
+\end{frame}
+
+% --- INSERISCI QUESTA SLIDE DOPO "INFRASTRUTTURA E CI/CD" ---
+
+\begin{frame}{Strategia di Testing a Più Livelli}
+    \frametitle{Strategia di Testing a Più Livelli}
+    
+    \begin{block}{Approccio}
+        Per garantire qualità e assenza di regressioni, è stata implementata una strategia di testing automatizzato che copre l'intera applicazione.
+    \end{block}
+
+    \begin{columns}[T]
+        \column{0.5\textwidth}
+            \begin{exampleblock}{Testing del Backend}
+                \begin{itemize}
+                    \item \textbf{Unitari (JUnit \& Mockito)}: Verifica della logica di business nei servizi in isolamento.
+                    \item \textbf{Integrazione (Testcontainers)}: Test degli endpoint e delle interazioni con un database PostgreSQL reale ma temporaneo.
+                    \item \textbf{Infrastruttura (WebTestClient)}: Validazione della configurazione di Spring Cloud Gateway e dei filtri custom.
+                \end{itemize}
+            \end{exampleblock}
+
+        \column{0.5\textwidth}
+            \begin{exampleblock}{Testing del Frontend}
+                \begin{itemize}
+                    \item \textbf{Framework (Jest \& RTL)}: Focus sul testare il comportamento dal punto di vista dell'utente, non i dettagli implementativi.
+                    \item \textbf{Logica}: Simulazione di interazioni utente (click, inserimento testo).
+                    \item \textbf{Chiamate API}: Mocking delle risposte del backend per testare la UI in vari scenari (successo, errore).
+                \end{itemize}
+            \end{exampleblock}
+    \end{columns}
 \end{frame}
 
 \section{Conclusioni}

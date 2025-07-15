@@ -11,10 +11,12 @@
 \usepackage{listings} % Per il codice sorgente
 \usepackage{textcomp} % Per simboli come il carattere di virgoletta singola diritta
 \usepackage{multimedia}
+\usepackage{fontawesome5}
+
 
 % --- Informazioni Tesi ---
 \title{Sviluppo di un pannello Web a supporto di un filtro DNS per malware e contenuti}
-\subtitle{Un'architettura a servizi che si inserisce nel contesto aziendale esistente}
+\subtitle{Un'architettura a servizi che si inserisce nel contesto aziendale esistente di FlashStart Group S.r.l.}
 \date{II Sessione di Laurea, A.A. 2024-2025}
 \author{Alessandro Valmori}
 \institute{Università di Bologna \and Relatore: Prof. Mirko Viroli \and Correlatore: Dott. Nicolas Farabegoli}
@@ -74,23 +76,89 @@
 \section{Architettura e Design}
 
 \begin{frame}{Architettura di Alto Livello e Deployment}
-    \frametitle{Architettura di Alto Livello e Deployment}
+  \frametitle{Architettura di Alto Livello e Deployment}
 
-    % --- FIGURA IN ALTO ---
-    \begin{figure}
-        \centering
-        \includegraphics[width=0.6\textwidth]{figures/components.pdf}
-    \end{figure}
+  % --- FIGURA IN ALTO ---
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/components.pdf}
+  \end{figure}
 
-    % --- DESCRIZIONE IN BASSO ---
+  % --- DESCRIZIONE IN BASSO ---
+  \begin{itemize}
+    \item \textbf{Frontend (React)}: Unico punto di contatto per l'utente.
+    \item \textbf{Backend (Java + Spring WebFlux)}: Nucleo logico, API Gateway e gestore dell'autenticazione.
+    \item \textbf{Database (PostgreSQL)}: Persistenza dei dati applicativi.
+    \item \textbf{API Esterne}: Integrazione con i servizi legacy di FlashStart.
+    \item \alert{\textbf{Deployment}}: L'intero stack è \textbf{containerizzato con Docker}. I servizi comunicano su una rete privata, il tutto ospitato su un unico server aziendale.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Stack Tecnologico: il Frontend}
+  \frametitle{Stack Tecnologico: il Frontend}
+
+  % --- PARTE SUPERIORE: TESTO IN DUE COLONNE ---
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{block}{Librerie e Architettura UI}
+      La UI è una \textbf{Single Page Application} sviluppata con:
+      \begin{itemize}
+        \item[\large\faReact] \textbf{React e TypeScript}: Per un'interfaccia a componenti, moderna e tipizzata.
+
+        \item[\large\faRoute]  \textbf{React Router DOM}: Navigazione e del routing lato client.
+
+        \item[\large\faExchange*] \textbf{Axios}: Come client HTTP per la comunicazione con il backend.
+
+        \item[\large\faCogs] \textbf{React Context API}: Per la gestione dello stato globale.
+      \end{itemize}
+    \end{block}
+
+    \column{0.5\textwidth}
+    \begin{block}{Build e Deployment}
+      Il ciclo di vita del frontend è gestito da:
+      \begin{itemize}
+        \item[\large\faBolt] \textbf{Vite}: Elevata velocità in sviluppo (Hot Module Replacement) e per la generazione di bundle di ottimizzati.
+        \item[\large\faServer] \textbf{Nginx}: Utilizzato come
+              \begin{itemize}
+                \item \textbf{Web Server}: Per servire i file statici generati dal processo di build.
+                \item \textbf{Reverse Proxy}: Per inoltrare le richieste API al backend, semplificando la configurazione del frontend ed evitando problemi legati al CORS.
+              \end{itemize}
+      \end{itemize}
+    \end{block}
+  \end{columns}
+
+  \vfill % Spinge la figura verso il basso
+
+  % --- PARTE INFERIORE: FIGURA ---
+  \begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/frontend_stack.png}
+  \end{figure}
+
+\end{frame}
+
+% --- SLIDE 2 (MODIFICATA) ---
+\begin{frame}{Stack Tecnologico: il Backend}
+  \frametitle{Stack Tecnologico: il Backend}
+
+  \begin{block}{Ecosistema e Framework}
+    L'intera logica di business è costruita sull'ecosistema Java, sfruttando:
     \begin{itemize}
-        \item \textbf{Frontend (React)}: Unico punto di contatto per l'utente.
-        \item \textbf{Backend (Java + Spring WebFlux)}: Nucleo logico, API Gateway e gestore dell'autenticazione.
-        \item \textbf{Database (PostgreSQL)}: Persistenza dei dati applicativi.
-        \item \textbf{API Esterne}: Integrazione con i servizi legacy di FlashStart.
-        \item \alert{\textbf{Deployment}}: L'intero stack è \textbf{containerizzato con Docker}. I servizi comunicano su una rete privata, il tutto ospitato su un unico server aziendale.
+      \item \textbf{Spring Boot}: Per accelerare lo sviluppo e la configurazione.
+      \item \textbf{Spring Cloud Gateway}: Per il routing e la gestione delle richieste.
+      \item \textbf{Spring Security}: Per la gestione dell'autenticazione e autorizzazione.
     \end{itemize}
-    
+  \end{block}
+
+  \begin{alertblock}{Stack Reattivo e Persistenza}
+    Per garantire performance e scalabilità, lo stack è interamente non bloccante:
+    \begin{itemize}
+      \item \textbf{Spring WebFlux} per il web layer reattivo.
+      \item \textbf{R2DBC} per l'accesso asincrono al database \textbf{PostgreSQL}.
+      \item \textbf{Flyway} per la gestione versionata delle migrazioni dello schema del database.
+    \end{itemize}
+  \end{alertblock}
 \end{frame}
 
 \begin{frame}{Design del Backend: Struttura e Reattività}
@@ -143,30 +211,30 @@
 \end{frame}
 
 \begin{frame}{Gestione dello Stato Frontend: Pattern Observer}
-    \frametitle{Gestione dello Stato Frontend: Pattern Observer con React Context}
-    
-    % --- PARTE SUPERIORE: TESTO ESPLICATIVO ---
-    \begin{alertblock}{Problema}
-        Come gestire dati globali (utente loggato, cliente selezionato) in modo efficiente, senza passare props attraverso innumerevoli componenti (prop drilling)?
-    \end{alertblock}
+  \frametitle{Gestione dello Stato Frontend: Pattern Observer con React Context}
 
-    \begin{block}{Soluzione: Pattern Observer}
-        Utilizzo della \textbf{React Context API} come implementazione del pattern Observer:
-        \begin{itemize}
-            \item \texttt{AuthProvider} e \texttt{CustomerProvider} agiscono da "soggetti" (subjects) che mantengono lo stato.
-            \item I componenti che necessitano dei dati si "sottoscrivono" (observers) al contesto e si ri-renderizzano automaticamente quando lo stato cambia.
-        \end{itemize}
-    \end{block}
+  % --- PARTE SUPERIORE: TESTO ESPLICATIVO ---
+  \begin{alertblock}{Problema}
+    Come gestire dati globali (utente loggato, cliente selezionato) in modo efficiente, senza passare props attraverso innumerevoli componenti (prop drilling)?
+  \end{alertblock}
 
-    \vfill % Questo comando spinge il contenuto seguente verso il basso
+  \begin{block}{Soluzione: Pattern Observer}
+    Utilizzo della \textbf{React Context API} come implementazione del pattern Observer:
+    \begin{itemize}
+      \item \texttt{AuthProvider} e \texttt{CustomerProvider} agiscono da "soggetti" (subjects) che mantengono lo stato.
+      \item I componenti che necessitano dei dati si "sottoscrivono" (observers) al contesto e si ri-renderizzano automaticamente quando lo stato cambia.
+    \end{itemize}
+  \end{block}
 
-    % --- PARTE INFERIORE: DIAGRAMMA ---
-    \begin{figure}
-        \centering
-        \includegraphics[width=0.85\textwidth]{figures/observer.png}
-        \caption{Diagramma del pattern Observer implementato con React Context.}
-    \end{figure}
-    
+  \vfill % Questo comando spinge il contenuto seguente verso il basso
+
+  % --- PARTE INFERIORE: DIAGRAMMA ---
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/observer.png}
+    \caption{Diagramma del pattern Observer implementato con React Context.}
+  \end{figure}
+
 \end{frame}
 \section{Implementazione e Risultati}
 
@@ -239,47 +307,31 @@
 % --- INSERISCI QUESTA SLIDE DOPO "INFRASTRUTTURA E CI/CD" ---
 
 \begin{frame}{Strategia di Testing a Più Livelli}
-    \frametitle{Strategia di Testing a Più Livelli}
-    
-    \begin{block}{Approccio}
-        Per garantire qualità e assenza di regressioni, è stata implementata una strategia di testing automatizzato che copre l'intera applicazione.
-    \end{block}
+  \frametitle{Strategia di Testing a Più Livelli}
 
-    \begin{columns}[T]
-        \column{0.5\textwidth}
-            \begin{exampleblock}{Testing del Backend}
-                \begin{itemize}
-                    \item \textbf{Unitari (JUnit \& Mockito)}: Verifica della logica di business nei servizi in isolamento.
-                    \item \textbf{Integrazione (Testcontainers)}: Test degli endpoint e delle interazioni con un database PostgreSQL reale ma temporaneo.
-                    \item \textbf{Infrastruttura (WebTestClient)}: Validazione della configurazione di Spring Cloud Gateway e dei filtri custom.
-                \end{itemize}
-            \end{exampleblock}
-
-        \column{0.5\textwidth}
-            \begin{exampleblock}{Testing del Frontend}
-                \begin{itemize}
-                    \item \textbf{Framework (Jest \& RTL)}: Focus sul testare il comportamento dal punto di vista dell'utente, non i dettagli implementativi.
-                    \item \textbf{Logica}: Simulazione di interazioni utente (click, inserimento testo).
-                    \item \textbf{Chiamate API}: Mocking delle risposte del backend per testare la UI in vari scenari (successo, errore).
-                \end{itemize}
-            \end{exampleblock}
-    \end{columns}
-\end{frame}
-
-\section{Conclusioni}
-
-\begin{frame}{Conclusioni e Risultati}
-  \begin{block}{Risultati del Progetto}
-    L'obiettivo è stato pienamente raggiunto: è stata sviluppata un'applicazione web full-stack che ha soddisfatto un'esigenza di business critica e immediata.
+  \begin{block}{Approccio}
+    Per garantire qualità e assenza di regressioni, è stata implementata una strategia di testing automatizzato che copre l'intera applicazione.
   \end{block}
 
-  \begin{exampleblock}{Impatto e Adozione}
-    La stabilità e l'efficacia della soluzione sono testimoniate dalla sua adozione in produzione da parte di clienti internazionali come \textbf{Telefónica} e un importante \textbf{Carrier Tier-1} statunitense.
-  \end{exampleblock}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{exampleblock}{Testing del Backend}
+      \begin{itemize}
+        \item \textbf{Unitari (JUnit \& Mockito)}: Verifica della logica di business nei servizi in isolamento.
+        \item \textbf{Integrazione (Testcontainers)}: Test degli endpoint e delle interazioni con un database PostgreSQL reale ma temporaneo.
+        \item \textbf{Infrastruttura (WebTestClient)}: Validazione della configurazione di Spring Cloud Gateway e dei filtri custom.
+      \end{itemize}
+    \end{exampleblock}
 
-  \begin{alertblock}{Apprendimento Chiave}
-    Il progetto ha dimostrato come l'applicazione rigorosa dei principi e dei design pattern della programmazione a oggetti sia cruciale per creare software robusto e manutenibile, anche in un contesto industriale agile e con vincoli di tempo stringenti.
-  \end{alertblock}
+    \column{0.5\textwidth}
+    \begin{exampleblock}{Testing del Frontend}
+      \begin{itemize}
+        \item \textbf{Framework (Jest \& RTL)}: Focus sul testare il comportamento dal punto di vista dell'utente, non i dettagli implementativi.
+        \item \textbf{Logica}: Simulazione di interazioni utente (click, inserimento testo).
+        \item \textbf{Chiamate API}: Mocking delle risposte del backend per testare la UI in vari scenari (successo, errore).
+      \end{itemize}
+    \end{exampleblock}
+  \end{columns}
 \end{frame}
 
 

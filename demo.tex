@@ -62,17 +62,30 @@
 \section{Contesto e Obiettivi}
 
 \begin{frame}{Contesto e Motivazione}
-  \begin{block}{Problema Aziendale }
-    FlasStart Group S.r.l., durante un re-engineering della piattaforma, necessitava di una soluzione "ponte" per fornire ai clienti una dashboard di analisi dati in modalità \textbf{readonly}.
-  \end{block}
-  \begin{block}{Obiettivo del Progetto }
-    Sviluppare uno \textit{spike tecnologico} per colmare questa lacuna funzionale immediata, in attesa del rilascio della nuova infrastruttura a Novembre 2025.
-  \end{block}
-  \begin{alertblock}{Obiettivo della Tesi }
-    Analizzare come i principi della programmazione a oggetti guidino le scelte architetturali in un progetto industriale con vincoli reali.
-  \end{alertblock}
-\end{frame}
+    \frametitle{Contesto e Motivazione}
+    
+    \begin{columns}[T]
+        % --- Colonna Sinistra: Testo ---
+        \column{0.45\textwidth}
+            \begin{block}{Problema Aziendale}
+                FlasStart Group S.r.l., durante un re-engineering della piattaforma, necessitava di una soluzione "ponte" per fornire ai clienti una dashboard di analisi dati in modalità \textbf{readonly}.
+            \end{block}
+            
+            \begin{block}{Obiettivo del Progetto}
+                Sviluppare uno \textit{spike tecnologico} per colmare questa lacuna funzionale immediata, in attesa del rilascio della nuova infrastruttura.
+            \end{block}
+            
+            \begin{alertblock}{Obiettivo della Tesi}
+                Analizzare come i principi della programmazione a oggetti guidino le scelte architetturali in un progetto industriale con vincoli reali.
+            \end{alertblock}
 
+        % --- Colonna Destra: Immagine ---
+        \column{0.55\textwidth}
+            \begin{figure}
+                \includegraphics[width=\textwidth]{figures/home.png}
+            \end{figure}
+    \end{columns}
+\end{frame}
 \section{Architettura e Design}
 
 \begin{frame}{Architettura di Alto Livello e Deployment}
@@ -104,13 +117,13 @@
     \begin{block}{Librerie e Architettura UI}
       La UI è una \textbf{Single Page Application} sviluppata con:
       \begin{itemize}
-        \item[\large\faReact] \textbf{React e TypeScript}: Per un'interfaccia a componenti, moderna e tipizzata.
+        \item[\large\faReact] \textbf{React e TypeScript}: Interfaccia a componenti, moderna e tipizzata.
 
-        \item[\large\faRoute]  \textbf{React Router DOM}: Navigazione e del routing lato client.
+        \item[\large\faRoute]  \textbf{React Router DOM}: Navigazione e routing lato client.
 
-        \item[\large\faExchange*] \textbf{Axios}: Come client HTTP per la comunicazione con il backend.
+        \item[\large\faExchange*] \textbf{Axios}: Client HTTP per la comunicazione con il backend.
 
-        \item[\large\faCogs] \textbf{React Context API}: Per la gestione dello stato globale.
+        \item[\large\faCogs] \textbf{React Context API}: Gestione dello stato globale.
       \end{itemize}
     \end{block}
 
@@ -334,5 +347,15 @@
   \end{columns}
 \end{frame}
 
+% --- SLIDE FINALE PER LA DEMO ---
+\begin{frame}[standout]
+    \centering
+    % Il comando \href rende il testo cliccabile.
+    % 'run:demo.mp4' dice al PDF viewer di eseguire/aprire il file 'demo.mp4'.
+    % Il file video deve trovarsi nella stessa cartella del PDF generato.
+    \href{run:demo.webm}{
+        \Huge\bfseries Demo
+    }
+\end{frame}
 
 \end{document}

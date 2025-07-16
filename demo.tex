@@ -131,7 +131,7 @@
     \begin{block}{Build e Deployment}
       Il ciclo di vita del frontend è gestito da:
       \begin{itemize}
-        \item[\large\faBolt] \textbf{Vite}: Elevata velocità in sviluppo (Hot Module Replacement) e per la generazione di bundle di ottimizzati.
+        \item[\large\faBolt] \textbf{Vite}: Elevata velocità in sviluppo (Hot Module Replacement) e generazione di bundle di ottimizzati.
         \item[\large\faServer] \textbf{Nginx}: Utilizzato come
               \begin{itemize}
                 \item \textbf{Web Server}: Per servire i file statici generati dal processo di build.
@@ -275,7 +275,7 @@
 
         \item \textbf{Token Rotation}:\\Il Refresh Token è \alert{monouso}. Ad ogni utilizzo, viene invalidato e sostituito, una misura fondamentale contro gli attacchi di tipo replay.
 
-        \item \textbf{Rinnovo Trasparente}:\\Un intercettore (pattern \textit{Decorator}) gestisce il rinnovo dei token in modo automatico e invisibile all'utente.
+        \item \textbf{Rinnovo Trasparente}:\\Un intercettore gestisce il rinnovo dei token in modo automatico e invisibile all'utente.
       \end{itemize}
     \end{alertblock}
   \end{columns}
